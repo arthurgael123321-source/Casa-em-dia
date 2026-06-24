@@ -20,6 +20,22 @@ app.get('/api/tarefas', async (req, res) => {
  res.status(500).json({ erro: 'Erro ao buscar tarefas' });
  }
 });
+// Rota de login (mock) para autenticação
+app.post('/api/login', async (req, res) => {
+	try {
+		const { email, password } = req.body;
+		if (!email || !password) {
+			return res.status(400).json({ erro: 'Email e senha obrigatorios' });
+		}
+
+		// Aqui você pode implementar verificação com DB.
+		// Por enquanto, retornamos um token mock baseado em base64.
+		const token = Buffer.from(`${email}:${password}`).toString('base64');
+		return res.json({ token, email });
+	} catch (error) {
+		res.status(500).json({ erro: 'Erro no login' });
+	}
+});
 app.post('/api/tarefas', async (req, res) => {
  try {
  const { descricao } = req.body;

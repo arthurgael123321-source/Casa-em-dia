@@ -1,4 +1,16 @@
-const API_URL = 'http://localhost:3000/api/tarefas';
+const BASE = 'http://localhost:3000/api';
+
+export async function login(email, password) {
+	const res = await fetch(`${BASE}/login`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ email, password })
+	});
+	if (!res.ok) throw new Error((await res.json()).erro || 'Erro ao autenticar');
+	return await res.json();
+}
+
+const API_URL = `${BASE}/tarefas`;
 export async function buscarTarefas() {
  const resposta = await fetch(API_URL);
  return await resposta.json();

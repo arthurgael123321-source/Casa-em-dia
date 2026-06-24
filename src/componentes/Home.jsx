@@ -1,21 +1,13 @@
 import { useState } from 'react'
+import logo from '../assets/WhatsApp Image 2026-06-23 at 7.39.28 PM.png'
 
 const slides = [
-  {
-    src: 'https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Profissional com equipamentos de limpeza',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1600607689484-7e8b6d9f9c9b?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Equipe feliz após limpeza',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1581574203058-0a7f1b4d5c6e?auto=format&fit=crop&q=80&w=1200',
-    alt: 'Casa organizada e limpa',
-  },
+  { bg: 'linear-gradient(180deg,#dff3df,#bfe6c1)', alt: 'Verde claro' },
+  { bg: 'linear-gradient(180deg,#9fb897,#6f9f6a)', alt: 'Verde médio' },
+  { bg: 'linear-gradient(180deg,#21401b,#2f5a30)', alt: 'Verde escuro' },
 ]
 
-function Home() {
+function Home({ onLoginClick, onHomeClick }) {
   const [index, setIndex] = useState(0)
   const [query, setQuery] = useState('')
   const prev = () => setIndex((i) => (i - 1 + slides.length) % slides.length)
@@ -26,6 +18,9 @@ function Home() {
     <main className="mockup-page">
       <section className="mockup-card" role="region" aria-label="Casa em Dia - Apresentação">
         <header className="mockup-header">
+          <button className="site-logo-button" onClick={() => (onHomeClick ? onHomeClick() : window.location.href = '/')} aria-label="Ir para página inicial">
+            <img src={logo} alt="Casa em Dia" className="site-logo" />
+          </button>
           <form className="search-box" role="search" aria-label="Pesquisar" onSubmit={(e) => e.preventDefault()}>
             <svg className="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
               <path d="M21 21l-4.35-4.35" stroke="#21401b" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
@@ -49,6 +44,10 @@ function Home() {
             )}
           </form>
 
+          <button className="header-login" onClick={() => onLoginClick && onLoginClick()} aria-label="Entrar">
+            Entrar
+          </button>
+
           <div className="top-dots" aria-hidden="true">
             <span className="dot" />
             <span className="dot" />
@@ -58,7 +57,7 @@ function Home() {
 
         <div className="carousel-area">
           <div className="carousel-card" aria-live="polite">
-            <img className="carousel-image" src={slides[index].src} alt={slides[index].alt} />
+            <div className="carousel-image" style={{ background: slides[index].bg }} role="img" aria-label={slides[index].alt} />
 
             <button onClick={prev} className="carousel-arrow left" aria-label="Anterior">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
