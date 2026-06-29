@@ -6,11 +6,17 @@ import { login as apiLogin } from '../services/api'
 import googleIcon from '../assets/OIP.png'
 import fbIcon from '../assets/pngtree-facebook-logo-facebook-icon-png-image_3654755.png'
 
-export default function Login({ onBack }) {
+export default function Login({ onGuestAccess }) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [info, setInfo] = useState('')
   const [loading, setLoading] = useState(false)
+
+  const handleCreateAccount = () => {
+    setError('')
+    setInfo('Criar conta ainda não está disponível, mas você pode entrar sem conta por enquanto.')
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -70,40 +76,64 @@ export default function Login({ onBack }) {
 
             {error && <div className="login-error">{error}</div>}
 
-            <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-              {onBack && (
-                <button
-                  type="button"
-                  className="login-submit"
-                  onClick={() => onBack()}
-                  style={{ background: '#fff', color: 'var(--accent-dark)', border: '2px solid rgba(33,64,27,0.06)', width: 110 }}
-                >
-                  Voltar
-                </button>
-              )}
-
-              <button className="login-submit" type="submit" disabled={loading}>{loading ? 'Entrando...' : 'Entrar'}</button>
+            <div className="login-submit-row">
+              <button className="login-submit" type="submit" disabled={loading}>
+                {loading ? 'Entrando...' : 'Entrar'}
+              </button>
             </div>
 
+            <div className="login-alt-actions">
+              <button
+                type="button"
+                className="login-secondary"
+                onClick={() => {
+                  setError('')
+                  setInfo('')
+                  if (onGuestAccess) {
+                    onGuestAccess()
+                  } else {
+                    setInfo('Entrar sem conta ativado.')
+                  }
+                }}
+              >
+                Entrar sem conta
+              </button>
+              <button
+                type="button"
+                className="login-tertiary"
+                onClick={handleCreateAccount}
+              >
+                Criar uma conta
+              </button>
+            </div>
+
+            {error && <div className="login-error">{error}</div>}
+            {info && <div className="login-info">{info}</div>}
+
             <div className="social-area">
-              <div className="social-title">/Entrar com</div>
+              <div className="social-title">Entrar com</div>
               <div className="social-buttons">
-                <button type="button" className="social-btn google" aria-label="Entrar com Google">
+                <button type="button" className="social-btn google" aria-label="e">
                   <img src={googleIcon} alt="Google" className="social-icon" />
-                  <span className="social-text">Entrar com Google</span>
+                  <span className="social-text"></span>
                 </button>
-                <button type="button" className="social-btn facebook" aria-label="Entrar com Facebook">
+                <button type="button" className="social-btn facebook" aria-label="">
                   <img src={fbIcon} alt="Facebook" className="social-icon" />
-                  <span className="social-text white">Entrar com Facebook</span>
+                  <span className="social-text white"></span>
                 </button>
-                <button type="button" className="social-btn phone" aria-label="Entrar com Telefone">📱
-                  <span className="social-text">Entrar com Telefone</span>
+                <button type="button" className="social-btn phone" aria-label="">📱
+                  <span className="social-text"></span>
                 </button>
               </div>
             </div>
           </form>
         </div>
         <aside className="login-right" aria-hidden="true">
+          <div className="login-bubble-group" aria-hidden="true">
+            <span className="bubble bubble-1" />
+            <span className="bubble bubble-2" />
+            <span className="bubble bubble-3" />
+          </div>
           <div className="side-content">
             <h3 className="side-title">Casa em Dia</h3>
             <p className="side-sub">Organização • Limpeza • Manutenção</p>
