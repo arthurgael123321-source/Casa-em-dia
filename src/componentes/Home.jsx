@@ -1,10 +1,16 @@
 import { useState } from 'react'
 import logo from '../assets/WhatsApp Image 2026-06-23 at 7.39.28 PM.png'
+import configIcon from '../assets/configs.png'
+import profileIcon from '../assets/perfil.png'
+import plansIcon from '../assets/planos.png'
+import slideGarden from '../assets/primeira imagem carrosel.png'
+import slideRepair from '../assets/Segunda imagem carrosel.png'
+import slideCleaning from '../assets/terceira imagem carrosel.png'
 
 const slides = [
-  { bg: 'linear-gradient(180deg,#dff3df,#bfe6c1)', alt: 'Verde claro' },
-  { bg: 'linear-gradient(180deg,#9fb897,#6f9f6a)', alt: 'Verde médio' },
-  { bg: 'linear-gradient(180deg,#21401b,#2f5a30)', alt: 'Verde escuro' },
+  { image: slideGarden, alt: 'Jardinagem' },
+  { image: slideRepair, alt: 'Reparo elétrico' },
+  { image: slideCleaning, alt: 'Limpeza' },
 ]
 
 function Home({ onLoginClick, onHomeClick }) {
@@ -59,7 +65,7 @@ function Home({ onLoginClick, onHomeClick }) {
               <path d="M21 21l-4.35-4.35" stroke="#21401b" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
               <circle cx="11" cy="11" r="6" stroke="#21401b" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
-            <label className="visually-hidden" htmlFor="site-search">Pesquisar serviços</label>
+            <label className="visually-hidden" htmlFor="site-search">Pesquisar</label>
             <input
               id="site-search"
               className="search-input"
@@ -77,20 +83,31 @@ function Home({ onLoginClick, onHomeClick }) {
             )}
           </form>
 
-          <button className="header-login" onClick={() => onLoginClick && onLoginClick()} aria-label="Entrar">
-            Entrar
-          </button>
+          <div className="header-actions">
+            <button className="header-login" onClick={() => onLoginClick && onLoginClick()} aria-label="Entrar">
+              Entrar
+            </button>
+            <button className="header-create-account" onClick={() => onLoginClick && onLoginClick()} aria-label="Criar conta">
+              Criar conta
+            </button>
+          </div>
 
-          <div className="top-dots" aria-hidden="true">
-            <span className="dot" />
-            <span className="dot" />
-            <span className="dot" />
+          <div className="top-actions" aria-label="Ações rápidas">
+            <button type="button" className="top-action-button" aria-label="Configurações">
+              <img src={configIcon} alt="Configurações" />
+            </button>
+            <button type="button" className="top-action-button" aria-label="Perfil">
+              <img src={profileIcon} alt="Perfil" />
+            </button>
+            <button type="button" className="top-action-button" aria-label="Planos">
+              <img src={plansIcon} alt="Planos" />
+            </button>
           </div>
         </header>
 
         <div className="carousel-area">
           <div className="carousel-card" aria-live="polite">
-            <div className="carousel-image" style={{ background: slides[index].bg }} role="img" aria-label={slides[index].alt} />
+            <img key={slides[index].image} src={slides[index].image} alt={slides[index].alt} className="carousel-image" />
 
             <button onClick={prev} className="carousel-arrow left" aria-label="Anterior">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -118,27 +135,11 @@ function Home({ onLoginClick, onHomeClick }) {
             </div>
           </div>
         </div>
-
-        <footer className="wave-footer">
-          <div className="footer-content">
-            <div className="footer-left">
-              <h3 className="footer-title">Casa em Dia</h3>
-              <p className="footer-sub">Limpeza profissional, confiança e cuidado para o seu lar.</p>
-            </div>
-
-            <nav className="footer-links" aria-label="Links de rodapé">
-              <a href="#servicos">Serviços</a>
-              <a href="#planos">Planos</a>
-              <a href="#contato">Contato</a>
-            </nav>
-          </div>
-
-          <div className="wave-wrapper">
-            <div className="wave wave-back" />
-            <div className="wave wave-front" />
-            <div className="wave-text">Quer saber como a Casa em Dia opera?</div>
-          </div>
-        </footer>
+        <div className="carousel-info">
+          <p className="carousel-info-text">
+            <strong>Se você não conhece nossos serviços, venha conhecer agora! Somos a empresa de limpeza básica de serviços domésticos mais completa da região!</strong>
+          </p>
+        </div>
       </section>
     </main>
   )

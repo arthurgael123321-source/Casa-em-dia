@@ -4,10 +4,10 @@ import Home from './componentes/Home.jsx'
 import Login from './componentes/Login.jsx'
 
 export default function App() {
-  const [view, setView] = useState('home')
+  const [view, setView] = useState('login')
 
   if (view === 'login') {
-    return <Login onBack={() => setView('home')} />
+    return <Login onGuestAccess={() => setView('home')} />
   }
 
   return <Home onLoginClick={() => setView('login')} onHomeClick={() => setView('home')} />
