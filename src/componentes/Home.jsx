@@ -13,7 +13,7 @@ const slides = [
   { image: slideCleaning, alt: 'Limpeza' },
 ]
 
-function Home({ onLoginClick, onHomeClick, onContactClick }) {
+function Home({ onLoginClick, onHomeClick, onContactClick, onPlanosClick }) {
   const [index, setIndex] = useState(0)
   const [query, setQuery] = useState('')
   const prev = () => setIndex((i) => (i - 1 + slides.length) % slides.length)
@@ -27,7 +27,9 @@ function Home({ onLoginClick, onHomeClick, onContactClick }) {
           <h3 className="sidebar-title">Casa em Dia</h3>
           <ul className="sidebar-menu">
             <li><a href="#servicos" className="sidebar-link">Serviços</a></li>
-            <li><a href="#planos" className="sidebar-link">Planos</a></li>
+            <li>
+              <button onClick={() => onPlanosClick && onPlanosClick()} className="sidebar-link" style={{background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit', color: 'inherit'}}>Planos</button>
+            </li>
             <li><a href="#sobre" className="sidebar-link">Sobre Nós</a></li>
             <li><button onClick={() => onContactClick && onContactClick()} className="sidebar-link" style={{background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit', color: 'inherit'}}>Contato</button></li>
           </ul>
@@ -99,7 +101,7 @@ function Home({ onLoginClick, onHomeClick, onContactClick }) {
             <button type="button" className="top-action-button" aria-label="Perfil">
               <img src={profileIcon} alt="Perfil" />
             </button>
-            <button type="button" className="top-action-button" aria-label="Planos">
+            <button type="button" className="top-action-button" aria-label="Planos" onClick={() => onPlanosClick && onPlanosClick()}>
               <img src={plansIcon} alt="Planos" />
             </button>
           </div>
