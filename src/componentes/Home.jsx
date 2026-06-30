@@ -13,7 +13,7 @@ const slides = [
   { image: slideCleaning, alt: 'Limpeza' },
 ]
 
-function Home({ onLoginClick, onHomeClick }) {
+function Home({ onLoginClick, onHomeClick, onContactClick }) {
   const [index, setIndex] = useState(0)
   const [query, setQuery] = useState('')
   const prev = () => setIndex((i) => (i - 1 + slides.length) % slides.length)
@@ -29,7 +29,7 @@ function Home({ onLoginClick, onHomeClick }) {
             <li><a href="#servicos" className="sidebar-link">Serviços</a></li>
             <li><a href="#planos" className="sidebar-link">Planos</a></li>
             <li><a href="#sobre" className="sidebar-link">Sobre Nós</a></li>
-            <li><a href="#contato" className="sidebar-link">Contato</a></li>
+            <li><button onClick={() => onContactClick && onContactClick()} className="sidebar-link" style={{background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit', color: 'inherit'}}>Contato</button></li>
           </ul>
         </nav>
 
