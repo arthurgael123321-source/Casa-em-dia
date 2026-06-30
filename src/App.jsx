@@ -3,6 +3,7 @@ import { useState } from 'react'
 import Home from './componentes/Home.jsx'
 import Login from './componentes/Login.jsx'
 import Contatos from './componentes/Contatos.jsx'
+import { Planos } from './componentes/Planos.jsx'
 
 export default function App() {
   const [view, setView] = useState('login')
@@ -15,5 +16,9 @@ export default function App() {
     return <Contatos onHomeClick={() => setView('home')} onLoginClick={() => setView('login')} />
   }
 
-  return <Home onLoginClick={() => setView('login')} onHomeClick={() => setView('home')} onContactClick={() => setView('contatos')} />
+  if (view === 'planos') {
+    return <Planos />
+  }
+
+  return <Home onLoginClick={() => setView('login')} onHomeClick={() => setView('home')} onContactClick={() => setView('contatos')} onPlanosClick={() => setView('planos')} />
 }
