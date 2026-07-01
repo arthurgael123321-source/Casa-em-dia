@@ -1,11 +1,24 @@
-import heroImage from '../assets/hero.png'
 import logo from '../assets/WhatsApp Image 2026-06-23 at 7.39.28 PM.png'
 import configIcon from '../assets/configs.png'
 import profileIcon from '../assets/perfil.png'
 import plansIcon from '../assets/planos.png'
-import services from './servicosData'
+import { serviceMap } from './servicosData'
 
-function Servicos({ onHomeClick, onContactClick, onPlanosClick, onLoginClick, onServicePageClick }) {
+function ServicoDetalhe({ serviceSlug, onHomeClick, onContactClick, onPlanosClick, onLoginClick, onServicosClick }) {
+  const service = serviceMap[serviceSlug]
+
+  if (!service) {
+    return (
+      <main className="mockup-page">
+        <section className="mockup-card">
+          <h1>Serviço não encontrado</h1>
+          <p>O serviço solicitado não está disponível no momento.</p>
+          <button onClick={() => onServicosClick && onServicosClick()}>Voltar para serviços</button>
+        </section>
+      </main>
+    )
+  }
+
   return (
     <main className="mockup-page">
       <aside className="sidebar" role="complementary" aria-label="Menu lateral">
@@ -20,6 +33,11 @@ function Servicos({ onHomeClick, onContactClick, onPlanosClick, onLoginClick, on
             <li>
               <button onClick={() => onPlanosClick && onPlanosClick()} className="sidebar-link" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit', color: 'inherit' }}>
                 Planos
+              </button>
+            </li>
+            <li>
+              <button onClick={() => onServicosClick && onServicosClick()} className="sidebar-link" style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit', color: 'inherit' }}>
+                Todos os serviços
               </button>
             </li>
             <li>
@@ -52,7 +70,7 @@ function Servicos({ onHomeClick, onContactClick, onPlanosClick, onLoginClick, on
         </button>
       </aside>
 
-      <section className="mockup-card" role="main" aria-label="Serviços de limpeza">
+      <section className="mockup-card" role="main" aria-label={`Serviço ${service.title}`}>
         <header className="mockup-header">
           <button className="site-logo-button" onClick={() => onHomeClick ? onHomeClick() : window.location.href = '/'} aria-label="Ir para página inicial">
             <img src={logo} alt="Casa em Dia" className="site-logo" />
@@ -78,48 +96,38 @@ function Servicos({ onHomeClick, onContactClick, onPlanosClick, onLoginClick, on
           </div>
         </header>
 
-        <div className="service-hero">
-          <div className="hero-copy">
-            <p className="eyebrow">Serviços de Limpeza Geral</p>
-            <h2>Casa impecável com cuidado completo</h2>
-            <p>
-              Deixe a Casa em Dia cuidar de tudo: limpeza residencial, faxina, organização de ambientes,
-              limpeza pós-obra, jardinagem e assistência doméstica. Nosso serviço une rapidez, atenção aos
-              detalhes e tecnologia para entregar um lar limpo e confortável.
-            </p>
-            <div className="hero-buttons">
-              <button className="hero-cta" onClick={() => onContactClick && onContactClick()}>
-                Agende agora
-              </button>
-              <button className="hero-secondary" onClick={() => onHomeClick && onHomeClick()}>
-                Voltar ao início
-              </button>
-            </div>
-          </div>
-
-          <div className="hero-image">
-            <img src={heroImage} alt="Serviços de limpeza doméstica" />
-          </div>
-        </div>
-
-        <div className="services-card" aria-label="Detalhes dos serviços">
-          <h3 className="services-title">Nossos principais serviços</h3>
-          <div className="services-grid">
-            {services.map((service) => (
-              <article key={service.title} className="service-detail-card">
-                <img src={service.image} alt={service.title} className="service-card-image" />
-                <h4>{service.title}</h4>
-                <p>{service.description}</p>
-                <button type="button" className="service-card-button" onClick={() => onServicePageClick && onServicePageClick(service.slug)}>
-                  Ver serviço
+        <div className="service-detail-page">
+          <article className="service-detail-hero">
+            <div className="hero-copy">
+              <p className="eyebrow">Serviço personalizado</p>
+              <h2>{service.title}</h2>
+              <p>{service.description}</p>
+              <div className="hero-buttons">
+                <button className="hero-cta" onClick={() => onContactClick && onContactClick()}>
+                  Agendar agora
                 </button>
-              </article>
-            ))}
-          </div>
+                <button className="hero-secondary" onClick={() => onServicosClick && onServicosClick()}>
+                  Ver todos os serviços
+                </button>
+              </div>
+            </div>
+            <div className="hero-image service-detail-image">
+              <img src={service.image} alt={service.title} />
+            </div>
+          </article>
+
+          <article className="service-detail-info">
+            <h2>O que está incluso</h2>
+            <ul>
+              {service.details.map((item) => (
+                <li key={item}>{item}</li>
+              ))}
+            </ul>
+          </article>
         </div>
       </section>
     </main>
   )
 }
 
-export default Servicos
+export default ServicoDetalhe
