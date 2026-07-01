@@ -26,15 +26,14 @@ function Home({ onLoginClick, onHomeClick, onContactClick, onPlanosClick, onServ
         <nav className="sidebar-nav" aria-label="Navegação principal">
           <h3 className="sidebar-title">Casa em Dia</h3>
           <ul className="sidebar-menu">
-            <li><a href="#servicos" className="sidebar-link">Serviços</a></li>
             <li>
-              <button onClick={() => onPlanosClick && onPlanosClick()} className="sidebar-link" style={{background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit', color: 'inherit'}}>Planos</button>
+              <button onClick={() => onServicosClick && onServicosClick()} className="home-sidebar-btn">Serviços</button>
             </li>
             <li>
-              <button onClick={() => onServicosClick && onServicosClick()} className="sidebar-link" style={{background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit', color: 'inherit'}}>Serviços completos</button>
+              <button onClick={() => onPlanosClick && onPlanosClick()} className="home-sidebar-btn">Planos</button>
             </li>
             <li><a href="#sobre" className="sidebar-link">Sobre Nós</a></li>
-            <li><button onClick={() => onContactClick && onContactClick()} className="sidebar-link" style={{background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit', color: 'inherit'}}>Contato</button></li>
+            <li><button onClick={() => onContactClick && onContactClick()} className="home-sidebar-btn">Contato</button></li>
           </ul>
         </nav>
 
