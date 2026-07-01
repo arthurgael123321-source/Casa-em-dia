@@ -86,6 +86,13 @@ export default function Login({ onGuestAccess }) {
               <button
                 type="button"
                 className="login-secondary"
+                onClick={handleCreateAccount}
+              >
+                Criar uma conta
+              </button>
+              <button
+                type="button"
+                className="login-tertiary"
                 onClick={() => {
                   setError('')
                   setInfo('')
@@ -96,14 +103,7 @@ export default function Login({ onGuestAccess }) {
                   }
                 }}
               >
-                Entrar sem conta
-              </button>
-              <button
-                type="button"
-                className="login-tertiary"
-                onClick={handleCreateAccount}
-              >
-                Criar uma conta
+                Entrar sem uma conta
               </button>
             </div>
 
@@ -128,23 +128,6 @@ export default function Login({ onGuestAccess }) {
             </div>
           </form>
         </div>
-        <aside className="login-right" aria-hidden="true">
-          <div className="login-bubble-group" aria-hidden="true">
-            <span className="bubble bubble-1" />
-            <span className="bubble bubble-2" />
-            <span className="bubble bubble-3" />
-          </div>
-          <div className="side-content">
-            <h3 className="side-title">Casa em Dia</h3>
-            <p className="side-sub">Organização • Limpeza • Manutenção</p>
-
-            <ul className="side-list">
-              <li>Profissionais treinados e confiáveis</li>
-              <li>Agendamento flexível</li>
-              <li>Produtos e equipamentos de qualidade</li>
-            </ul>
-          </div>
-        </aside>
       </section>
     </main>
   )
