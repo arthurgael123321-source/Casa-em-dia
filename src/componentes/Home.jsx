@@ -13,7 +13,7 @@ const slides = [
   { image: slideCleaning, alt: 'Limpeza' },
 ]
 
-function Home({ onLoginClick, onHomeClick, onContactClick, onPlanosClick }) {
+function Home({ onLoginClick, onHomeClick, onContactClick, onPlanosClick, onServicosClick, onServicePageClick }) {
   const [index, setIndex] = useState(0)
   const [query, setQuery] = useState('')
   const prev = () => setIndex((i) => (i - 1 + slides.length) % slides.length)
@@ -29,6 +29,9 @@ function Home({ onLoginClick, onHomeClick, onContactClick, onPlanosClick }) {
             <li><a href="#servicos" className="sidebar-link">Serviços</a></li>
             <li>
               <button onClick={() => onPlanosClick && onPlanosClick()} className="sidebar-link" style={{background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit', color: 'inherit'}}>Planos</button>
+            </li>
+            <li>
+              <button onClick={() => onServicosClick && onServicosClick()} className="sidebar-link" style={{background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit', color: 'inherit'}}>Serviços completos</button>
             </li>
             <li><a href="#sobre" className="sidebar-link">Sobre Nós</a></li>
             <li><button onClick={() => onContactClick && onContactClick()} className="sidebar-link" style={{background: 'none', border: 'none', cursor: 'pointer', padding: 0, font: 'inherit', color: 'inherit'}}>Contato</button></li>
@@ -149,27 +152,34 @@ function Home({ onLoginClick, onHomeClick, onContactClick, onPlanosClick }) {
             <div className="services-card" aria-label="Tipos de serviço">
               <h3 className="services-title">Tipos de serviço</h3>
               <div className="services-list" role="list">
-                <button type="button" className="service-item">
+                <button type="button" className="service-item" onClick={() => onServicePageClick && onServicePageClick('limpeza-residencial')}>
                   <span>Limpeza residencial</span>
                   <span className="service-arrow" aria-hidden="true">›</span>
                 </button>
-                <button type="button" className="service-item">
+                <button type="button" className="service-item" onClick={() => onServicePageClick && onServicePageClick('limpeza-pos-obra')}>
                   <span>Limpeza pós-obra</span>
                   <span className="service-arrow" aria-hidden="true">›</span>
                 </button>
-                <button type="button" className="service-item">
+                <button type="button" className="service-item" onClick={() => onServicePageClick && onServicePageClick('organizacao-de-ambientes')}>
                   <span>Organização de ambientes</span>
                   <span className="service-arrow" aria-hidden="true">›</span>
                 </button>
-                <button type="button" className="service-item">
+                <button type="button" className="service-item" onClick={() => onServicePageClick && onServicePageClick('jardinagem')}>
                   <span>Jardinagem</span>
                   <span className="service-arrow" aria-hidden="true">›</span>
                 </button>
-                <button type="button" className="service-item">
+                <button type="button" className="service-item" onClick={() => onServicePageClick && onServicePageClick('assistencia-domestica')}>
                   <span>Assistência doméstica</span>
                   <span className="service-arrow" aria-hidden="true">›</span>
                 </button>
+                <button type="button" className="service-item" onClick={() => onServicePageClick && onServicePageClick('faxina')}>
+                  <span>Faxina</span>
+                  <span className="service-arrow" aria-hidden="true">›</span>
+                </button>
               </div>
+              <button type="button" className="service-page-button" onClick={() => onServicosClick && onServicosClick()}>
+                Ver todos os serviços de limpeza geral
+              </button>
             </div>
           </div>
         </div>
