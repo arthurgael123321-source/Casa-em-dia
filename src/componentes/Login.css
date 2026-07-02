@@ -44,14 +44,13 @@
 
 .login-right { 
   flex: 0 0 45%; 
-  background: linear-gradient(135deg, #f5f9f7 0%, #e8f3ed 100%);
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  padding: 40px; 
+  background: #e8f3ed;
+  display: block; 
+  padding: 0; 
   min-height: 100vh; 
   animation: fadeSlideUp .6s cubic-bezier(.2,.9,.25,1) both; 
   position: relative;
+  overflow: hidden;
 }
 
 .side-image-wrap {
@@ -66,11 +65,11 @@
 
 .side-image {
   width: 100%;
-  height: auto;
-  max-height: 85%;
-  border-radius: 30px;
+  height: 100%;
+  display: block;
+  border-radius: 0;
   object-fit: cover;
-  box-shadow: 0 20px 60px rgba(33, 64, 27, 0.15);
+  box-shadow: none;
 }
 
 .side-text {
@@ -370,9 +369,9 @@
   .login-right {
     flex: 0 0 auto;
     width: 100%; 
-    padding: 24px; 
-    min-height: auto;
-    max-height: 50vh;
+    padding: 0; 
+    min-height: 45vh;
+    max-height: none;
   }
   
   .logo-wrap { 
@@ -401,7 +400,7 @@
   }
 
   .side-image {
-    max-height: 60%;
+    height: 45vh;
   }
 }
 
@@ -412,8 +411,9 @@
   }
 
   .login-right {
-    padding: 16px;
-    max-height: 40vh;
+    padding: 0;
+    min-height: 36vh;
+    max-height: none;
   }
 
   .logo-wrap {
@@ -469,7 +469,7 @@
   }
 
   .side-image {
-    max-height: 50%;
-    border-radius: 20px;
+    height: 36vh;
+    border-radius: 0;
   }
 }

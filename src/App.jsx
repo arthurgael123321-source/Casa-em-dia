@@ -20,7 +20,7 @@ export default function App() {
   const [view, setView] = useState('login')
 
   if (view === 'login') {
-    return <Login onGuestAccess={() => setView('home')} />
+    return <Login onLoginSuccess={() => setView('home')} />
   }
 
   if (view === 'contatos') {
