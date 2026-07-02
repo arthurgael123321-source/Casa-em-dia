@@ -1,16 +1,79 @@
-# React + Vite
+# Casa em Dia
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Sistema desenvolvido para gerenciar os serviços prestados pela empresa Casa em Dia.
 
-Currently, two official plugins are available:
+## Sobre a empresa
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+A Casa em Dia é uma empresa especializada em serviços domésticos, oferecendo limpeza residencial, manutenção, pequenos consertos e outros serviços para facilitar o dia a dia de seus clientes.
 
-## React Compiler
+## Objetivo do sistema
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+O sistema tem como objetivo facilitar o gerenciamento dos serviços da empresa. Ele permitirá cadastrar clientes, funcionários, serviços, agendamentos e acompanhar o andamento de cada atendimento.
 
-## Expanding the ESLint configuration
+## Integrantes
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Arthur Gonçalves
+- Renan Kael
+- Vinicius Gabriel
+- Djony
+- João Marchi
+
+## Tecnologias utilizadas
+
+- React
+- Vite
+- Node.js
+- Express
+- MySQL
+- mysql2
+- GitHub
+
+## Como instalar e executar
+
+Clone o repositório:
+
+```bash
+git clone https://github.com/arthurgael123321-source/Casa-em-dia.git
+```
+
+Entre na pasta:
+
+```bash
+cd casa-em-dia
+```
+
+Instale as dependências:
+
+```bash
+npm install
+```
+
+Execute:
+
+```bash
+npm run dev
+```
+
+Backend:
+
+```bash
+cd backend
+npm install
+npm start
+```
+
+## Variáveis de ambiente
+
+Crie um arquivo `.env` baseado no `.env.example`.
+
+```
+DB_HOST=
+DB_PORT=
+DB_NAME=
+DB_USER=
+DB_PASSWORD=
+```
+
+## Status do projeto
+
+Projeto em desenvolvimento.

@@ -4,6 +4,7 @@ import './Login.css'
 import logo from '../assets/WhatsApp Image 2026-06-23 at 7.39.28 PM.png'
 import googleIcon from '../assets/OIP.png'
 import fbIcon from '../assets/pngtree-facebook-logo-facebook-icon-png-image_3654755.png'
+import loginImage from '../assets/hero.png'
 
 export default function Login({ onBack }) {
   // Estados de login tradicional
@@ -91,7 +92,7 @@ export default function Login({ onBack }) {
   }
 
   // Login tradicional
-  const handleTraditionalLogin = async (e) => {
+  const handleTraditionalLogin = (e) => {
     e.preventDefault()
     setError('')
 
@@ -432,7 +433,7 @@ export default function Login({ onBack }) {
                   </button>
                 )}
                 <button className="login-submit" type="submit" disabled={loading}>
-                  {loading ? 'Entrando...' : isNewUser ? 'Criar Conta' : 'Entrar'}
+                  {loading ? 'Entrando...' : 'Entrar'}
                 </button>
               </div>
 
@@ -707,15 +708,12 @@ export default function Login({ onBack }) {
           )}
         </div>
         <aside className="login-right" aria-hidden="true">
-          <div className="side-content">
-            <h3 className="side-title">Casa em Dia</h3>
-            <p className="side-sub">Organização • Limpeza • Manutenção</p>
-
-            <ul className="side-list">
-              <li>Profissionais treinados e confiáveis</li>
-              <li>Agendamento flexível</li>
-              <li>Produtos e equipamentos de qualidade</li>
-            </ul>
+          <div className="side-image-wrap">
+            <img src={loginImage} alt="Casa limpa" className="side-image" />
+            <div className="side-text">
+              <h3>Sua casa limpa,</h3>
+              <p>sua vida leve!</p>
+            </div>
           </div>
         </aside>
       </section>
