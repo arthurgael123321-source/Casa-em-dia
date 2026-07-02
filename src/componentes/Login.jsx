@@ -4,9 +4,9 @@ import './Login.css'
 import logo from '../assets/WhatsApp Image 2026-06-23 at 7.39.28 PM.png'
 import googleIcon from '../assets/OIP.png'
 import fbIcon from '../assets/pngtree-facebook-logo-facebook-icon-png-image_3654755.png'
-import loginImage from '../assets/hero.png'
+import loginImage from '../assets/imagelogCasa.jpg'
 
-export default function Login({ onBack }) {
+export default function Login({ onBack, onLoginSuccess }) {
   // Estados de login tradicional
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -88,7 +88,11 @@ export default function Login({ onBack }) {
     if (rememberMe) {
       localStorage.setItem('rememberMe', 'true')
     }
-    window.location.href = '/'
+    if (onLoginSuccess) {
+      onLoginSuccess()
+    } else {
+      window.location.href = '/'
+    }
   }
 
   // Login tradicional
@@ -708,13 +712,7 @@ export default function Login({ onBack }) {
           )}
         </div>
         <aside className="login-right" aria-hidden="true">
-          <div className="side-image-wrap">
-            <img src={loginImage} alt="Casa limpa" className="side-image" />
-            <div className="side-text">
-              <h3>Sua casa limpa,</h3>
-              <p>sua vida leve!</p>
-            </div>
-          </div>
+          <img src={loginImage} alt="Casa limpa" className="side-image" />
         </aside>
       </section>
     </main>
