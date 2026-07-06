@@ -1,5 +1,5 @@
 import './App.css'
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { isAuthenticated } from './services/authUtils.js'
 import Home from './componentes/Home.jsx'
 import Login from './componentes/Login.jsx'
@@ -17,25 +17,67 @@ const serviceViews = [
   'faxina',
 ]
 
+const appViews = ['login', 'home', 'contatos', 'servicos', 'planos', ...serviceViews]
+
+const getViewFromHash = () => {
+  const hashView = window.location.hash.replace('#', '')
+
+  if (appViews.includes(hashView)) {
+    return hashView
+  }
+
+  return isAuthenticated() ? 'home' : 'login'
+}
+
 export default function App() {
-  const [view, setView] = useState(() => (isAuthenticated() ? 'home' : 'login'))
+  const [view, setView] = useState(getViewFromHash)
+
+  useEffect(() => {
+    window.history.replaceState({ view }, '', `#${view}`)
+
+    const handlePopState = (event) => {
+      const previousView = event.state?.view
+
+      if (appViews.includes(previousView)) {
+        setView(previousView)
+        return
+      }
+
+      setView(getViewFromHash())
+    }
+
+    window.addEventListener('popstate', handlePopState)
+
+    return () => {
+      window.removeEventListener('popstate', handlePopState)
+    }
+  }, [])
+
+  const navigate = useCallback((nextView) => {
+    if (!appViews.includes(nextView) || nextView === view) {
+      return
+    }
+
+    window.history.pushState({ view: nextView }, '', `#${nextView}`)
+    setView(nextView)
+  }, [view])
 
   if (view === 'login') {
-    return <Login onLoginSuccess={() => setView('home')} />
+    return <Login onLoginSuccess={() => navigate('home')} />
   }
 
   if (view === 'contatos') {
-    return <Contatos onHomeClick={() => setView('home')} onLoginClick={() => setView('login')} />
+    return <Contatos onHomeClick={() => navigate('home')} onLoginClick={() => navigate('login')} />
   }
 
   if (view === 'servicos') {
     return (
       <Servicos
-        onHomeClick={() => setView('home')}
-        onContactClick={() => setView('contatos')}
-        onPlanosClick={() => setView('planos')}
-        onLoginClick={() => setView('login')}
-        onServicePageClick={(slug) => setView(slug)}
+        onHomeClick={() => navigate('home')}
+        onContactClick={() => navigate('contatos')}
+        onPlanosClick={() => navigate('planos')}
+        onLoginClick={() => navigate('login')}
+        onServicePageClick={(slug) => navigate(slug)}
       />
     )
   }
@@ -44,11 +86,11 @@ export default function App() {
     return (
       <ServicoDetalhe
         serviceSlug={view}
-        onHomeClick={() => setView('home')}
-        onContactClick={() => setView('contatos')}
-        onPlanosClick={() => setView('planos')}
-        onLoginClick={() => setView('login')}
-        onServicosClick={() => setView('servicos')}
+        onHomeClick={() => navigate('home')}
+        onContactClick={() => navigate('contatos')}
+        onPlanosClick={() => navigate('planos')}
+        onLoginClick={() => navigate('login')}
+        onServicosClick={() => navigate('servicos')}
       />
     )
   }
@@ -59,12 +101,12 @@ export default function App() {
 
   return (
     <Home
-      onLoginClick={() => setView('login')}
-      onHomeClick={() => setView('home')}
-      onContactClick={() => setView('contatos')}
-      onPlanosClick={() => setView('planos')}
-      onServicosClick={() => setView('servicos')}
-      onServicePageClick={(slug) => setView(slug)}
+      onLoginClick={() => navigate('login')}
+      onHomeClick={() => navigate('home')}
+      onContactClick={() => navigate('contatos')}
+      onPlanosClick={() => navigate('planos')}
+      onServicosClick={() => navigate('servicos')}
+      onServicePageClick={(slug) => navigate(slug)}
     />
   )
 }
