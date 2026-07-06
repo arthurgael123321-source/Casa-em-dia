@@ -186,7 +186,7 @@
 }
 
 .forgot-password {
-  align-self: flex-end;
+  align-self: flex-start;
   background: transparent;
   border: 0;
   color: rgba(255, 255, 255, 0.86);
