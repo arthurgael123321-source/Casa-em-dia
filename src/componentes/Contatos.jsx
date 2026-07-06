@@ -67,14 +67,6 @@ export default function Contatos({ onHomeClick, onLoginClick }) {
           ← Voltar
         </button>
         <h1 className="header-title">Casa em Dia</h1>
-        <div className="header-actions">
-          <button onClick={() => onLoginClick && onLoginClick()} className="btn-entrar">
-            Entrar
-          </button>
-          <button onClick={() => onLoginClick && onLoginClick()} className="btn-criar-conta">
-            Criar conta
-          </button>
-        </div>
       </header>
 
       {/* Banner Principal */}

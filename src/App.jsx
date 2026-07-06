@@ -2,11 +2,13 @@ import './App.css'
 import { useCallback, useEffect, useState } from 'react'
 import { isAuthenticated } from './services/authUtils.js'
 import Home from './componentes/Home.jsx'
+import { isAuthenticated, logout } from './services/authUtils.js'
 import Login from './componentes/Login.jsx'
 import Contatos from './componentes/Contatos.jsx'
 import { Planos } from './componentes/Planos.jsx'
 import Servicos from './componentes/Serviços.jsx'
 import ServicoDetalhe from './componentes/ServicoDetalhe.jsx'
+import Perfil from './componentes/Perfil.jsx'
 
 const serviceViews = [
   'limpeza-residencial',
@@ -30,6 +32,7 @@ const getViewFromHash = () => {
 }
 
 export default function App() {
+<<<<<<< HEAD
   const [view, setView] = useState(getViewFromHash)
 
   useEffect(() => {
@@ -61,6 +64,9 @@ export default function App() {
     window.history.pushState({ view: nextView }, '', `#${nextView}`)
     setView(nextView)
   }, [view])
+=======
+  const [view, setView] = useState(() => (isAuthenticated() ? 'home' : 'login'))
+>>>>>>> 4c4c20b (Commit modificações página principal(remoção dos botoes))
 
   if (view === 'login') {
     return <Login onLoginSuccess={() => navigate('home')} />
@@ -96,18 +102,36 @@ export default function App() {
   }
 
   if (view === 'planos') {
+<<<<<<< HEAD
     // CORRIGIDO AQUI: Agora ele sabe que clicar em voltar deve mudar o estado para 'home'
     return <Planos onHomeClick={() => setView('home')} />
+=======
+    return <Planos onHomeClick={() => setView('home')} />
+  }
+
+  if (view === 'perfil') {
+    return <Perfil onHomeClick={() => setView('home')} onLoginClick={() => { logout(); setView('login') }} />
+>>>>>>> 4c4c20b (Commit modificações página principal(remoção dos botoes))
   }
 
   return (
     <Home
+<<<<<<< HEAD
       onLoginClick={() => navigate('login')}
       onHomeClick={() => navigate('home')}
       onContactClick={() => navigate('contatos')}
       onPlanosClick={() => navigate('planos')}
       onServicosClick={() => navigate('servicos')}
       onServicePageClick={(slug) => navigate(slug)}
+=======
+      onLoginClick={() => setView('login')}
+      onHomeClick={() => setView('home')}
+      onContactClick={() => setView('contatos')}
+      onPlanosClick={() => setView('planos')}
+      onServicosClick={() => setView('servicos')}
+      onProfileClick={() => setView('perfil')}
+      onServicePageClick={(slug) => setView(slug)}
+>>>>>>> 4c4c20b (Commit modificações página principal(remoção dos botoes))
     />
   )
 }

@@ -65,6 +65,7 @@ export function Planos({ onHomeClick }) {
 
   return (
     <div style={styles.container}>
+<<<<<<< HEAD
       {/* Topo de Navegação Premium — Casa em Dia */}
       <header style={styles.headerNav}>
         <button onClick={() => onHomeClick && onHomeClick()} style={styles.botaoVoltarHome}>
@@ -81,6 +82,18 @@ export function Planos({ onHomeClick }) {
       {/* Seção de Introdução dos Planos */}
       <section style={styles.secaoIntroducao}>
         <h2 style={styles.titulo}>Planos de Assinatura</h2>
+=======
+      <header style={styles.header}>
+        <button
+          type="button"
+          onClick={() => onHomeClick && onHomeClick()}
+          style={styles.botaoVoltar}
+          aria-label="Voltar para a página inicial"
+        >
+          ← Voltar
+        </button>
+        <h1 style={styles.titulo}>Planos de Assinatura — Casa em Dia</h1>
+>>>>>>> 4c4c20b (Commit modificações página principal(remoção dos botoes))
         <p style={styles.subtitulo}>
           Contrate os melhores profissionais do mercado com segurança, rapidez e garantias exclusivas.
         </p>
@@ -221,6 +234,25 @@ const styles = {
   secaoIntroducao: {
     textAlign: 'center',
     marginBottom: '50px',
+    position: 'relative',
+  },
+  botaoVoltar: {
+    position: 'absolute',
+    left: 0,
+    top: 0,
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    background: 'linear-gradient(135deg, #eef6e6 0%, #e1ecd3 100%)',
+    border: '1px solid rgba(33, 64, 27, 0.12)',
+    color: '#21401b',
+    fontSize: '0.95rem',
+    fontWeight: '700',
+    cursor: 'pointer',
+    padding: '10px 14px',
+    borderRadius: '999px',
+    boxShadow: '0 6px 16px rgba(33, 64, 27, 0.08)',
+    transition: 'all 0.2s ease',
   },
   titulo: {
     color: '#111827',

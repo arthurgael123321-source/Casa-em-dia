@@ -57,14 +57,6 @@ function Servicos({ onHomeClick, onContactClick, onPlanosClick, onLoginClick, on
           <button className="site-logo-button" onClick={() => onHomeClick ? onHomeClick() : window.location.href = '/'} aria-label="Ir para página inicial">
             <img src={logo} alt="Casa em Dia" className="site-logo" />
           </button>
-          <div className="header-actions">
-            <button className="header-login" onClick={() => onLoginClick && onLoginClick()} aria-label="Entrar">
-              Entrar
-            </button>
-            <button className="header-create-account" onClick={() => onLoginClick && onLoginClick()} aria-label="Criar conta">
-              Criar conta
-            </button>
-          </div>
           <div className="top-actions" aria-label="Ações rápidas">
             <button type="button" className="top-action-button" aria-label="Configurações">
               <img src={configIcon} alt="Configurações" />

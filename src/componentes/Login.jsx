@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import '../App.css'
 import './Login.css'
 import logo from '../assets/WhatsApp Image 2026-06-23 at 7.39.28 PM.png'
+import { persistAuthSession } from '../services/authUtils.js'
 import googleIcon from '../assets/OIP.png'
 import fbIcon from '../assets/pngtree-facebook-logo-facebook-icon-png-image_3654755.png'
 import loginImage from '../assets/imagelogCasa.jpg'
@@ -41,6 +42,9 @@ export default function Login({ onBack, onLoginSuccess }) {
     if (!users) {
       localStorage.setItem('users', JSON.stringify([]))
     }
+
+    const savedRememberMe = localStorage.getItem('rememberMe') === 'true'
+    setRememberMe(savedRememberMe)
   }, [])
 
   // Funções utilitárias
@@ -97,7 +101,12 @@ export default function Login({ onBack, onLoginSuccess }) {
   }
 
   const authenticateUser = (user) => {
+<<<<<<< HEAD
     saveSession(user, rememberMe)
+=======
+    persistAuthSession(user, rememberMe)
+
+>>>>>>> 4c4c20b (Commit modificações página principal(remoção dos botoes))
     if (onLoginSuccess) {
       onLoginSuccess()
     } else {
@@ -235,8 +244,11 @@ export default function Login({ onBack, onLoginSuccess }) {
       const newUser = {
         id: Date.now(),
         username,
+        fullName: username,
         email,
         password,
+        phone: '',
+        address: '',
         createdAt: new Date().toISOString(),
       }
 
