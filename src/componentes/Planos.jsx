@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-export function Planos() {
+export function Planos({ onHomeClick }) {
   const [planoSelecionado, setPlanoSelecionado] = useState(null);
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
@@ -65,12 +65,26 @@ export function Planos() {
 
   return (
     <div style={styles.container}>
-      <header style={styles.header}>
-        <h1 style={styles.titulo}>Planos de Assinatura — Casa em Dia</h1>
+      {/* Topo de Navegação Premium — Casa em Dia */}
+      <header style={styles.headerNav}>
+        <button onClick={() => onHomeClick && onHomeClick()} style={styles.botaoVoltarHome}>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
+          Voltar
+        </button>
+        
+        <h1 style={styles.marcaHeader}>Casa em Dia</h1>
+        <div style={{ width: '90px' }}></div> {/* Espaçador para manter o título centralizado */}
+      </header>
+
+      {/* Seção de Introdução dos Planos */}
+      <section style={styles.secaoIntroducao}>
+        <h2 style={styles.titulo}>Planos de Assinatura</h2>
         <p style={styles.subtitulo}>
           Contrate os melhores profissionais do mercado com segurança, rapidez e garantias exclusivas.
         </p>
-      </header>
+      </section>
 
       <div style={styles.gridPlanos}>
         {planosAssinatura.map((plano) => (
@@ -167,27 +181,60 @@ export function Planos() {
 
 const styles = {
   container: {
-    padding: '60px 20px',
+    padding: '40px 20px',
     fontFamily: 'Arial, sans-serif',
     backgroundColor: '#ffffff',
     minHeight: '100vh',
   },
-  header: {
+  headerNav: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    maxWidth: '1200px',
+    margin: '0 auto 40px auto',
+    padding: '0 10px',
+    borderBottom: '1px solid #f3f4f6',
+    paddingBottom: '20px',
+    width: '100%',
+  },
+  botaoVoltarHome: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '8px',
+    backgroundColor: '#ffffff',
+    color: '#4b5563',
+    border: '1px solid #e5e7eb',
+    fontSize: '0.9rem',
+    fontWeight: '600',
+    cursor: 'pointer',
+    padding: '8px 16px',
+    borderRadius: '8px',
+    boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+    transition: 'all 0.2s ease',
+  },
+  marcaHeader: {
+    fontSize: '1.5rem',
+    fontWeight: 'bold',
+    color: '#059669',
+    margin: 0,
+  },
+  secaoIntroducao: {
     textAlign: 'center',
     marginBottom: '50px',
   },
   titulo: {
     color: '#111827',
-    fontSize: '2.2rem',
-    fontWeight: 'bold',
+    fontSize: '2.4rem',
+    fontWeight: '800',
     marginBottom: '12px',
+    letterSpacing: '-0.025em',
   },
   subtitulo: {
     color: '#4b5563',
     fontSize: '1.1rem',
     maxWidth: '600px',
     margin: '0 auto',
-    lineHeight: '1.5',
+    lineHeight: '1.6',
   },
   gridPlanos: {
     display: 'flex',

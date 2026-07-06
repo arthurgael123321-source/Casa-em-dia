@@ -53,7 +53,8 @@ export default function App() {
   }
 
   if (view === 'planos') {
-    return <Planos />
+    // CORRIGIDO AQUI: Agora ele sabe que clicar em voltar deve mudar o estado para 'home'
+    return <Planos onHomeClick={() => setView('home')} />
   }
 
   return (
