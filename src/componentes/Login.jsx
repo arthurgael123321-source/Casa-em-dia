@@ -457,7 +457,7 @@ export default function Login({ onBack, onLoginSuccess }) {
               </button>
 
               <div className="social-area">
-                <div className="social-title">/Entrar com</div>
+                <div className="social-title">Entrar com</div>
                 <div className="social-buttons">
                   <button
                     type="button"
