@@ -176,6 +176,32 @@
   border-left: 3px solid #ff6b6b;
 }
 
+.login-success {
+  color: #ffffff;
+  background: rgba(46, 139, 87, 0.35);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  border-left: 3px solid #2E8B57;
+}
+
+.forgot-password {
+  align-self: flex-end;
+  background: transparent;
+  border: 0;
+  color: rgba(255, 255, 255, 0.86);
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 700;
+  padding: 0 6px;
+  transition: color 0.3s ease;
+}
+
+.forgot-password:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
 .login-submit { 
   margin-top: 4px; 
   padding: 10px 22px; 
