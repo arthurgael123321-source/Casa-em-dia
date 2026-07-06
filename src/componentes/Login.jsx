@@ -6,7 +6,6 @@ import { persistAuthSession } from '../services/authUtils.js'
 import googleIcon from '../assets/OIP.png'
 import fbIcon from '../assets/pngtree-facebook-logo-facebook-icon-png-image_3654755.png'
 import loginImage from '../assets/imagelogCasa.jpg'
-import { saveSession } from '../services/authUtils.js'
 
 export default function Login({ onBack, onLoginSuccess }) {
   // Estados de login tradicional
@@ -101,12 +100,8 @@ export default function Login({ onBack, onLoginSuccess }) {
   }
 
   const authenticateUser = (user) => {
-<<<<<<< HEAD
-    saveSession(user, rememberMe)
-=======
     persistAuthSession(user, rememberMe)
 
->>>>>>> 4c4c20b (Commit modificações página principal(remoção dos botoes))
     if (onLoginSuccess) {
       onLoginSuccess()
     } else {
