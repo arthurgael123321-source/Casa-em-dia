@@ -1,5 +1,6 @@
 import './App.css'
 import { useState } from 'react'
+import { isAuthenticated } from './services/authUtils.js'
 import Home from './componentes/Home.jsx'
 import Login from './componentes/Login.jsx'
 import Contatos from './componentes/Contatos.jsx'
@@ -17,7 +18,7 @@ const serviceViews = [
 ]
 
 export default function App() {
-  const [view, setView] = useState('login')
+  const [view, setView] = useState(() => (isAuthenticated() ? 'home' : 'login'))
 
   if (view === 'login') {
     return <Login onLoginSuccess={() => setView('home')} />

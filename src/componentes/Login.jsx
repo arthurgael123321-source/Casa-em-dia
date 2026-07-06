@@ -5,6 +5,7 @@ import logo from '../assets/WhatsApp Image 2026-06-23 at 7.39.28 PM.png'
 import googleIcon from '../assets/OIP.png'
 import fbIcon from '../assets/pngtree-facebook-logo-facebook-icon-png-image_3654755.png'
 import loginImage from '../assets/imagelogCasa.jpg'
+import { saveSession } from '../services/authUtils.js'
 
 export default function Login({ onBack, onLoginSuccess }) {
   // Estados de login tradicional
@@ -21,12 +22,18 @@ export default function Login({ onBack, onLoginSuccess }) {
   const [codeWasSent, setCodeWasSent] = useState(false)
   const [phone, setPhone] = useState('')
   const [socialEmail, setSocialEmail] = useState('')
+  const [resetIdentifier, setResetIdentifier] = useState('')
+  const [resetUser, setResetUser] = useState(null)
+  const [resetStep, setResetStep] = useState('identify') // 'identify', 'code', 'new-password'
+  const [newPassword, setNewPassword] = useState('')
+  const [newConfirmPassword, setNewConfirmPassword] = useState('')
+  const [success, setSuccess] = useState('')
 
   // Estados gerais
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [acceptTerms, setAcceptTerms] = useState(false)
-  const [rememberMe, setRememberMe] = useState(false)
+  const [rememberMe, setRememberMe] = useState(() => localStorage.getItem('rememberMe') === 'true')
 
   // Inicializar usuários no local storage
   useEffect(() => {
@@ -76,23 +83,115 @@ export default function Login({ onBack, onLoginSuccess }) {
     localStorage.setItem('users', JSON.stringify(users))
   }
 
+  const updateUserInStorage = (updatedUser) => {
+    const users = getUsersFromStorage()
+    const updatedUsers = users.map((user) => (
+      user.id === updatedUser.id ? updatedUser : user
+    ))
+    localStorage.setItem('users', JSON.stringify(updatedUsers))
+  }
+
   const findUser = (emailOrUsername) => {
     const users = getUsersFromStorage()
     return users.find(u => u.email === emailOrUsername || u.username === emailOrUsername)
   }
 
   const authenticateUser = (user) => {
-    localStorage.setItem('authToken', `token_${Date.now()}`)
-    localStorage.setItem('userEmail', user.email)
-    localStorage.setItem('username', user.username || user.email)
-    if (rememberMe) {
-      localStorage.setItem('rememberMe', 'true')
-    }
+    saveSession(user, rememberMe)
     if (onLoginSuccess) {
       onLoginSuccess()
     } else {
       window.location.href = '/'
     }
+  }
+
+  const resetForgotPasswordForm = () => {
+    setResetIdentifier('')
+    setResetUser(null)
+    setResetStep('identify')
+    setVerificationCode('')
+    setSentCode('')
+    setNewPassword('')
+    setNewConfirmPassword('')
+    setError('')
+    setSuccess('')
+  }
+
+  const handleForgotPasswordSend = (e) => {
+    e.preventDefault()
+    setError('')
+    setSuccess('')
+
+    if (!resetIdentifier.trim()) {
+      setError('Digite seu email ou usuario')
+      return
+    }
+
+    const user = findUser(resetIdentifier)
+    if (!user) {
+      setError('Usuario ou email nao encontrado')
+      return
+    }
+
+    if (user.password === null) {
+      setError('Essa conta foi criada por login social ou telefone')
+      return
+    }
+
+    const code = generateRandomCode()
+    setResetUser(user)
+    setSentCode(code)
+    setVerificationCode('')
+    setResetStep('code')
+  }
+
+  const handleForgotPasswordCodeVerify = (e) => {
+    e.preventDefault()
+    setError('')
+
+    if (!verificationCode.trim()) {
+      setError('Digite o codigo de verificacao')
+      return
+    }
+
+    if (verificationCode !== sentCode) {
+      setError('Codigo incorreto')
+      return
+    }
+
+    setResetStep('new-password')
+    setVerificationCode('')
+  }
+
+  const handlePasswordReset = (e) => {
+    e.preventDefault()
+    setError('')
+    setSuccess('')
+
+    if (!newPassword.trim() || !newConfirmPassword.trim()) {
+      setError('Preencha a nova senha e a confirmacao')
+      return
+    }
+
+    if (newPassword.length < 6) {
+      setError('A senha deve ter pelo menos 6 caracteres')
+      return
+    }
+
+    if (newPassword !== newConfirmPassword) {
+      setError('As senhas nao conferem')
+      return
+    }
+
+    const updatedUser = {
+      ...resetUser,
+      password: newPassword,
+    }
+
+    updateUserInStorage(updatedUser)
+    resetForgotPasswordForm()
+    setAuthMode('traditional')
+    setSuccess('Senha alterada com sucesso. Voce ja pode entrar.')
   }
 
   // Login tradicional
@@ -401,6 +500,16 @@ export default function Login({ onBack, onLoginSuccess }) {
                     required
                     minLength={4}
                   />
+                  <button
+                    type="button"
+                    className="forgot-password"
+                    onClick={() => {
+                      resetForgotPasswordForm()
+                      setAuthMode('forgot-password')
+                    }}
+                  >
+                    Esqueci minha senha
+                  </button>
                 </>
               )}
 
@@ -424,6 +533,7 @@ export default function Login({ onBack, onLoginSuccess }) {
               </div>
 
               {error && <div className="login-error">{error}</div>}
+              {success && <div className="login-success">{success}</div>}
 
               <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
                 {onBack && (
@@ -451,6 +561,7 @@ export default function Login({ onBack, onLoginSuccess }) {
                   setPassword('')
                   setUsername('')
                   setConfirmPassword('')
+                  setSuccess('')
                 }}
               >
                 {isNewUser ? 'Já tem uma conta? Faça login' : 'Não tem conta? Crie uma'}
@@ -497,6 +608,128 @@ export default function Login({ onBack, onLoginSuccess }) {
                   </button>
                 </div>
               </div>
+            </form>
+          )}
+
+          {authMode === 'forgot-password' && (
+            <form
+              className="login-form"
+              onSubmit={
+                resetStep === 'identify'
+                  ? handleForgotPasswordSend
+                  : resetStep === 'code'
+                    ? handleForgotPasswordCodeVerify
+                    : handlePasswordReset
+              }
+            >
+              <h3 className="auth-title">Recuperar senha</h3>
+
+              {resetStep === 'identify' && (
+                <>
+                  <input
+                    id="reset-identifier"
+                    className="login-input"
+                    type="text"
+                    value={resetIdentifier}
+                    onChange={(e) => setResetIdentifier(e.target.value)}
+                    placeholder="Email ou usuario cadastrado"
+                    required
+                  />
+                  {error && <div className="login-error">{error}</div>}
+                  <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                    <button
+                      type="button"
+                      className="login-submit"
+                      onClick={() => {
+                        resetForgotPasswordForm()
+                        setAuthMode('traditional')
+                      }}
+                      style={{ background: '#fff', color: 'var(--accent-dark)', border: '2px solid rgba(33,64,27,0.06)', width: 110 }}
+                    >
+                      Voltar
+                    </button>
+                    <button className="login-submit" type="submit">Enviar Codigo</button>
+                  </div>
+                </>
+              )}
+
+              {resetStep === 'code' && (
+                <>
+                  <div className="code-display">
+                    <p className="code-text">Seu codigo de recuperacao e:</p>
+                    <div className="code-box">{sentCode}</div>
+                    <p className="code-info">Use esse codigo para criar uma nova senha.</p>
+                  </div>
+                  <input
+                    id="reset-code"
+                    className="login-input"
+                    type="text"
+                    value={verificationCode}
+                    onChange={(e) => setVerificationCode(e.target.value)}
+                    placeholder="Digite o codigo"
+                    required
+                    maxLength="6"
+                  />
+                  {error && <div className="login-error">{error}</div>}
+                  <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                    <button
+                      type="button"
+                      className="login-submit"
+                      onClick={() => {
+                        setResetStep('identify')
+                        setVerificationCode('')
+                        setError('')
+                      }}
+                      style={{ background: '#fff', color: 'var(--accent-dark)', border: '2px solid rgba(33,64,27,0.06)', width: 110 }}
+                    >
+                      Voltar
+                    </button>
+                    <button className="login-submit" type="submit">Verificar Codigo</button>
+                  </div>
+                </>
+              )}
+
+              {resetStep === 'new-password' && (
+                <>
+                  <input
+                    id="new-password"
+                    className="login-input"
+                    type="password"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Nova senha"
+                    required
+                    minLength={6}
+                  />
+                  <input
+                    id="new-confirm-password"
+                    className="login-input"
+                    type="password"
+                    value={newConfirmPassword}
+                    onChange={(e) => setNewConfirmPassword(e.target.value)}
+                    placeholder="Confirmar nova senha"
+                    required
+                    minLength={6}
+                  />
+                  {error && <div className="login-error">{error}</div>}
+                  <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                    <button
+                      type="button"
+                      className="login-submit"
+                      onClick={() => {
+                        setResetStep('code')
+                        setNewPassword('')
+                        setNewConfirmPassword('')
+                        setError('')
+                      }}
+                      style={{ background: '#fff', color: 'var(--accent-dark)', border: '2px solid rgba(33,64,27,0.06)', width: 110 }}
+                    >
+                      Voltar
+                    </button>
+                    <button className="login-submit" type="submit">Salvar Senha</button>
+                  </div>
+                </>
+              )}
             </form>
           )}
 
