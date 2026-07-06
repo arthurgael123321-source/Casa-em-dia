@@ -8,9 +8,10 @@
  * @returns {Object|null} Dados do usuário ou null se não autenticado
  */
 export const getCurrentUser = () => {
-  const token = localStorage.getItem('authToken');
-  const email = localStorage.getItem('userEmail');
-  const username = localStorage.getItem('username');
+  const storage = getSessionStorage();
+  const token = storage.getItem('authToken');
+  const email = storage.getItem('userEmail');
+  const username = storage.getItem('username');
 
   if (!token || !email) {
     return null;
@@ -28,7 +29,44 @@ export const getCurrentUser = () => {
  * @returns {boolean} true se autenticado, false caso contrário
  */
 export const isAuthenticated = () => {
-  return !!localStorage.getItem('authToken');
+  return !!getSessionStorage().getItem('authToken');
+};
+
+/**
+ * Obter o storage que tem a sessao atual.
+ * localStorage e usado quando "Lembre de mim" esta ativo.
+ * sessionStorage e usado para manter login apenas na aba atual.
+ */
+export const getSessionStorage = () => {
+  if (localStorage.getItem('authToken')) {
+    return localStorage;
+  }
+
+  return sessionStorage;
+};
+
+/**
+ * Salvar sessao do usuario.
+ * @param {Object} user - Usuario autenticado
+ * @param {boolean} rememberMe - Se true, persiste mesmo apos fechar o navegador
+ */
+export const saveSession = (user, rememberMe = false) => {
+  const storage = rememberMe ? localStorage : sessionStorage;
+  const otherStorage = rememberMe ? sessionStorage : localStorage;
+
+  otherStorage.removeItem('authToken');
+  otherStorage.removeItem('userEmail');
+  otherStorage.removeItem('username');
+
+  storage.setItem('authToken', `token_${Date.now()}`);
+  storage.setItem('userEmail', user.email);
+  storage.setItem('username', user.username || user.email);
+
+  if (rememberMe) {
+    localStorage.setItem('rememberMe', 'true');
+  } else {
+    localStorage.removeItem('rememberMe');
+  }
 };
 
 /**
@@ -39,6 +77,9 @@ export const logout = () => {
   localStorage.removeItem('userEmail');
   localStorage.removeItem('username');
   localStorage.removeItem('rememberMe');
+  sessionStorage.removeItem('authToken');
+  sessionStorage.removeItem('userEmail');
+  sessionStorage.removeItem('username');
   window.location.href = '/login';
 };
 
@@ -67,10 +108,12 @@ export const findUserByEmailOrUsername = (emailOrUsername) => {
  * @param {any} value - Novo valor
  */
 export const updateCurrentUserField = (field, value) => {
+  const storage = getSessionStorage();
+
   if (field === 'email') {
-    localStorage.setItem('userEmail', value);
+    storage.setItem('userEmail', value);
   } else if (field === 'username') {
-    localStorage.setItem('username', value);
+    storage.setItem('username', value);
   }
 };
 
