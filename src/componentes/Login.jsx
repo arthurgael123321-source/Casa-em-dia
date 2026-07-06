@@ -5,6 +5,7 @@ import logo from '../assets/WhatsApp Image 2026-06-23 at 7.39.28 PM.png'
 import googleIcon from '../assets/OIP.png'
 import fbIcon from '../assets/pngtree-facebook-logo-facebook-icon-png-image_3654755.png'
 import loginImage from '../assets/imagelogCasa.jpg'
+import { saveSession } from '../services/authUtils.js'
 
 export default function Login({ onBack, onLoginSuccess }) {
   // Estados de login tradicional
@@ -26,7 +27,7 @@ export default function Login({ onBack, onLoginSuccess }) {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [acceptTerms, setAcceptTerms] = useState(false)
-  const [rememberMe, setRememberMe] = useState(false)
+  const [rememberMe, setRememberMe] = useState(() => localStorage.getItem('rememberMe') === 'true')
 
   // Inicializar usuários no local storage
   useEffect(() => {
@@ -82,12 +83,7 @@ export default function Login({ onBack, onLoginSuccess }) {
   }
 
   const authenticateUser = (user) => {
-    localStorage.setItem('authToken', `token_${Date.now()}`)
-    localStorage.setItem('userEmail', user.email)
-    localStorage.setItem('username', user.username || user.email)
-    if (rememberMe) {
-      localStorage.setItem('rememberMe', 'true')
-    }
+    saveSession(user, rememberMe)
     if (onLoginSuccess) {
       onLoginSuccess()
     } else {
