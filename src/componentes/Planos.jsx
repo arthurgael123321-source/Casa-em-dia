@@ -1,9 +1,9 @@
-import { useState } from 'react';
+import { useState } from 'react'
 
 export function Planos({ onHomeClick }) {
-  const [planoSelecionado, setPlanoSelecionado] = useState(null);
-  const [nome, setNome] = useState('');
-  const [email, setEmail] = useState('');
+  const [planoSelecionado, setPlanoSelecionado] = useState(null)
+  const [nome, setNome] = useState('')
+  const [email, setEmail] = useState('')
 
   const planosAssinatura = [
     {
@@ -33,7 +33,7 @@ export function Planos({ onHomeClick }) {
         'Desconto de 5% direto na mão de obra',
       ],
       textoBotao: 'Assinar Premium',
-      destaque: true, 
+      destaque: true,
     },
     {
       id: 'pro',
@@ -51,49 +51,33 @@ export function Planos({ onHomeClick }) {
       textoBotao: 'Seja Pro',
       destaque: false,
     },
-  ];
+  ]
 
   const handleCliqueAssinar = (plano) => {
-    setPlanoSelecionado(plano);
-    document.getElementById('area-assinatura')?.scrollIntoView({ behavior: 'smooth' });
-  };
+    setPlanoSelecionado(plano)
+    document.getElementById('area-assinatura')?.scrollIntoView({ behavior: 'smooth' })
+  }
 
   const handleEnviarAssinatura = (e) => {
-    e.preventDefault();
-    alert(`Sucesso! Você assinou o plano ${planoSelecionado.nome} para o Casa em Dia.`);
-  };
+    e.preventDefault()
+    alert(`Sucesso! Você assinou o plano ${planoSelecionado.nome} para o Casa em Dia.`)
+  }
 
   return (
     <div style={styles.container}>
-<<<<<<< HEAD
-      {/* Topo de Navegação Premium — Casa em Dia */}
       <header style={styles.headerNav}>
-        <button onClick={() => onHomeClick && onHomeClick()} style={styles.botaoVoltarHome}>
+        <button type="button" onClick={() => onHomeClick && onHomeClick()} style={styles.botaoVoltarHome}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
           Voltar
         </button>
-        
         <h1 style={styles.marcaHeader}>Casa em Dia</h1>
-        <div style={{ width: '90px' }}></div> {/* Espaçador para manter o título centralizado */}
+        <div style={{ width: '90px' }} />
       </header>
 
-      {/* Seção de Introdução dos Planos */}
       <section style={styles.secaoIntroducao}>
         <h2 style={styles.titulo}>Planos de Assinatura</h2>
-=======
-      <header style={styles.header}>
-        <button
-          type="button"
-          onClick={() => onHomeClick && onHomeClick()}
-          style={styles.botaoVoltar}
-          aria-label="Voltar para a página inicial"
-        >
-          ← Voltar
-        </button>
-        <h1 style={styles.titulo}>Planos de Assinatura — Casa em Dia</h1>
->>>>>>> 4c4c20b (Commit modificações página principal(remoção dos botoes))
         <p style={styles.subtitulo}>
           Contrate os melhores profissionais do mercado com segurança, rapidez e garantias exclusivas.
         </p>
@@ -101,8 +85,8 @@ export function Planos({ onHomeClick }) {
 
       <div style={styles.gridPlanos}>
         {planosAssinatura.map((plano) => (
-          <div 
-            key={plano.id} 
+          <div
+            key={plano.id}
             style={{
               ...styles.cardPlano,
               ...(plano.destaque ? styles.cardDestaque : {}),
@@ -110,10 +94,10 @@ export function Planos({ onHomeClick }) {
             }}
           >
             {plano.destaque && <span style={styles.tagDestaque}>Mais Recomendado</span>}
-            
+
             <h2 style={styles.nomePlano}>{plano.nome}</h2>
             <p style={styles.descricaoPlano}>{plano.descricao}</p>
-            
+
             <div style={styles.containerPreco}>
               <span style={styles.preco}>{plano.preco}</span>
               {plano.periodo && <span style={styles.periodo}>{plano.periodo}</span>}
@@ -127,7 +111,8 @@ export function Planos({ onHomeClick }) {
               ))}
             </ul>
 
-            <button 
+            <button
+              type="button"
               onClick={() => handleCliqueAssinar(plano)}
               style={{
                 ...styles.botao,
@@ -143,25 +128,27 @@ export function Planos({ onHomeClick }) {
       <div id="area-assinatura" style={styles.secaoAssinatura}>
         {planoSelecionado ? (
           <div style={styles.caixaFormulario}>
-            <h2 style={styles.tituloForm}>Você escolheu o plano: <span style={styles.textoVerde}>{planoSelecionado.nome}</span></h2>
+            <h2 style={styles.tituloForm}>
+              Você escolheu o plano: <span style={styles.textoVerde}>{planoSelecionado.nome}</span>
+            </h2>
             <p style={styles.subForm}>Preencha os dados abaixo para concluir sua assinatura no Casa em Dia.</p>
-            
+
             <form onSubmit={handleEnviarAssinatura} style={styles.form}>
               <label style={styles.label}>Nome Completo</label>
-              <input 
-                type="text" 
-                required 
-                placeholder="Digite seu nome" 
+              <input
+                type="text"
+                required
+                placeholder="Digite seu nome"
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
                 style={styles.input}
               />
 
               <label style={styles.label}>E-mail de Cadastro</label>
-              <input 
-                type="email" 
-                required 
-                placeholder="seuemail@casaemdia.com" 
+              <input
+                type="email"
+                required
+                placeholder="seuemail@casaemdia.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 style={styles.input}
@@ -170,10 +157,10 @@ export function Planos({ onHomeClick }) {
               {planoSelecionado.id !== 'basico' && (
                 <>
                   <label style={styles.label}>Número do Cartão de Crédito</label>
-                  <input 
-                    type="text" 
-                    required 
-                    placeholder="0000 0000 0000 0000" 
+                  <input
+                    type="text"
+                    required
+                    placeholder="0000 0000 0000 0000"
                     style={styles.input}
                   />
                 </>
@@ -185,11 +172,11 @@ export function Planos({ onHomeClick }) {
             </form>
           </div>
         ) : (
-          <p style={styles.avisoSelecione}>💡 Clique em um dos botões acima para selecionar seu plano e abrir a área de pagamento.</p>
+          <p style={styles.avisoSelecione}>Clique em um dos botões acima para selecionar seu plano e abrir a área de pagamento.</p>
         )}
       </div>
     </div>
-  );
+  )
 }
 
 const styles = {
@@ -205,9 +192,8 @@ const styles = {
     alignItems: 'center',
     maxWidth: '1200px',
     margin: '0 auto 40px auto',
-    padding: '0 10px',
+    padding: '0 10px 20px',
     borderBottom: '1px solid #f3f4f6',
-    paddingBottom: '20px',
     width: '100%',
   },
   botaoVoltarHome: {
@@ -235,24 +221,6 @@ const styles = {
     textAlign: 'center',
     marginBottom: '50px',
     position: 'relative',
-  },
-  botaoVoltar: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '8px',
-    background: 'linear-gradient(135deg, #eef6e6 0%, #e1ecd3 100%)',
-    border: '1px solid rgba(33, 64, 27, 0.12)',
-    color: '#21401b',
-    fontSize: '0.95rem',
-    fontWeight: '700',
-    cursor: 'pointer',
-    padding: '10px 14px',
-    borderRadius: '999px',
-    boxShadow: '0 6px 16px rgba(33, 64, 27, 0.08)',
-    transition: 'all 0.2s ease',
   },
   titulo: {
     color: '#111827',
@@ -434,5 +402,5 @@ const styles = {
     backgroundColor: '#f3f4f6',
     padding: '20px',
     borderRadius: '12px',
-  }
-};
+  },
+}
