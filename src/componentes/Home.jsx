@@ -13,7 +13,7 @@ const slides = [
   { image: slideCleaning, alt: 'Limpeza' },
 ]
 
-function Home({ onLoginClick, onHomeClick, onContactClick, onPlanosClick, onServicosClick, onProfileClick, onServicePageClick }) {
+function Home({ onLoginClick, onHomeClick, onContactClick, onPlanosClick, onServicosClick, onProfileClick, onConfiguracoesClick, onServicePageClick }) {
   const [index, setIndex] = useState(0)
   const prev = () => setIndex((i) => (i - 1 + slides.length) % slides.length)
   const next = () => setIndex((i) => (i + 1) % slides.length)
@@ -64,7 +64,7 @@ function Home({ onLoginClick, onHomeClick, onContactClick, onPlanosClick, onServ
             <img src={logo} alt="Casa em Dia" className="site-logo" />
           </button>
           <div className="top-actions" aria-label="Ações rápidas">
-            <button type="button" className="top-action-button" aria-label="Configurações">
+            <button type="button" className="top-action-button" aria-label="Configurações" onClick={() => onConfiguracoesClick && onConfiguracoesClick()}>
               <img src={configIcon} alt="Configurações" />
             </button>
             <button type="button" className="top-action-button" aria-label="Perfil" onClick={() => onProfileClick && onProfileClick()}>
