@@ -8,6 +8,7 @@ import { Planos } from './componentes/Planos.jsx'
 import Servicos from './componentes/Serviços.jsx'
 import ServicoDetalhe from './componentes/ServicoDetalhe.jsx'
 import Perfil from './componentes/Perfil.jsx'
+import Configuracoes from './componentes/Configuracoes.jsx'
 
 const serviceViews = [
   'limpeza-residencial',
@@ -18,7 +19,7 @@ const serviceViews = [
   'faxina',
 ]
 
-const appViews = ['login', 'home', 'contatos', 'servicos', 'planos', 'perfil', ...serviceViews]
+const appViews = ['login', 'home', 'contatos', 'servicos', 'planos', 'perfil', 'configuracoes', ...serviceViews]
 
 const getViewFromHash = () => {
   const hashView = window.location.hash.replace('#', '')
@@ -112,6 +113,18 @@ export default function App() {
     )
   }
 
+  if (view === 'configuracoes') {
+    return (
+      <Configuracoes
+        onHomeClick={() => navigate('home')}
+        onLoginClick={() => {
+          logout()
+          navigate('login')
+        }}
+      />
+    )
+  }
+
   return (
     <Home
       onLoginClick={() => navigate('login')}
@@ -120,6 +133,7 @@ export default function App() {
       onPlanosClick={() => navigate('planos')}
       onServicosClick={() => navigate('servicos')}
       onProfileClick={() => navigate('perfil')}
+      onConfiguracoesClick={() => navigate('configuracoes')}
       onServicePageClick={(slug) => navigate(slug)}
     />
   )
