@@ -32,7 +32,6 @@ export default function Login({ onBack, onLoginSuccess }) {
   // Estados gerais
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [acceptTerms, setAcceptTerms] = useState(false)
   const [rememberMe, setRememberMe] = useState(() => localStorage.getItem('rememberMe') === 'true')
 
   // Inicializar usuários no local storage
@@ -138,7 +137,7 @@ export default function Login({ onBack, onLoginSuccess }) {
     }
 
     if (user.password === null) {
-      setError('Essa conta foi criada por login social ou telefone')
+      setError('Essa conta foi criada com o Google, portanto nao possui senha para resetar. Tente entrar com o Google.')
       return
     }
 
@@ -225,11 +224,6 @@ export default function Login({ onBack, onLoginSuccess }) {
         return
       }
 
-      if (!acceptTerms) {
-        setError('Você deve aceitar os termos de serviço')
-        return
-      }
-
       const existingUser = findUser(email) || findUser(username)
       if (existingUser) {
         setError('Email ou usuário já cadastrado')
@@ -251,28 +245,24 @@ export default function Login({ onBack, onLoginSuccess }) {
       authenticateUser(newUser)
     } else {
       // Login com usuario/email existente
-      if (!email.trim() || !password.trim()) {
-        setError('Por favor preencha todos os campos')
-        return
-      }
+if (!email.trim() || !password.trim()) {
+  setError('Por favor preencha todos os campos')
+  return
+}
 
-      if (!acceptTerms) {
-        setError('Você deve aceitar os termos de serviço')
-        return
-      }
+const user = findUser(email)
 
-      const user = findUser(email)
-      if (!user) {
-        setError('Usuário ou email não encontrado')
-        return
-      }
+if (!user) {
+  setError('Usuário não encontrado')
+  return
+}
 
-      if (user.password !== password) {
-        setError('Senha incorreta')
-        return
-      }
+if (user.password !== password) {
+  setError('Senha incorreta')
+  return
+}
 
-      authenticateUser(user)
+authenticateUser(user)
     }
   }
 
@@ -334,9 +324,12 @@ export default function Login({ onBack, onLoginSuccess }) {
       <section className="login-card" aria-label="Login">
         <div className="login-left">
           <div className="logo-wrap">
-            <img src={logo} alt="Casa em Dia" className="login-logo" />
-          </div>
-
+      <img
+        src={logo}
+        alt="Casa em Dia"
+        className="login-logo"
+      />
+    </div>
           {authMode === 'traditional' && (
             <form className="login-form" onSubmit={handleTraditionalLogin}>
               {isNewUser ? (
@@ -415,22 +408,15 @@ export default function Login({ onBack, onLoginSuccess }) {
               )}
 
               <div className="login-checks">
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={acceptTerms}
-                    onChange={(e) => setAcceptTerms(e.target.checked)}
-                  />
-                  Aceite os termos de serviço
-                </label>
-                <label>
-                  <input
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                  />
-                  Lembre de mim
-                </label>
+               <label className="remember-switch">
+                <div
+                className={`switch ${rememberMe ? "active" : ""}`}
+                onClick={() => setRememberMe(!rememberMe)}
+                >
+                  <div className="switch-ball"></div>
+                </div>
+                <span>Lembre de mim</span>
+               </label>
               </div>
 
               {error && <div className="login-error">{error}</div>}
@@ -681,146 +667,6 @@ export default function Login({ onBack, onLoginSuccess }) {
             </form>
           )}
 
-          {authMode === 'facebook' && (
-            <form className="login-form" onSubmit={codeWasSent ? handleFacebookCodeVerify : handleFacebookCodeSend}>
-              {!codeWasSent ? (
-                <>
-                  <h3 className="auth-title">Login com Facebook</h3>
-                  <input
-                    id="facebook-email"
-                    className="login-input"
-                    type="email"
-                    value={socialEmail}
-                    onChange={(e) => setSocialEmail(e.target.value)}
-                    placeholder="Digite seu email Facebook"
-                    required
-                  />
-                  {error && <div className="login-error">{error}</div>}
-                  <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                    <button
-                      type="button"
-                      className="login-submit"
-                      onClick={() => {
-                        setAuthMode('traditional')
-                        setError('')
-                        setSocialEmail('')
-                      }}
-                      style={{ background: '#fff', color: 'var(--accent-dark)', border: '2px solid rgba(33,64,27,0.06)', width: 110 }}
-                    >
-                      Voltar
-                    </button>
-                    <button className="login-submit" type="submit">Enviar Código</button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <h3 className="auth-title">Código Enviado</h3>
-                  <div className="code-display">
-                    <p className="code-text">Seu código de verificação é:</p>
-                    <div className="code-box">{sentCode}</div>
-                    <p className="code-info">Esse código foi enviado para {socialEmail}</p>
-                  </div>
-                  <input
-                    id="facebook-code"
-                    className="login-input"
-                    type="text"
-                    value={verificationCode}
-                    onChange={(e) => setVerificationCode(e.target.value)}
-                    placeholder="Digite o código"
-                    required
-                    maxLength="6"
-                  />
-                  {error && <div className="login-error">{error}</div>}
-                  <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                    <button
-                      type="button"
-                      className="login-submit"
-                      onClick={() => {
-                        setCodeWasSent(false)
-                        setVerificationCode('')
-                        setError('')
-                      }}
-                      style={{ background: '#fff', color: 'var(--accent-dark)', border: '2px solid rgba(33,64,27,0.06)', width: 110 }}
-                    >
-                      Voltar
-                    </button>
-                    <button className="login-submit" type="submit">Verificar Código</button>
-                  </div>
-                </>
-              )}
-            </form>
-          )}
-
-          {authMode === 'sms' && (
-            <form className="login-form" onSubmit={codeWasSent ? handleSMSCodeVerify : handleSMSCodeSend}>
-              {!codeWasSent ? (
-                <>
-                  <h3 className="auth-title">Login com SMS</h3>
-                  <input
-                    id="sms-phone"
-                    className="login-input"
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(formatPhone(e.target.value))}
-                    placeholder="(XX) 9XXXX-XXXX"
-                    required
-                  />
-                  <p className="phone-info">Formato: (DDD) 9XXXX-XXXX | Ex: (51) 98765-4321</p>
-                  {error && <div className="login-error">{error}</div>}
-                  <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                    <button
-                      type="button"
-                      className="login-submit"
-                      onClick={() => {
-                        setAuthMode('traditional')
-                        setError('')
-                        setPhone('')
-                      }}
-                      style={{ background: '#fff', color: 'var(--accent-dark)', border: '2px solid rgba(33,64,27,0.06)', width: 110 }}
-                    >
-                      Voltar
-                    </button>
-                    <button className="login-submit" type="submit">Enviar Código</button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <h3 className="auth-title">Código Enviado</h3>
-                  <div className="code-display">
-                    <p className="code-text">Seu código de verificação é:</p>
-                    <div className="code-box">{sentCode}</div>
-                    <p className="code-info">Esse código foi enviado para {phone}</p>
-                  </div>
-                  <input
-                    id="sms-code"
-                    className="login-input"
-                    type="text"
-                    value={verificationCode}
-                    onChange={(e) => setVerificationCode(e.target.value)}
-                    placeholder="Digite o código"
-                    required
-                    maxLength="6"
-                  />
-                  {error && <div className="login-error">{error}</div>}
-                  <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                    <button
-                      type="button"
-                      className="login-submit"
-                      onClick={() => {
-                        setCodeWasSent(false)
-                        setVerificationCode('')
-                        setError('')
-                      }}
-                      style={{ background: '#fff', color: 'var(--accent-dark)', border: '2px solid rgba(33,64,27,0.06)', width: 110 }}
-                    >
-                      Voltar
-                    </button>
-                    <button className="login-submit" type="submit">Verificar Código</button>
-                  </div>
-                </>
-              )}
-            </form>
-          )}
         </div>
         <aside className="login-right" aria-hidden="true">
           <img src={loginImage} alt="Casa limpa" className="side-image" />
