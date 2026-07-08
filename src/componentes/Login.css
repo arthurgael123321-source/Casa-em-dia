@@ -201,7 +201,7 @@
   align-self: flex-start;
   background: transparent;
   border: 0;
-  color: rgba(255, 255, 255, 0.86);
+   color: #355847;
   cursor: pointer;
   font-size: 0.9rem;
   font-weight: 700;
@@ -210,7 +210,7 @@
 }
 
 .forgot-password:hover {
-  color: #fff;
+  color: #329062;
   text-decoration: underline;
 }
 
@@ -242,7 +242,7 @@
 .toggle-auth {
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.8);
+  color: #355847;
   cursor: pointer;
   font-size: 0.95rem;
   margin-top: 2px;
@@ -250,7 +250,7 @@
 }
 
 .toggle-auth:hover {
-  color: #fff;
+  color: #58db9b;
   text-decoration: underline;
 }
 
@@ -263,9 +263,10 @@
 
 .social-title { 
   font-style: italic; 
-  color: rgba(255, 255, 255, 0.7); 
-  margin-bottom: 0;
-  font-size: 0.95rem;
+  color: #355847;
+  margin-bottom: 10;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 .social-buttons { 
@@ -353,7 +354,7 @@
 .social-btn.google { 
   background: #fff;
   border: 1px solid rgba(0, 0, 0, 0.08);
-  color: var(--accent-dark);
+   color: #21402f;
 }
 
 
@@ -550,5 +551,23 @@
   .login-input {
     padding-top: 8px;
     padding-bottom: 8px;
+  }
+}
+.login-form.show-animation {
+  animation: componentEnter .35s ease forwards;
+}
+
+
+@keyframes componentEnter {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+    filter: blur(3px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
   }
 }

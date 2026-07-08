@@ -7,6 +7,7 @@ import googleIcon from '../assets/OIP.png'
 import fbIcon from '../assets/pngtree-facebook-logo-facebook-icon-png-image_3654755.png'
 import loginImage from '../assets/imagelogCasa.jpg'
 
+
 export default function Login({ onBack, onLoginSuccess }) {
   // Estados de login tradicional
   const [email, setEmail] = useState('')
@@ -32,6 +33,7 @@ export default function Login({ onBack, onLoginSuccess }) {
   // Estados gerais
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [animateContent, setAnimateContent] = useState(false)
   const [rememberMe, setRememberMe] = useState(() => localStorage.getItem('rememberMe') === 'true')
 
   // Inicializar usuários no local storage
@@ -107,6 +109,15 @@ export default function Login({ onBack, onLoginSuccess }) {
       window.location.href = '/'
     }
   }
+  useEffect(() => {
+  setAnimateContent(true)
+
+  const timer = setTimeout(() => {
+    setAnimateContent(false)
+  }, 350)
+
+  return () => clearTimeout(timer)
+}, [authMode, isNewUser, resetStep])
 
   const resetForgotPasswordForm = () => {
     setResetIdentifier('')
@@ -331,7 +342,10 @@ authenticateUser(user)
       />
     </div>
           {authMode === 'traditional' && (
-            <form className="login-form" onSubmit={handleTraditionalLogin}>
+            <form 
+  className={`login-form ${animateContent ? 'show-animation' : ''}`} 
+  onSubmit={handleTraditionalLogin}
+>
               {isNewUser ? (
                 <>
                   <input
@@ -455,7 +469,7 @@ authenticateUser(user)
               </button>
 
               <div className="social-area">
-                <div className="social-title">Entrar com</div>
+                <div className="social-title">|Entrar com</div>
                 <div className="social-buttons">
                   <button
                     type="button"
@@ -476,16 +490,17 @@ authenticateUser(user)
           )}
 
           {authMode === 'forgot-password' && (
-            <form
-              className="login-form"
-              onSubmit={
-                resetStep === 'identify'
-                  ? handleForgotPasswordSend
-                  : resetStep === 'code'
-                    ? handleForgotPasswordCodeVerify
-                    : handlePasswordReset
-              }
-            >
+           <form 
+  className={`login-form ${animateContent ? 'show-animation' : ''}`}
+  onSubmit={
+    resetStep === 'identify'
+      ? handleForgotPasswordSend
+      : resetStep === 'code'
+        ? handleForgotPasswordCodeVerify
+        : handlePasswordReset
+  }
+>
+            
               <h3 className="auth-title">Recuperar senha</h3>
 
               {resetStep === 'identify' && (
@@ -598,7 +613,10 @@ authenticateUser(user)
           )}
 
           {authMode === 'google' && (
-            <form className="login-form" onSubmit={codeWasSent ? handleGoogleCodeVerify : handleGoogleCodeSend}>
+            <form 
+ className={`login-form ${animateContent ? 'show-animation' : ''}`}
+ onSubmit={codeWasSent ? handleGoogleCodeVerify : handleGoogleCodeSend}
+>
               {!codeWasSent ? (
                 <>
                   <h3 className="auth-title">Login com Google</h3>
