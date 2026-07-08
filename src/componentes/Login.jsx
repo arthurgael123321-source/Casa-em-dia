@@ -329,112 +329,6 @@ export default function Login({ onBack, onLoginSuccess }) {
     authenticateUser(user)
   }
 
-  // Enviar código para Facebook
-  const handleFacebookCodeSend = (e) => {
-    e.preventDefault()
-    setError('')
-
-    if (!socialEmail.trim()) {
-      setError('Por favor digite um email')
-      return
-    }
-
-    if (!validateEmail(socialEmail)) {
-      setError('Email inválido')
-      return
-    }
-
-    const code = generateRandomCode()
-    setSentCode(code)
-    setCodeWasSent(true)
-    setVerificationCode('')
-  }
-
-  // Verificar código Facebook
-  const handleFacebookCodeVerify = (e) => {
-    e.preventDefault()
-    setError('')
-
-    if (!verificationCode.trim()) {
-      setError('Por favor digite o código')
-      return
-    }
-
-    if (verificationCode !== sentCode) {
-      setError('Código incorreto')
-      return
-    }
-
-    let user = findUser(socialEmail)
-    if (!user) {
-      user = {
-        id: Date.now(),
-        username: socialEmail.split('@')[0],
-        email: socialEmail,
-        password: null,
-        loginMethod: 'facebook',
-        createdAt: new Date().toISOString(),
-      }
-      saveUserToStorage(user)
-    }
-
-    authenticateUser(user)
-  }
-
-  // Enviar código para SMS
-  const handleSMSCodeSend = (e) => {
-    e.preventDefault()
-    setError('')
-
-    if (!phone.trim()) {
-      setError('Por favor digite um número de telefone')
-      return
-    }
-
-    if (!validatePhone(phone)) {
-      setError('Número de telefone inválido. Use o formato: (XX) 9XXXX-XXXX')
-      return
-    }
-
-    const code = generateRandomCode()
-    setSentCode(code)
-    setCodeWasSent(true)
-    setVerificationCode('')
-  }
-
-  // Verificar código SMS
-  const handleSMSCodeVerify = (e) => {
-    e.preventDefault()
-    setError('')
-
-    if (!verificationCode.trim()) {
-      setError('Por favor digite o código')
-      return
-    }
-
-    if (verificationCode !== sentCode) {
-      setError('Código incorreto')
-      return
-    }
-
-    // Criar ou encontrar usuário SMS
-    let user = findUser(phone)
-    if (!user) {
-      user = {
-        id: Date.now(),
-        username: `user_${phone.replace(/\D/g, '')}`,
-        phone,
-        email: `sms_${Date.now()}@casaemdia.local`,
-        password: null,
-        loginMethod: 'sms',
-        createdAt: new Date().toISOString(),
-      }
-      saveUserToStorage(user)
-    }
-
-    authenticateUser(user)
-  }
-
   return (
     <main className="login-page">
       <section className="login-card" aria-label="Login">
@@ -589,30 +483,7 @@ export default function Login({ onBack, onLoginSuccess }) {
                     <img src={googleIcon} alt="Google" className="social-icon" />
                     <span className="social-text">Entrar com Google</span>
                   </button>
-                  <button
-                    type="button"
-                    className="social-btn facebook"
-                    onClick={() => {
-                      setAuthMode('facebook')
-                      setError('')
-                      setCodeWasSent(false)
-                    }}
-                  >
-                    <img src={fbIcon} alt="Facebook" className="social-icon" />
-                    <span className="social-text white">Entrar com Facebook</span>
-                  </button>
-                  <button
-                    type="button"
-                    className="social-btn phone"
-                    onClick={() => {
-                      setAuthMode('sms')
-                      setError('')
-                      setCodeWasSent(false)
-                    }}
-                  >
-                    📱
-                    <span className="social-text">Entrar com Telefone</span>
-                  </button>
+                  
                 </div>
               </div>
             </form>
