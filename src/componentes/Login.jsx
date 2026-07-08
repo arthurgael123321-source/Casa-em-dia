@@ -421,17 +421,16 @@ authenticateUser(user)
                 </>
               )}
 
-              <div className="login-checks">
-               <label className="remember-switch">
-                <div
-                className={`switch ${rememberMe ? "active" : ""}`}
-                onClick={() => setRememberMe(!rememberMe)}
-                >
-                  <div className="switch-ball"></div>
-                </div>
-                <span>Lembre de mim</span>
-               </label>
-              </div>
+              {!isNewUser && (
+                <div className="login-checks">
+                  <label className="remember-switch">
+                    <div className={`switch ${rememberMe ? "active" : ""}`} onClick={() => setRememberMe(!rememberMe)}>
+                      <div className="switch-ball"></div>
+                      </div>
+                      <span>Lembre de mim</span>
+                      </label>
+                      </div>
+                    )}
 
               {error && <div className="login-error">{error}</div>}
               {success && <div className="login-success">{success}</div>}
