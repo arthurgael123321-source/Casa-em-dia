@@ -70,15 +70,15 @@ function Perfil({ onHomeClick, onLoginClick }) {
     <main className="profile-page">
       <section className="profile-card" role="region" aria-label="Perfil do usuário">
         <header className="profile-header">
-          <div>
-            <p className="profile-eyebrow">Minha conta</p>
-            <h2>Olá, {user.fullName || user.username || user.email}</h2>
-            <p className="profile-subtitle">Atualize suas informações e mantenha seus dados sempre organizados.</p>
+          <div className="profile-identity">
+            <div className="profile-avatar">{(user.fullName || user.username || user.email || 'C').slice(0, 1).toUpperCase()}</div>
+            <div>
+              <p className="profile-eyebrow">Minha conta</p>
+              <h2>Olá, {user.fullName || user.username || user.email}</h2>
+              <p className="profile-subtitle">Seu espaço para manter dados, preferências e histórico sempre em dia.</p>
+            </div>
           </div>
           <div className="profile-actions">
-            <button className="profile-secondary" onClick={() => onHomeClick && onHomeClick()}>
-              Voltar para a página inicial
-            </button>
             <button className="profile-primary" onClick={handleLogout}>
               Sair
             </button>
@@ -86,6 +86,24 @@ function Perfil({ onHomeClick, onLoginClick }) {
         </header>
 
         {message && <p className="profile-message">{message}</p>}
+
+        <div className="profile-highlight-row">
+          <article className="profile-highlight-card">
+            <p className="profile-highlight-title">Status da conta</p>
+            <strong>Conta ativa</strong>
+            <span>Seu perfil está pronto para receber novos agendamentos.</span>
+          </article>
+          <article className="profile-highlight-card">
+            <p className="profile-highlight-title">Próximo passo</p>
+            <strong>Atualize seus dados</strong>
+            <span>Deixe seu cadastro completo e preparado para qualquer serviço.</span>
+          </article>
+          <article className="profile-highlight-card">
+            <p className="profile-highlight-title">Segurança</p>
+            <strong>Proteção reforçada</strong>
+            <span>Seu acesso fica seguro e organizado em um só lugar.</span>
+          </article>
+        </div>
 
         <div className="profile-grid">
           <article className="profile-panel">
@@ -150,14 +168,19 @@ function Perfil({ onHomeClick, onLoginClick }) {
             </form>
           </article>
 
-          <article className="profile-panel">
+          <article className="profile-panel profile-panel-secondary">
             <h3>Resumo da conta</h3>
-            <p className="profile-highlight">Status: Conta ativa</p>
-            <p>Você pode revisar, editar e manter seus dados atualizados a qualquer momento.</p>
+            <p className="profile-highlight">Seu cadastro está sempre atualizado.</p>
+            <p>Organize seus dados, mantenha o atendimento mais rápido e tenha mais praticidade para agendar cada serviço.</p>
+            <ul className="profile-info-list">
+              <li><span>Login seguro</span><strong>Ativo</strong></li>
+              <li><span>Dados atualizados</span><strong>Disponível</strong></li>
+              <li><span>Acesso rápido</span><strong>Pronto</strong></li>
+            </ul>
             <div className="profile-pill-group">
-              <span className="profile-pill">Login seguro</span>
-              <span className="profile-pill">Dados atualizados</span>
-              <span className="profile-pill">Acesso rápido</span>
+              <span className="profile-pill">Atualização simples</span>
+              <span className="profile-pill">Informações seguras</span>
+              <span className="profile-pill">Atendimento melhor</span>
             </div>
           </article>
         </div>

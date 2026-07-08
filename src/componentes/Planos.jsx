@@ -84,19 +84,6 @@ export function Planos({ onHomeClick }) {
 
   return (
     <div style={styles.container}>
-      {/* Topo de Navegação Premium — Casa em Dia */}
-      <header style={styles.headerNav}>
-        <button onClick={() => onHomeClick && onHomeClick()} style={styles.botaoVoltarHome}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          Voltar
-        </button>
-        
-        <h1 style={styles.marcaHeader}>Casa em Dia</h1>
-        <div style={{ width: '90px' }}></div>
-      </header>
-
       {/* Seção de Introdução dos Planos */}
       <section style={styles.secaoIntroducao}>
         <h2 style={styles.titulo}>Planos de Assinatura</h2>

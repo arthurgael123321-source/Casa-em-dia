@@ -97,16 +97,12 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
   return (
     <main className="settings-page">
       <div className="settings-container">
-        {/* Header */}
-        <header className="settings-header">
+        <div className="settings-header">
           <div className="settings-header-content">
             <h1>Configurações</h1>
             <p className="settings-subtitle">Personalize sua experiência</p>
           </div>
-          <button className="btn-back" onClick={() => onHomeClick && onHomeClick()}>
-            ← Voltar
-          </button>
-        </header>
+        </div>
 
         {/* Mensagem */}
         {message && (

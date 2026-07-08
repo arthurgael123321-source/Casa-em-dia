@@ -61,14 +61,6 @@ export default function Contatos({ onHomeClick, onLoginClick }) {
 
   return (
     <div className="contatos-container">
-      {/* Header de Navegação */}
-      <header className="contatos-header">
-        <button onClick={() => onHomeClick && onHomeClick()} className="btn-voltar">
-          ← Voltar
-        </button>
-        <h1 className="header-title">Casa em Dia</h1>
-      </header>
-
       {/* Banner Principal */}
       <section className="banner-contatos">
         <div className="banner-content">
