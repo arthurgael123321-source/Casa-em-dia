@@ -9,6 +9,11 @@ import Servicos from './componentes/Serviços.jsx'
 import ServicoDetalhe from './componentes/ServicoDetalhe.jsx'
 import Perfil from './componentes/Perfil.jsx'
 import Configuracoes from './componentes/Configuracoes.jsx'
+import Agendamento from './componentes/Agendamento.jsx'
+import logo from './assets/WhatsApp Image 2026-06-23 at 7.39.28 PM.png'
+import configIcon from './assets/configs.png'
+import profileIcon from './assets/perfil.png'
+import plansIcon from './assets/planos.png'
 
 const serviceViews = [
   'limpeza-residencial',
@@ -19,7 +24,7 @@ const serviceViews = [
   'faxina',
 ]
 
-const appViews = ['login', 'home', 'contatos', 'servicos', 'planos', 'perfil', 'configuracoes', ...serviceViews]
+const appViews = ['login', 'home', 'contatos', 'servicos', 'planos', 'perfil', 'configuracoes', 'agendamento', ...serviceViews]
 
 const getViewFromHash = () => {
   const hashView = window.location.hash.replace('#', '')
@@ -28,7 +33,59 @@ const getViewFromHash = () => {
     return hashView
   }
 
-  return isAuthenticated() ? 'home' : 'login'
+  return isAuthenticated() ? 'servicos' : 'login'
+}
+
+function AppShell({ currentView, onNavigate, children }) {
+  const isServiceView = currentView === 'servicos' || serviceViews.includes(currentView)
+
+  return (
+    <main className="mockup-page">
+      <aside className="sidebar" role="complementary" aria-label="Menu lateral">
+        <button className="site-logo-button sidebar-logo-button" onClick={() => onNavigate('home')} aria-label="Ir para a página inicial">
+          <img src={logo} alt="Casa em Dia" className="sidebar-logo" />
+        </button>
+
+        <nav className="sidebar-nav" aria-label="Navegação principal">
+          <ul className="sidebar-menu">
+            <li><button onClick={() => onNavigate('servicos')} className={`home-sidebar-btn ${isServiceView ? 'active' : ''}`}>Serviços</button></li>
+            <li><button onClick={() => onNavigate('planos')} className={`home-sidebar-btn ${currentView === 'planos' ? 'active' : ''}`}>Planos</button></li>
+            <li><button onClick={() => onNavigate('agendamento')} className={`home-sidebar-btn ${currentView === 'agendamento' ? 'active' : ''}`}>Agendamento</button></li>
+            <li><button onClick={() => onNavigate('contatos')} className={`home-sidebar-btn ${currentView === 'contatos' ? 'active' : ''}`}>Contato</button></li>
+          </ul>
+        </nav>
+
+        <div className="sidebar-contact">
+          <h4 className="sidebar-subtitle">Fale Conosco</h4>
+          <a href="tel:11999999999" className="sidebar-contact-link">(55) 55 4002-8922</a>
+          <a href="mailto:contato@casaemdia.com" className="sidebar-contact-link">contato@casaemdia.com</a>
+        </div>
+
+        <button className="sidebar-cta" onClick={() => onNavigate('contatos')}>Agende Agora</button>
+      </aside>
+
+      <section className="mockup-card" role="main" aria-label="Conteúdo principal">
+        <header className="mockup-header">
+          <button className="site-logo-button" onClick={() => onNavigate('home')} aria-label="Ir para página inicial">
+            <img src={logo} alt="Casa em Dia" className="site-logo" />
+          </button>
+          <div className="top-actions" aria-label="Ações rápidas">
+            <button type="button" className="top-action-button" aria-label="Configurações" onClick={() => onNavigate('configuracoes')}>
+              <img src={configIcon} alt="Configurações" />
+            </button>
+            <button type="button" className="top-action-button" aria-label="Perfil" onClick={() => onNavigate('perfil')}>
+              <img src={profileIcon} alt="Perfil" />
+            </button>
+            <button type="button" className="top-action-button" aria-label="Planos" onClick={() => onNavigate('planos')}>
+              <img src={plansIcon} alt="Planos" />
+            </button>
+          </div>
+        </header>
+
+        <div className="app-content-shell">{children}</div>
+      </section>
+    </main>
+  )
 }
 
 export default function App() {
@@ -65,76 +122,102 @@ export default function App() {
   }, [view])
 
   if (view === 'login') {
-    return <Login onLoginSuccess={() => navigate('home')} />
+    return <Login onLoginSuccess={() => navigate('servicos')} />
   }
 
   if (view === 'contatos') {
-    return <Contatos onHomeClick={() => navigate('home')} onLoginClick={() => navigate('login')} />
+    return (
+      <AppShell currentView={view} onNavigate={navigate}>
+        <Contatos onHomeClick={() => navigate('home')} onLoginClick={() => navigate('login')} />
+      </AppShell>
+    )
+  }
+
+  if (view === 'agendamento') {
+    return (
+      <AppShell currentView={view} onNavigate={navigate}>
+        <Agendamento />
+      </AppShell>
+    )
   }
 
   if (view === 'servicos') {
     return (
-      <Servicos
-        onHomeClick={() => navigate('home')}
-        onContactClick={() => navigate('contatos')}
-        onPlanosClick={() => navigate('planos')}
-        onLoginClick={() => navigate('login')}
-        onServicePageClick={(slug) => navigate(slug)}
-      />
+      <AppShell currentView={view} onNavigate={navigate}>
+        <Servicos
+          onHomeClick={() => navigate('home')}
+          onContactClick={() => navigate('contatos')}
+          onPlanosClick={() => navigate('planos')}
+          onLoginClick={() => navigate('login')}
+          onServicePageClick={(slug) => navigate(slug)}
+        />
+      </AppShell>
     )
   }
 
   if (serviceViews.includes(view)) {
     return (
-      <ServicoDetalhe
-        serviceSlug={view}
-        onHomeClick={() => navigate('home')}
-        onContactClick={() => navigate('contatos')}
-        onPlanosClick={() => navigate('planos')}
-        onLoginClick={() => navigate('login')}
-        onServicosClick={() => navigate('servicos')}
-      />
+      <AppShell currentView={view} onNavigate={navigate}>
+        <ServicoDetalhe
+          serviceSlug={view}
+          onHomeClick={() => navigate('home')}
+          onContactClick={() => navigate('contatos')}
+          onPlanosClick={() => navigate('planos')}
+          onLoginClick={() => navigate('login')}
+          onServicosClick={() => navigate('servicos')}
+        />
+      </AppShell>
     )
   }
 
   if (view === 'planos') {
-    return <Planos onHomeClick={() => navigate('home')} />
+    return (
+      <AppShell currentView={view} onNavigate={navigate}>
+        <Planos onHomeClick={() => navigate('home')} />
+      </AppShell>
+    )
   }
 
   if (view === 'perfil') {
     return (
-      <Perfil
-        onHomeClick={() => navigate('home')}
-        onLoginClick={() => {
-          logout()
-          navigate('login')
-        }}
-      />
+      <AppShell currentView={view} onNavigate={navigate}>
+        <Perfil
+          onHomeClick={() => navigate('home')}
+          onLoginClick={() => {
+            logout()
+            navigate('login')
+          }}
+        />
+      </AppShell>
     )
   }
 
   if (view === 'configuracoes') {
     return (
-      <Configuracoes
-        onHomeClick={() => navigate('home')}
-        onLoginClick={() => {
-          logout()
-          navigate('login')
-        }}
-      />
+      <AppShell currentView={view} onNavigate={navigate}>
+        <Configuracoes
+          onHomeClick={() => navigate('home')}
+          onLoginClick={() => {
+            logout()
+            navigate('login')
+          }}
+        />
+      </AppShell>
     )
   }
 
   return (
-    <Home
-      onLoginClick={() => navigate('login')}
-      onHomeClick={() => navigate('home')}
-      onContactClick={() => navigate('contatos')}
-      onPlanosClick={() => navigate('planos')}
-      onServicosClick={() => navigate('servicos')}
-      onProfileClick={() => navigate('perfil')}
-      onConfiguracoesClick={() => navigate('configuracoes')}
-      onServicePageClick={(slug) => navigate(slug)}
-    />
+    <AppShell currentView={view} onNavigate={navigate}>
+      <Home
+        onLoginClick={() => navigate('login')}
+        onHomeClick={() => navigate('home')}
+        onContactClick={() => navigate('contatos')}
+        onPlanosClick={() => navigate('planos')}
+        onServicosClick={() => navigate('servicos')}
+        onProfileClick={() => navigate('perfil')}
+        onConfiguracoesClick={() => navigate('configuracoes')}
+        onServicePageClick={(slug) => navigate(slug)}
+      />
+    </AppShell>
   )
 }
