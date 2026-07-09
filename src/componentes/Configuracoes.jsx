@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react'
 import { getCurrentUser } from '../services/authUtils.js'
 import './Configuracoes.css'
+import bellIcon from '../assets/icons/Notificação.png'
+import lockIcon from '../assets/icons/Cadeado.png'
+import settingsIcon from '../assets/configs.png'
+import shieldIcon from '../assets/icons/Segurança.png'
 
 export default function Configuracoes({ onHomeClick, onLoginClick }) {
   const [user, setUser] = useState(null)
@@ -118,33 +122,40 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
         <div className="settings-layout">
           {/* Sidebar */}
           <aside className="settings-sidebar">
-            <nav className="settings-nav">
-              <button
-                className={`nav-item ${activeTab === 'notificacoes' ? 'active' : ''}`}
-                onClick={() => setActiveTab('notificacoes')}
-              >
-                🔔 Notificações
-              </button>
-              <button
-                className={`nav-item ${activeTab === 'privacidade' ? 'active' : ''}`}
-                onClick={() => setActiveTab('privacidade')}
-              >
-                🔒 Privacidade
-              </button>
-              <button
-                className={`nav-item ${activeTab === 'preferencias' ? 'active' : ''}`}
-                onClick={() => setActiveTab('preferencias')}
-              >
-                ⚙️ Preferências
-              </button>
-              <button
-                className={`nav-item ${activeTab === 'seguranca' ? 'active' : ''}`}
-                onClick={() => setActiveTab('seguranca')}
-              >
-                🛡️ Segurança
-              </button>
-            </nav>
-          </aside>
+  <nav className="settings-nav">
+    <button
+      className={`nav-item ${activeTab === 'notificacoes' ? 'active' : ''}`}
+      onClick={() => setActiveTab('notificacoes')}
+    >
+      <img src={bellIcon} alt="" className="nav-icon" />
+      Notificações
+    </button>
+
+    <button
+      className={`nav-item ${activeTab === 'privacidade' ? 'active' : ''}`}
+      onClick={() => setActiveTab('privacidade')}
+    >
+      <img src={lockIcon} alt="" className="nav-icon" />
+      Privacidade
+    </button>
+
+    <button
+      className={`nav-item ${activeTab === 'preferencias' ? 'active' : ''}`}
+      onClick={() => setActiveTab('preferencias')}
+    >
+      <img src={settingsIcon} alt="" className="nav-icon" />
+      Preferências
+    </button>
+
+    <button
+      className={`nav-item ${activeTab === 'seguranca' ? 'active' : ''}`}
+      onClick={() => setActiveTab('seguranca')}
+    >
+      <img src={shieldIcon} alt="" className="nav-icon" />
+      Segurança
+    </button>
+  </nav>
+</aside>
 
           {/* Content */}
           <section className="settings-content">
@@ -340,7 +351,7 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
                 onClick={handleSaveSettings}
                 disabled={isSaving}
               >
-                {isSaving ? '⏳ Salvando...' : '💾 Salvar Configurações'}
+                {isSaving ? '⏳ Salvando...' : ' Salvar Configurações'}
               </button>
             </div>
           </section>

@@ -136,6 +136,15 @@
   transition: all 0.3s ease;
   text-align: left;
   font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-icon {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
 }
 
 .nav-item:hover {
