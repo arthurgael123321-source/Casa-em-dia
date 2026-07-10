@@ -2,8 +2,9 @@ import slideGarden from '../assets/primeira imagem carrosel.png'
 import slideRepair from '../assets/Segunda imagem carrosel.png'
 import slideCleaning from '../assets/terceira imagem carrosel.png'
 import heroImage from '../assets/hero.png'
-import extraImage from '../assets/OIP.png'
-
+import houseImage from '../assets/imagelogCasa.jpg'
+import tecnicaimage from '../assets/tecnica.png'
+ 
 const services = [
   {
     slug: 'limpeza-residencial',
@@ -39,7 +40,7 @@ const services = [
       'Melhoria de circulação e aproveitamento',
       'Dicas práticas para manutenção diária',
     ],
-    image: extraImage,
+    image: houseImage,
   },
   {
     slug: 'jardinagem',
@@ -63,19 +64,20 @@ const services = [
       'Cuidados com roupas e pequenos reparos',
       'Apoio em tarefas de cozinha e compras',
     ],
-    image: heroImage,
+    image: houseImage,
   },
   {
-    slug: 'faxina',
-    title: 'Faxina',
-    description: 'Limpeza geral com foco em cada detalhe: retirada de pó, lavagem de pisos, limpeza de vidros e higienização completa.',
+    slug: 'arrumar-eletrodomesticos',
+    title: 'Técnica de eletrodmésticos',
+    description: 'Serviço especializado para deixar seus aparelhos em bom funcionamento com diagnóstico, ajustes e manutenção preventiva para evitar problemas futuros.',
     details: [
-      'Lavagem de pisos e paredes',
-      'Limpeza de vidros e espelhos',
-      'Desinfecção de bancadas e áreas de toque',
-      'Acabamento em rodapés e cantos',
+      'Avaliação completa do funcionamento do aparelho',
+      'Ajustes e pequenos reparos domésticos',
+      'Limpeza interna e manutenção preventiva',
+      'Orientação sobre uso, cuidados e prevenção de falhas',
+      'Atendimento prático para geladeiras, máquinas de lavar, fogões e mais',
     ],
-    image: heroImage,
+    image: tecnicaimage,
   },
 ]
 
