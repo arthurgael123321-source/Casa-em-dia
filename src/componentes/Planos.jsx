@@ -1,8 +1,28 @@
 import { useState } from 'react';
+import { getCurrentUser, updateCurrentUserProfile } from '../services/authUtils.js';
+
+const PLANO_PADRAO = 'basico';
+
+const getChavePlanoUsuario = (user) => (
+  user?.email ? `planoAtual:${user.email}` : 'planoAtual'
+);
+
+const carregarPlanoAtual = (user) => {
+  const planoDoUsuario = user?.planoAtual;
+
+  if (planoDoUsuario) {
+    return planoDoUsuario;
+  }
+
+  return localStorage.getItem(getChavePlanoUsuario(user))
+    || localStorage.getItem('planoAtual')
+    || PLANO_PADRAO;
+};
 
 export function Planos({ onHomeClick }) {
+  const usuarioAtual = getCurrentUser();
   // Novo estado: define qual plano o usuário possui atualmente cadastrado
-  const [planoAtual, setPlanoAtual] = useState('basico'); 
+  const [planoAtual, setPlanoAtual] = useState(() => carregarPlanoAtual(usuarioAtual)); 
   const [planoSelecionado, setPlanoSelecionado] = useState(null);
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
@@ -69,7 +89,15 @@ export function Planos({ onHomeClick }) {
   const handleEnviarAssinatura = (e) => {
     e.preventDefault();
     // Atualiza o plano do topo para o novo plano contratado
-    setPlanoAtual(planoSelecionado.id);
+    const novoPlano = planoSelecionado.id;
+    setPlanoAtual(novoPlano);
+    localStorage.setItem(getChavePlanoUsuario(usuarioAtual), novoPlano);
+    localStorage.setItem('planoAtual', novoPlano);
+
+    if (usuarioAtual) {
+      updateCurrentUserProfile({ planoAtual: novoPlano });
+    }
+
     alert(`Sucesso! Seu plano foi atualizado para ${planoSelecionado.nome}.`);
     setPlanoSelecionado(null);
   };
