@@ -45,7 +45,7 @@ const services = [
   {
     slug: 'jardinagem',
     title: 'Jardinagem',
-    description: 'Corte de grama, cuidados com o jardim, poda de plantas e manutenção de canteiros. Deixe sua área verde bonita e saudável o ano todo.',
+    description: 'Corte de grama, cuidados do jardim, poda de plantas e manutenção de canteiros. Deixe sua área verde bonita e saudável o ano todo.',
     details: [
       'Corte de grama e acabamento de bordas',
       'Poda de arbustos e plantas ornamentais',
