@@ -1,8 +1,9 @@
 import slideGarden from '../assets/primeira imagem carrosel.png'
 import slideRepair from '../assets/Segunda imagem carrosel.png'
 import slideCleaning from '../assets/terceira imagem carrosel.png'
-import heroImage from '../assets/hero.png'
-import extraImage from '../assets/OIP.png'
+import organizationImage from '../assets/Organização.png'
+import homeAssistanceImage from '../assets/AssistDomestica.png'
+import cleaningImage from '../assets/Faxina.jpg'
 
 const services = [
   {
@@ -39,7 +40,7 @@ const services = [
       'Melhoria de circulação e aproveitamento',
       'Dicas práticas para manutenção diária',
     ],
-    image: extraImage,
+    image: organizationImage,
   },
   {
     slug: 'jardinagem',
@@ -63,7 +64,7 @@ const services = [
       'Cuidados com roupas e pequenos reparos',
       'Apoio em tarefas de cozinha e compras',
     ],
-    image: heroImage,
+    image: homeAssistanceImage,
   },
   {
     slug: 'faxina',
@@ -75,7 +76,7 @@ const services = [
       'Desinfecção de bancadas e áreas de toque',
       'Acabamento em rodapés e cantos',
     ],
-    image: heroImage,
+    image: cleaningImage,
   },
 ]
 

@@ -266,6 +266,109 @@
   font-weight: 600;
 }
 
+/* Security */
+.security-card {
+  padding: 22px;
+  background: linear-gradient(135deg, #fafbf9, #f5f7f3);
+  border: 2px solid rgba(137, 159, 127, 0.12);
+  border-radius: 14px;
+}
+
+.login-preference-options {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 18px 0;
+}
+
+.login-preference-option {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 14px;
+  border: 2px solid rgba(137, 159, 127, 0.18);
+  border-radius: 10px;
+  cursor: pointer;
+  background: #fff;
+}
+
+.login-preference-option.selected {
+  border-color: var(--accent-1);
+  background: rgba(137, 159, 127, 0.08);
+}
+
+.login-preference-option input {
+  margin-top: 3px;
+  accent-color: var(--accent-dark);
+}
+
+.login-preference-option span,
+.login-preference-option small {
+  display: block;
+}
+
+.login-preference-option strong {
+  color: var(--accent-dark);
+}
+
+.login-preference-option small {
+  margin-top: 4px;
+  color: rgba(33, 64, 27, 0.65);
+  line-height: 1.35;
+}
+
+.password-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.password-form .setting-info {
+  grid-column: 1 / -1;
+}
+
+.security-field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  color: var(--accent-dark);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.security-field input {
+  min-width: 0;
+  padding: 12px;
+  border: 2px solid rgba(137, 159, 127, 0.2);
+  border-radius: 9px;
+  font: inherit;
+}
+
+.security-field input:focus {
+  outline: none;
+  border-color: var(--accent-dark);
+  box-shadow: 0 0 0 3px rgba(137, 159, 127, 0.1);
+}
+
+.btn-secondary {
+  width: fit-content;
+  padding: 11px 18px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--accent-dark);
+  color: #fff;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background: var(--accent-1);
+}
+
+.password-form .btn-secondary {
+  grid-column: 1 / -1;
+}
+
 /* Toggle Switch */
 .toggle-switch {
   position: relative;
@@ -457,6 +560,11 @@ input:checked + .toggle-slider:before {
   .settings-select {
     margin-left: 0;
     width: 100%;
+  }
+
+  .login-preference-options,
+  .password-form {
+    grid-template-columns: 1fr;
   }
 }
 

@@ -1,4 +1,4 @@
-import heroImage from '../assets/hero.png'
+import heroImage from '../assets/CasaImpecavel.png'
 import services from './servicosData'
 
 function Servicos({ onHomeClick, onContactClick, onPlanosClick, onLoginClick, onServicePageClick }) {

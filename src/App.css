@@ -443,7 +443,8 @@ body { margin: 0; background: var(--bg); color: var(--accent-dark); }
 .services-grid {
   display: grid;
   gap: 22px;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  /* Mantém três serviços por linha em telas de computador. */
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 @keyframes fadeIn {
@@ -898,6 +899,12 @@ body { margin: 0; background: var(--bg); color: var(--accent-dark); }
   .profile-header { flex-direction: column; }
   .profile-grid { grid-template-columns: 1fr; }
   .services-section-head { flex-direction: column; align-items: flex-start; }
+  .services-grid { grid-template-columns: 1fr; }
   .agendamento-hero { flex-direction: column; align-items: flex-start; }
   .agendamento-grid { grid-template-columns: 1fr; }
+}
+
+/* Mantém três cards para computadores, mesmo em janelas mais estreitas. */
+@media (max-width: 760px) and (hover: hover) and (pointer: fine) {
+  .services-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
