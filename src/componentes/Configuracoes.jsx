@@ -1,27 +1,33 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { getCurrentUser, updateCurrentUserProfile } from '../services/authUtils.js'
 import './Configuracoes.css'
-import bellIcon from '../assets/icons/Notificação.png'
-import lockIcon from '../assets/icons/Cadeado.png'
+import bellIcon from '../assets/Icons/Notificação.png'
+import lockIcon from '../assets/Icons/Cadeado.png'
 import settingsIcon from '../assets/configs.png'
-import shieldIcon from '../assets/icons/Segurança.png'
+import shieldIcon from '../assets/Icons/Segurança.png'
 
 export default function Configuracoes({ onHomeClick, onLoginClick }) {
-  const [user, setUser] = useState(null)
+  const [user, setUser] = useState(() => getCurrentUser())
   const [message, setMessage] = useState('')
   const [messageType, setMessageType] = useState('success')
   const [activeTab, setActiveTab] = useState('notificacoes')
   const [isSaving, setIsSaving] = useState(false)
-  const [currentPassword, setCurrentPassword] = useState('')
-  const [newPassword, setNewPassword] = useState('')
-  const [confirmNewPassword, setConfirmNewPassword] = useState('')
-  const [loginPreference, setLoginPreference] = useState('email')
-  const [settings, setSettings] = useState({
+  const [settings, setSettings] = useState(() => {
+    const savedSettings = localStorage.getItem('userSettings')
+    if (savedSettings) {
+      try {
+        return JSON.parse(savedSettings)
+      } catch {
+        localStorage.removeItem('userSettings')
+      }
+    }
+
+    return {
     notificacoes: {
       emailNotificacoes: true,
       smsNotificacoes: false,
       notificacoesAgendamento: true,
-      notificacoesPromotos: false,
+      notificacoesPromocoes: false,
     },
     privacidade: {
       perfPublico: false,
@@ -34,19 +40,13 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
     seguranca: {
       sessoesAtivasMonitor: true,
     },
+    }
   })
 
-  useEffect(() => {
-    const currentUser = getCurrentUser()
-    if (currentUser) {
-      setUser(currentUser)
-      setLoginPreference(currentUser.loginPreference || currentUser.loginMethod || 'email')
-      const savedSettings = localStorage.getItem('userSettings')
-      if (savedSettings) {
-        setSettings(JSON.parse(savedSettings))
-      }
-    }
-  }, [])
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmNewPassword, setConfirmNewPassword] = useState('')
+  const [loginPreference, setLoginPreference] = useState(() => user?.loginPreference || user?.loginMethod || 'email')
 
   const handleToggle = (section, key) => {
     setSettings((prev) => ({
@@ -78,7 +78,7 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
       localStorage.setItem('userSettings', JSON.stringify(userSettings))
       setMessageType('success')
       setMessage('✓ Configurações salvas com sucesso!')
-    } catch (error) {
+    } catch {
       setMessageType('error')
       setMessage('❌ Erro ao salvar configurações')
     } finally {
@@ -277,8 +277,8 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
                     <label className="toggle-switch">
                       <input
                         type="checkbox"
-                        checked={settings.notificacoes.notificacoesPromotos}
-                        onChange={() => handleToggle('notificacoes', 'notificacoesPromotos')}
+                        checked={settings.notificacoes.notificacoesPromocoes}
+                        onChange={() => handleToggle('notificacoes', 'notificacoesPromocoes')}
                       />
                       <span className="toggle-slider"></span>
                     </label>

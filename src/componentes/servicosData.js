@@ -82,7 +82,7 @@ const services = [
   },
   {
     slug: 'arrumar-eletrodomesticos',
-    title: 'Técnica de eletrodomésticos',
+    title: 'Reparo de eletrodomésticos',
     description: 'Serviço especializado para deixar seus aparelhos em bom funcionamento com diagnóstico, ajustes e manutenção preventiva para evitar problemas futuros.',
     details: [
       'Avaliação completa do funcionamento do aparelho',

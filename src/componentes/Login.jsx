@@ -4,7 +4,6 @@ import './Login.css'
 import logo from '../assets/WhatsApp Image 2026-06-23 at 7.39.28 PM.png'
 import { persistAuthSession } from '../services/authUtils.js'
 import googleIcon from '../assets/OIP.png'
-import fbIcon from '../assets/pngtree-facebook-logo-facebook-icon-png-image_3654755.png'
 import loginImage from '../assets/imagelogCasa.jpg'
 
 
@@ -23,7 +22,6 @@ export default function Login({ onBack, onLoginSuccess }) {
   const [verificationCode, setVerificationCode] = useState('')
   const [sentCode, setSentCode] = useState('')
   const [codeWasSent, setCodeWasSent] = useState(false)
-  const [phone, setPhone] = useState('')
   const [socialEmail, setSocialEmail] = useState('')
   const [resetIdentifier, setResetIdentifier] = useState('')
   const [resetUser, setResetUser] = useState(null)
@@ -34,8 +32,6 @@ export default function Login({ onBack, onLoginSuccess }) {
 
   // Estados gerais
   const [error, setError] = useState('')
-  const [loading, setLoading] = useState(false)
-  const [animateContent, setAnimateContent] = useState(false)
   const [rememberMe, setRememberMe] = useState(() => localStorage.getItem('rememberMe') === 'true')
 
   // Inicializar usuários no local storage
@@ -45,8 +41,6 @@ export default function Login({ onBack, onLoginSuccess }) {
       localStorage.setItem('users', JSON.stringify([]))
     }
 
-    const savedRememberMe = localStorage.getItem('rememberMe') === 'true'
-    setRememberMe(savedRememberMe)
   }, [])
 
   // Funções utilitárias
@@ -59,28 +53,17 @@ export default function Login({ onBack, onLoginSuccess }) {
     return emailRegex.test(email)
   }
 
-  const validatePhone = (phone) => {
-    // Formato: (XX) 9XXXX-XXXX ou XX 9XXXX-XXXX (Brasil)
-    const phoneRegex = /^\(?[0-9]{2}\)?[\s-]?9[0-9]{4}-?[0-9]{4}$/
-    return phoneRegex.test(phone.replace(/\s/g, ''))
-  }
-
-  const formatPhone = (value) => {
-    const cleaned = value.replace(/\D/g, '')
-    if (cleaned.length <= 2) {
-      return cleaned
-    } else if (cleaned.length <= 6) {
-      return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2)}`
-    } else if (cleaned.length <= 10) {
-      return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7)}`
-    } else {
-      return `(${cleaned.slice(0, 2)}) ${cleaned.slice(2, 7)}-${cleaned.slice(7, 11)}`
-    }
-  }
-
   const getUsersFromStorage = () => {
     const usersJSON = localStorage.getItem('users')
-    return usersJSON ? JSON.parse(usersJSON) : []
+    if (!usersJSON) return []
+
+    try {
+      const users = JSON.parse(usersJSON)
+      return Array.isArray(users) ? users : []
+    } catch {
+      localStorage.removeItem('users')
+      return []
+    }
   }
 
   const saveUserToStorage = (user) => {
@@ -111,16 +94,6 @@ export default function Login({ onBack, onLoginSuccess }) {
       window.location.href = '/'
     }
   }
-  useEffect(() => {
-  setAnimateContent(true)
-
-  const timer = setTimeout(() => {
-    setAnimateContent(false)
-  }, 350)
-
-  return () => clearTimeout(timer)
-}, [authMode, isNewUser, resetStep])
-
   const resetForgotPasswordForm = () => {
     setResetIdentifier('')
     setResetUser(null)
@@ -345,7 +318,7 @@ authenticateUser(user)
     </div>
           {authMode === 'traditional' && (
             <form 
-  className={`login-form ${animateContent ? 'show-animation' : ''}`} 
+  className="login-form"
   onSubmit={handleTraditionalLogin}
 >
               {isNewUser ? (
@@ -426,10 +399,16 @@ authenticateUser(user)
               {!isNewUser && (
                 <div className="login-checks">
                   <label className="remember-switch">
-                    <div className={`switch ${rememberMe ? "active" : ""}`} onClick={() => setRememberMe(!rememberMe)}>
+                    <input
+                      className="remember-input"
+                      type="checkbox"
+                      checked={rememberMe}
+                      onChange={(event) => setRememberMe(event.target.checked)}
+                    />
+                    <span className={`switch ${rememberMe ? 'active' : ''}`} aria-hidden="true">
                       <div className="switch-ball"></div>
-                      </div>
-                      <span>Lembre de mim</span>
+                    </span>
+                    <span>Lembre de mim</span>
                       </label>
                       </div>
                     )}
@@ -448,8 +427,8 @@ authenticateUser(user)
                     Voltar
                   </button>
                 )}
-                <button className="login-submit" type="submit" disabled={loading}>
-                  {loading ? 'Entrando...' : 'Entrar'}
+                <button className="login-submit" type="submit">
+                  Entrar
                 </button>
               </div>
 
@@ -492,7 +471,7 @@ authenticateUser(user)
 
           {authMode === 'forgot-password' && (
            <form 
-  className={`login-form ${animateContent ? 'show-animation' : ''}`}
+  className="login-form"
   onSubmit={
     resetStep === 'identify'
       ? handleForgotPasswordSend
@@ -615,7 +594,7 @@ authenticateUser(user)
 
           {authMode === 'google' && (
             <form 
- className={`login-form ${animateContent ? 'show-animation' : ''}`}
+ className="login-form"
  onSubmit={codeWasSent ? handleGoogleCodeVerify : handleGoogleCodeSend}
 >
               {!codeWasSent ? (

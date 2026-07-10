@@ -51,11 +51,11 @@ function AppShell({ currentView, onNavigate, children }) {
 
         <div className="sidebar-contact">
           <h4 className="sidebar-subtitle">Fale Conosco</h4>
-          <a href="tel:11999999999" className="sidebar-contact-link">(55) 55 4002-8922</a>
+          <a href="tel:+5511999998888" className="sidebar-contact-link">(11) 99999-8888</a>
           <a href="mailto:contato@casaemdia.com" className="sidebar-contact-link">contato@casaemdia.com</a>
         </div>
 
-        <button className="sidebar-cta" onClick={() => onNavigate('contatos')}>Agende Agora</button>
+        <button className="sidebar-cta" onClick={() => onNavigate('agendamento')}>Agende Agora</button>
       </aside>
 
       <section className="mockup-card" role="main" aria-label="Conteúdo principal">
@@ -87,7 +87,9 @@ export default function App() {
 
   useEffect(() => {
     window.history.replaceState({ view }, '', `#${view}`)
+  }, [view])
 
+  useEffect(() => {
     const handlePopState = (event) => {
       const previousView = event.state?.view
 
@@ -122,7 +124,7 @@ export default function App() {
   if (view === 'contatos') {
     return (
       <AppShell currentView={view} onNavigate={navigate}>
-        <Contatos onHomeClick={() => navigate('home')} onLoginClick={() => navigate('login')} />
+        <Contatos onHomeClick={() => navigate('home')} />
       </AppShell>
     )
   }
@@ -139,10 +141,8 @@ export default function App() {
     return (
       <AppShell currentView={view} onNavigate={navigate}>
         <Servicos
-          onHomeClick={() => navigate('home')}
           onContactClick={() => navigate('contatos')}
           onPlanosClick={() => navigate('planos')}
-          onLoginClick={() => navigate('login')}
           onServicePageClick={(slug) => navigate(slug)}
         />
       </AppShell>
@@ -154,10 +154,7 @@ export default function App() {
       <AppShell currentView={view} onNavigate={navigate}>
         <ServicoDetalhe
           serviceSlug={view}
-          onHomeClick={() => navigate('home')}
-          onContactClick={() => navigate('contatos')}
-          onPlanosClick={() => navigate('planos')}
-          onLoginClick={() => navigate('login')}
+          onScheduleClick={() => navigate('agendamento')}
           onServicosClick={() => navigate('servicos')}
         />
       </AppShell>
@@ -176,7 +173,6 @@ export default function App() {
     return (
       <AppShell currentView={view} onNavigate={navigate}>
         <Perfil
-          onHomeClick={() => navigate('home')}
           onLoginClick={() => {
             logout()
             navigate('login')
@@ -203,13 +199,7 @@ export default function App() {
   return (
     <AppShell currentView={view} onNavigate={navigate}>
       <Home
-        onLoginClick={() => navigate('login')}
-        onHomeClick={() => navigate('home')}
-        onContactClick={() => navigate('contatos')}
-        onPlanosClick={() => navigate('planos')}
         onServicosClick={() => navigate('servicos')}
-        onProfileClick={() => navigate('perfil')}
-        onConfiguracoesClick={() => navigate('configuracoes')}
         onServicePageClick={(slug) => navigate(slug)}
       />
     </AppShell>

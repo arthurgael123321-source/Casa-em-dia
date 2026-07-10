@@ -8,6 +8,7 @@
     "server": "node --watch backend/server.js",
     "dev:all": "concurrently \"npm run server\" \"npm run dev\"",
     "setup-db": "node backend/setupDatabase.js",
+    "lint": "eslint .",
     "build": "vite build",
     "preview": "vite preview"
   },

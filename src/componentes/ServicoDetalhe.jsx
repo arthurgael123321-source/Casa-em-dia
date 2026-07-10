@@ -1,6 +1,6 @@
 import { serviceMap } from './servicosData'
 
-function ServicoDetalhe({ serviceSlug, onHomeClick, onContactClick, onPlanosClick, onLoginClick, onServicosClick }) {
+function ServicoDetalhe({ serviceSlug, onScheduleClick, onServicosClick }) {
   const service = serviceMap[serviceSlug]
 
   if (!service) {
@@ -21,7 +21,7 @@ function ServicoDetalhe({ serviceSlug, onHomeClick, onContactClick, onPlanosClic
               <h2>{service.title}</h2>
               <p>{service.description}</p>
               <div className="hero-buttons">
-                <button className="hero-cta" onClick={() => onContactClick && onContactClick()}>
+                <button className="hero-cta" onClick={() => onScheduleClick && onScheduleClick()}>
                   Agendar agora
                 </button>
                 <button className="hero-secondary" onClick={() => onServicosClick && onServicosClick()}>
