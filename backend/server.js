@@ -16,7 +16,7 @@ app.get('/api/tarefas', async (req, res) => {
  'SELECT * FROM tarefas ORDER BY data_criacao DESC'
  );
  res.json(tarefas);
- } catch (error) {
+ } catch {
  res.status(500).json({ erro: 'Erro ao buscar tarefas' });
  }
 });
@@ -32,7 +32,7 @@ app.post('/api/login', async (req, res) => {
 		// Por enquanto, retornamos um token mock baseado em base64.
 		const token = Buffer.from(`${email}:${password}`).toString('base64');
 		return res.json({ token, email });
-	} catch (error) {
+	} catch {
 		res.status(500).json({ erro: 'Erro no login' });
 	}
 });
@@ -51,7 +51,7 @@ app.post('/api/tarefas', async (req, res) => {
  descricao,
  status: false
  });
- } catch (error) {
+ } catch {
  res.status(500).json({ erro: 'Erro ao criar tarefa' });
  }
 });
@@ -70,7 +70,7 @@ app.put('/api/tarefas/:id', async (req, res) => {
  return res.status(404).json({ erro: 'Tarefa nao encontrada' });
  }
  res.json({ mensagem: 'Tarefa atualizada com sucesso' });
- } catch (error) {
+ } catch {
  res.status(500).json({ erro: 'Erro ao atualizar tarefa' });
  }
 });
@@ -85,7 +85,7 @@ app.delete('/api/tarefas/:id', async (req, res) => {
  return res.status(404).json({ erro: 'Tarefa nao encontrada' });
  }
  res.json({ mensagem: 'Tarefa deletada com sucesso' });
- } catch (error) {
+ } catch {
  res.status(500).json({ erro: 'Erro ao deletar tarefa' });
  }
 });

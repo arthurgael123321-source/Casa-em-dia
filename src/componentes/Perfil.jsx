@@ -1,31 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { getCurrentUser, updateCurrentUserProfile, clearAuthSession } from '../services/authUtils.js'
 
-function Perfil({ onHomeClick, onLoginClick }) {
-  const [user, setUser] = useState(null)
+const getFormData = (currentUser) => ({
+  fullName: currentUser?.fullName || '',
+  username: currentUser?.username || '',
+  email: currentUser?.email || '',
+  phone: currentUser?.phone || '',
+  address: currentUser?.address || '',
+})
+
+function Perfil({ onLoginClick }) {
+  const [user, setUser] = useState(() => getCurrentUser())
   const [isEditing, setIsEditing] = useState(false)
   const [message, setMessage] = useState('')
-  const [formData, setFormData] = useState({
-    fullName: '',
-    username: '',
-    email: '',
-    phone: '',
-    address: '',
-  })
-
-  useEffect(() => {
-    const currentUser = getCurrentUser()
-    setUser(currentUser)
-    if (currentUser) {
-      setFormData({
-        fullName: currentUser.fullName || '',
-        username: currentUser.username || '',
-        email: currentUser.email || '',
-        phone: currentUser.phone || '',
-        address: currentUser.address || '',
-      })
-    }
-  }, [])
+  const [formData, setFormData] = useState(() => getFormData(getCurrentUser()))
 
   const handleChange = (e) => {
     const { name, value } = e.target

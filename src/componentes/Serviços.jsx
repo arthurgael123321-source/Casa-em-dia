@@ -1,7 +1,7 @@
 import heroImage from '../assets/hero.png'
 import services from './servicosData'
 
-function Servicos({ onHomeClick, onContactClick, onPlanosClick, onLoginClick, onServicePageClick }) {
+function Servicos({ onContactClick, onPlanosClick, onServicePageClick }) {
   return (
     <div className="services-shell">
       <section className="service-hero" aria-label="Serviços de limpeza">
@@ -48,7 +48,7 @@ function Servicos({ onHomeClick, onContactClick, onPlanosClick, onLoginClick, on
             <p className="eyebrow">Escolha o tipo de cuidado</p>
             <h3 className="services-title">Nossos principais serviços</h3>
           </div>
-          <button className="hero-secondary" onClick={() => onLoginClick && onLoginClick()}>
+          <button className="hero-secondary" onClick={() => onContactClick && onContactClick()}>
             Fale com a equipe
           </button>
         </div>

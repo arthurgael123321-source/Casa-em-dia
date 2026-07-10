@@ -22,7 +22,13 @@ const readStoredUser = (storage) => {
 }
 
 const persistUserInRegistry = (user) => {
-  const users = JSON.parse(window.localStorage.getItem('users') || '[]')
+  let users = []
+  try {
+    const storedUsers = JSON.parse(window.localStorage.getItem('users') || '[]')
+    users = Array.isArray(storedUsers) ? storedUsers : []
+  } catch {
+    window.localStorage.removeItem('users')
+  }
   const normalizedUser = {
     ...user,
     id: user.id || Date.now(),
@@ -156,7 +162,14 @@ export const updateCurrentUserProfile = (updates) => {
 
 export const getAllUsers = () => {
   const usersJSON = window.localStorage.getItem('users')
-  return usersJSON ? JSON.parse(usersJSON) : []
+  if (!usersJSON) return []
+
+  try {
+    const users = JSON.parse(usersJSON)
+    return Array.isArray(users) ? users : []
+  } catch {
+    return []
+  }
 }
 
 export const findUserByEmailOrUsername = (emailOrUsername) => {

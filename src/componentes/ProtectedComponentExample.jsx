@@ -15,13 +15,6 @@ import {
  * Hook para proteger componentes que requerem autenticação
  */
 export const useAuth = () => {
-  useEffect(() => {
-    if (!isAuthenticated()) {
-      // Redirecionar para login se não autenticado
-      window.location.href = '/login'
-    }
-  }, [])
-
   return getCurrentUser()
 }
 
@@ -152,7 +145,7 @@ export function UpdateProfileExample() {
 export function PermissionExample() {
   const user = getCurrentUser()
 
-  const hasPermission = (permissionName) => {
+  const hasPermission = () => {
     // Exemplo: checar se usuário tem certas permissões
     // Em produção, isso viria do servidor
     return true
@@ -198,8 +191,7 @@ export function ExampleUseEffect() {
  */
 export function PrivateRoute({ Component, ...props }) {
   if (!isAuthenticated()) {
-    window.location.href = '/login'
-    return null
+    return <a href="#login">Ir para login</a>
   }
 
   return <Component {...props} />

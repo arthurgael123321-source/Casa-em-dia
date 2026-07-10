@@ -9,7 +9,7 @@ const slides = [
   { image: slideCleaning, alt: 'Limpeza' },
 ]
 
-function Home({ onLoginClick, onHomeClick, onContactClick, onPlanosClick, onServicosClick, onProfileClick, onConfiguracoesClick, onServicePageClick }) {
+function Home({ onServicosClick, onServicePageClick }) {
   const [index, setIndex] = useState(0)
   const prev = () => setIndex((i) => (i - 1 + slides.length) % slides.length)
   const next = () => setIndex((i) => (i + 1) % slides.length)
@@ -51,7 +51,7 @@ function Home({ onLoginClick, onHomeClick, onContactClick, onPlanosClick, onServ
           <div className="carousel-info-panel">
             <div className="carousel-info">
               <p className="carousel-info-text">
-                <strong>Se você não conhece nossos serviços, venha conhecer agora! Somos a empresa de limpeza básica e de serviços domésticos mais completa da região sul. Contamos com serviços e planos de assinatura de diversos níveis, desde limpezas básicas até limpezas completas, além de organização e muito mais.</strong>
+                <strong>Conheça nossos serviços! A Casa em Dia oferece limpeza e cuidados domésticos completos, com opções que vão de limpezas básicas a serviços detalhados, organização e muito mais.</strong>
               </p>
             </div>
 
@@ -78,8 +78,8 @@ function Home({ onLoginClick, onHomeClick, onContactClick, onPlanosClick, onServ
                   <span>Assistência doméstica</span>
                   <span className="service-arrow" aria-hidden="true">›</span>
                 </button>
-                <button type="button" className="service-item" onClick={() => onServicePageClick && onServicePageClick('faxina')}>
-                  <span>Faxina</span>
+                <button type="button" className="service-item" onClick={() => onServicePageClick && onServicePageClick('arrumar-eletrodomesticos')}>
+                  <span>Reparo de eletrodomésticos</span>
                   <span className="service-arrow" aria-hidden="true">›</span>
                 </button>
               </div>

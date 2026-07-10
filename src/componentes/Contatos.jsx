@@ -2,7 +2,7 @@ import { useState } from 'react';
 import './Contatos.css';
 import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaWhatsapp, FaChevronDown } from 'react-icons/fa';
 
-export default function Contatos({ onHomeClick, onLoginClick }) {
+export default function Contatos({ onHomeClick }) {
   const [activeAccordion, setActiveAccordion] = useState(null);
 
   const toggleAccordion = (index) => {
@@ -43,7 +43,8 @@ export default function Contatos({ onHomeClick, onLoginClick }) {
       icon: <FaWhatsapp />,
       titulo: 'WhatsApp',
       descricao: '(11) 99999-8888',
-      link: 'https://wa.me/5511999998888'
+      link: 'https://wa.me/5511999998888',
+      abrirEmNovaAba: true
     },
     {
       icon: <FaEnvelope />,
@@ -54,8 +55,9 @@ export default function Contatos({ onHomeClick, onLoginClick }) {
     {
       icon: <FaMapMarkerAlt />,
       titulo: 'Localização',
-      descricao: 'São Paulo, SP',
-      link: '#'
+      descricao: 'Centro Histórico de São Paulo, SP',
+      link: 'https://www.google.com/maps/search/?api=1&query=Centro+Hist%C3%B3rico+de+S%C3%A3o+Paulo%2C+SP',
+      abrirEmNovaAba: true
     }
   ];
 
@@ -86,8 +88,8 @@ export default function Contatos({ onHomeClick, onLoginClick }) {
                 key={index} 
                 href={canal.link}
                 className="canal-card"
-                target={canal.titulo === 'WhatsApp' ? '_blank' : '_self'}
-                rel="noopener noreferrer"
+                target={canal.abrirEmNovaAba ? '_blank' : undefined}
+                rel={canal.abrirEmNovaAba ? 'noopener noreferrer' : undefined}
               >
                 <div className="canal-icon">{canal.icon}</div>
                 <h3>{canal.titulo}</h3>

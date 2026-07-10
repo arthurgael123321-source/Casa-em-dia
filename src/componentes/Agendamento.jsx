@@ -8,6 +8,8 @@ function Agendamento() {
     data: '',
     observacoes: '',
   })
+  const [successMessage, setSuccessMessage] = useState('')
+  const minDate = new Date().toISOString().split('T')[0]
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -16,7 +18,14 @@ function Agendamento() {
 
   const handleSubmit = (event) => {
     event.preventDefault()
-    alert(`Agendamento solicitado para ${formData.nome || 'o cliente'} com sucesso!`)
+    setSuccessMessage(`Pedido enviado, ${formData.nome}! Nossa equipe confirmará seu agendamento por WhatsApp.`)
+    setFormData({
+      nome: '',
+      telefone: '',
+      servico: 'Limpeza residencial',
+      data: '',
+      observacoes: '',
+    })
   }
 
   return (
@@ -37,6 +46,7 @@ function Agendamento() {
       <div className="agendamento-grid">
         <form className="agendamento-card agendamento-form" onSubmit={handleSubmit}>
           <h3>Solicitar agendamento</h3>
+          {successMessage && <p className="agendamento-success" role="status">{successMessage}</p>}
 
           <label>
             <span>Nome</span>
@@ -62,7 +72,7 @@ function Agendamento() {
 
           <label>
             <span>Data desejada</span>
-            <input name="data" type="date" value={formData.data} onChange={handleChange} required />
+            <input name="data" type="date" min={minDate} value={formData.data} onChange={handleChange} required />
           </label>
 
           <label>
@@ -83,7 +93,7 @@ function Agendamento() {
 
           <div className="agendamento-contact-box">
             <strong>Atendimento rápido</strong>
-            <p>Fale com a equipe pelo WhatsApp ou pelo telefone da Casa em Dia.</p>
+            <p><a href="https://wa.me/5511999998888" target="_blank" rel="noopener noreferrer">Fale com a equipe pelo WhatsApp</a> ou ligue para <a href="tel:+5511999998888">(11) 99999-8888</a>.</p>
           </div>
         </div>
       </div>

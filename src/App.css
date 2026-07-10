@@ -58,7 +58,7 @@ body { margin: 0; background: var(--bg); color: var(--accent-dark); }
 .search-input { border:0; outline:0; background:transparent; padding:8px 6px; font-size:0.98rem; width:100%; min-width:260px; color:#21401b; transition: width .28s ease, opacity .18s ease; }
 .search-input::placeholder { color: rgba(33, 56, 26, 0.72); font-weight: 600; letter-spacing: 0.01em; }
 .search-input::-webkit-search-cancel-button { display: none; }
-.search-input::ms-clear { display: none; }
+.search-input::-ms-clear { display: none; }
 .search-clear { background:transparent; border:0; padding:6px; display:grid; place-items:center; cursor:pointer; opacity:0.85; }
 .search-clear svg { opacity:0.95; }
 
@@ -450,6 +450,15 @@ body { margin: 0; background: var(--bg); color: var(--accent-dark); }
   gap: 12px;
 }
 
+.agendamento-success {
+  margin: 0;
+  padding: 12px;
+  border-radius: 10px;
+  background: #e6f6ec;
+  color: #1e5c3b;
+  font-weight: 600;
+}
+
 .agendamento-form label {
   display: grid;
   gap: 6px;
@@ -482,6 +491,11 @@ body { margin: 0; background: var(--bg); color: var(--accent-dark); }
   border-radius: 14px;
   background: #f4faef;
   border: 1px solid rgba(33,64,27,0.08);
+}
+
+.agendamento-contact-box a {
+  color: inherit;
+  font-weight: 700;
 }
 
 .services-card {

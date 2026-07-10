@@ -571,3 +571,15 @@
     filter: blur(0);
   }
 }
+
+.remember-input{
+    position:absolute;
+    width:1px;
+    height:1px;
+    opacity:0;
+}
+
+.remember-input:focus-visible + .switch{
+    outline:2px solid #21401b;
+    outline-offset:3px;
+}

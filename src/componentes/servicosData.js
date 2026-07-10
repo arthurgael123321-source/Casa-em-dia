@@ -1,7 +1,6 @@
 import slideGarden from '../assets/primeira imagem carrosel.png'
 import slideRepair from '../assets/Segunda imagem carrosel.png'
 import slideCleaning from '../assets/terceira imagem carrosel.png'
-import heroImage from '../assets/hero.png'
 import houseImage from '../assets/imagelogCasa.jpg'
 import tecnicaimage from '../assets/tecnica.png'
  
@@ -68,7 +67,7 @@ const services = [
   },
   {
     slug: 'arrumar-eletrodomesticos',
-    title: 'Técnica de eletrodmésticos',
+    title: 'Reparo de eletrodomésticos',
     description: 'Serviço especializado para deixar seus aparelhos em bom funcionamento com diagnóstico, ajustes e manutenção preventiva para evitar problemas futuros.',
     details: [
       'Avaliação completa do funcionamento do aparelho',
