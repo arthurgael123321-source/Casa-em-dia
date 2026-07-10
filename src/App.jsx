@@ -21,7 +21,7 @@ const serviceViews = [
   'organizacao-de-ambientes',
   'jardinagem',
   'assistencia-domestica',
-  'faxina',
+  'arrumar-eletrodomesticos',
 ]
 
 const appViews = ['login', 'home', 'contatos', 'servicos', 'planos', 'perfil', 'configuracoes', 'agendamento', ...serviceViews]

@@ -56,7 +56,14 @@ function Servicos({ onHomeClick, onContactClick, onPlanosClick, onLoginClick, on
         <div className="services-grid">
           {services.map((service) => (
             <article key={service.title} className="service-detail-card">
-              <img src={service.image} alt={service.title} className="service-card-image" />
+              <img
+                src={service.image || heroImage}
+                alt={service.title}
+                className="service-card-image"
+                onError={(event) => {
+                  event.currentTarget.src = heroImage
+                }}
+              />
               <h4>{service.title}</h4>
               <p>{service.description}</p>
               <button type="button" className="service-card-button" onClick={() => onServicePageClick && onServicePageClick(service.slug)}>

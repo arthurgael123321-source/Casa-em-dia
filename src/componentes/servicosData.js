@@ -4,7 +4,7 @@ import slideCleaning from '../assets/terceira imagem carrosel.png'
 import organizationImage from '../assets/Organização.png'
 import homeAssistanceImage from '../assets/AssistDomestica.png'
 import cleaningImage from '../assets/Faxina.jpg'
-
+import tecnicaimage from '../assets/tecnica.png'
 const services = [
   {
     slug: 'limpeza-residencial',
@@ -45,7 +45,7 @@ const services = [
   {
     slug: 'jardinagem',
     title: 'Jardinagem',
-    description: 'Corte de grama, cuidados com o jardim, poda de plantas e manutenção de canteiros. Deixe sua área verde bonita e saudável o ano todo.',
+    description: 'Corte de grama, cuidados do jardim, poda de plantas e manutenção de canteiros. Deixe sua área verde bonita e saudável o ano todo.',
     details: [
       'Corte de grama e acabamento de bordas',
       'Poda de arbustos e plantas ornamentais',
@@ -77,6 +77,19 @@ const services = [
       'Acabamento em rodapés e cantos',
     ],
     image: cleaningImage,
+  },
+  {
+    slug: 'arrumar-eletrodomesticos',
+    title: 'Técnica de eletrodomésticos',
+    description: 'Serviço especializado para deixar seus aparelhos em bom funcionamento com diagnóstico, ajustes e manutenção preventiva para evitar problemas futuros.',
+    details: [
+      'Avaliação completa do funcionamento do aparelho',
+      'Ajustes e pequenos reparos domésticos',
+      'Limpeza interna e manutenção preventiva',
+      'Orientação sobre uso, cuidados e prevenção de falhas',
+      'Atendimento prático para geladeiras, máquinas de lavar, fogões e mais',
+    ],
+    image: tecnicaimage,
   },
 ]
 
