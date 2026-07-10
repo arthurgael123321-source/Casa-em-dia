@@ -16,7 +16,9 @@ export default function Login({ onBack, onLoginSuccess }) {
   const [confirmPassword, setConfirmPassword] = useState('')
 
   // Estados de autenticação social
-  const [authMode, setAuthMode] = useState('traditional') // 'traditional', 'google', 'facebook', 'sms'
+  const [authMode, setAuthMode] = useState(() => (
+    localStorage.getItem('preferredLoginMethod') === 'google' ? 'google' : 'traditional'
+  )) // 'traditional', 'google', 'facebook', 'sms'
   const [verificationCode, setVerificationCode] = useState('')
   const [sentCode, setSentCode] = useState('')
   const [codeWasSent, setCodeWasSent] = useState(false)

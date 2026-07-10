@@ -1,9 +1,10 @@
 import slideGarden from '../assets/primeira imagem carrosel.png'
 import slideRepair from '../assets/Segunda imagem carrosel.png'
 import slideCleaning from '../assets/terceira imagem carrosel.png'
-import houseImage from '../assets/imagelogCasa.jpg'
+import organizationImage from '../assets/Organização.png'
+import homeAssistanceImage from '../assets/AssistDomestica.png'
+import cleaningImage from '../assets/Faxina.jpg'
 import tecnicaimage from '../assets/tecnica.png'
- 
 const services = [
   {
     slug: 'limpeza-residencial',
@@ -39,7 +40,7 @@ const services = [
       'Melhoria de circulação e aproveitamento',
       'Dicas práticas para manutenção diária',
     ],
-    image: houseImage,
+    image: organizationImage,
   },
   {
     slug: 'jardinagem',
@@ -63,7 +64,19 @@ const services = [
       'Cuidados com roupas e pequenos reparos',
       'Apoio em tarefas de cozinha e compras',
     ],
-    image: houseImage,
+    image: homeAssistanceImage,
+  },
+  {
+    slug: 'faxina',
+    title: 'Faxina',
+    description: 'Limpeza geral com foco em cada detalhe: retirada de pó, lavagem de pisos, limpeza de vidros e higienização completa.',
+    details: [
+      'Lavagem de pisos e paredes',
+      'Limpeza de vidros e espelhos',
+      'Desinfecção de bancadas e áreas de toque',
+      'Acabamento em rodapés e cantos',
+    ],
+    image: cleaningImage,
   },
   {
     slug: 'arrumar-eletrodomesticos',

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { getCurrentUser } from '../services/authUtils.js'
+import { getCurrentUser, updateCurrentUserProfile } from '../services/authUtils.js'
 import './Configuracoes.css'
 import bellIcon from '../assets/Icons/Notificação.png'
 import lockIcon from '../assets/Icons/Cadeado.png'
@@ -7,7 +7,7 @@ import settingsIcon from '../assets/configs.png'
 import shieldIcon from '../assets/Icons/Segurança.png'
 
 export default function Configuracoes({ onHomeClick, onLoginClick }) {
-  const [user] = useState(() => getCurrentUser())
+  const [user, setUser] = useState(() => getCurrentUser())
   const [message, setMessage] = useState('')
   const [messageType, setMessageType] = useState('success')
   const [activeTab, setActiveTab] = useState('notificacoes')
@@ -42,6 +42,11 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
     },
     }
   })
+
+  const [currentPassword, setCurrentPassword] = useState('')
+  const [newPassword, setNewPassword] = useState('')
+  const [confirmNewPassword, setConfirmNewPassword] = useState('')
+  const [loginPreference, setLoginPreference] = useState(() => user?.loginPreference || user?.loginMethod || 'email')
 
   const handleToggle = (section, key) => {
     setSettings((prev) => ({
@@ -80,6 +85,58 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
       setIsSaving(false)
       setTimeout(() => setMessage(''), 4000)
     }
+  }
+
+  const showMessage = (type, text) => {
+    setMessageType(type)
+    setMessage(text)
+    setTimeout(() => setMessage(''), 4000)
+  }
+
+  const handleLoginPreferenceSave = () => {
+    if (loginPreference === 'email' && !user.password) {
+      showMessage('error', 'Crie uma senha antes de escolher o acesso por e-mail e senha.')
+      return
+    }
+
+    const updatedUser = updateCurrentUserProfile({ loginPreference })
+    setUser(updatedUser)
+    localStorage.setItem('preferredLoginMethod', loginPreference)
+    showMessage('success', 'Preferência de login atualizada com sucesso!')
+  }
+
+  const handlePasswordChange = (event) => {
+    event.preventDefault()
+    const hadPassword = Boolean(user.password)
+
+    if (user.password && currentPassword !== user.password) {
+      showMessage('error', 'A senha atual está incorreta.')
+      return
+    }
+
+    if (newPassword.length < 6) {
+      showMessage('error', 'A nova senha deve ter pelo menos 6 caracteres.')
+      return
+    }
+
+    if (newPassword !== confirmNewPassword) {
+      showMessage('error', 'A confirmação da nova senha não confere.')
+      return
+    }
+
+    const updatedUser = updateCurrentUserProfile({
+      password: newPassword,
+      ...(hadPassword ? {} : { loginPreference: 'email' }),
+    })
+    setUser(updatedUser)
+    if (!hadPassword) {
+      setLoginPreference('email')
+      localStorage.setItem('preferredLoginMethod', 'email')
+    }
+    setCurrentPassword('')
+    setNewPassword('')
+    setConfirmNewPassword('')
+    showMessage('success', hadPassword ? 'Senha alterada com sucesso!' : 'Senha criada com sucesso. Você já pode entrar por e-mail e senha.')
   }
 
   if (!user) {
@@ -336,6 +393,43 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
                       <span className="toggle-slider"></span>
                     </label>
                   </div>
+
+                  <div className="security-card">
+                    <div className="setting-info">
+                      <h3>Como deseja entrar</h3>
+                      <p>Escolha o método que será priorizado no próximo acesso.</p>
+                    </div>
+                    <div className="login-preference-options" role="radiogroup" aria-label="Método de login preferido">
+                      <label className={`login-preference-option ${loginPreference === 'google' ? 'selected' : ''}`}>
+                        <input type="radio" name="loginPreference" value="google" checked={loginPreference === 'google'} onChange={(event) => setLoginPreference(event.target.value)} />
+                        <span><strong>Continuar com Google</strong><small>Use a verificação da sua conta Google.</small></span>
+                      </label>
+                      <label className={`login-preference-option ${loginPreference === 'email' ? 'selected' : ''}`}>
+                        <input type="radio" name="loginPreference" value="email" checked={loginPreference === 'email'} onChange={(event) => setLoginPreference(event.target.value)} />
+                        <span><strong>E-mail e senha</strong><small>Entre usando o e-mail cadastrado e sua senha.</small></span>
+                      </label>
+                    </div>
+                    <button type="button" className="btn-secondary" onClick={handleLoginPreferenceSave}>Salvar preferência de login</button>
+                  </div>
+
+                  <form className="security-card password-form" onSubmit={handlePasswordChange}>
+                    <div className="setting-info">
+                      <h3>{user.password ? 'Alterar senha' : 'Criar senha para acesso por e-mail'}</h3>
+                      <p>{user.password ? 'Confirme sua senha atual para definir uma nova.' : 'Sua conta foi criada com Google. Defina uma senha para também poder entrar por e-mail.'}</p>
+                    </div>
+                    {user.password && (
+                      <label className="security-field">Senha atual
+                        <input type="password" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} autoComplete="current-password" required />
+                      </label>
+                    )}
+                    <label className="security-field">Nova senha
+                      <input type="password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} autoComplete="new-password" minLength="6" required />
+                    </label>
+                    <label className="security-field">Confirmar nova senha
+                      <input type="password" value={confirmNewPassword} onChange={(event) => setConfirmNewPassword(event.target.value)} autoComplete="new-password" minLength="6" required />
+                    </label>
+                    <button type="submit" className="btn-secondary">{user.password ? 'Alterar senha' : 'Criar senha'}</button>
+                  </form>
 
                   <div className="setting-info-message">
                     <p>💡 Mais opções de segurança disponíveis em breve.</p>
