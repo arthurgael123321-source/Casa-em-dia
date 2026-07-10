@@ -7,6 +7,7 @@ import Contatos from './componentes/Contatos.jsx'
 import { Planos } from './componentes/Planos.jsx'
 import Servicos from './componentes/Serviços.jsx'
 import ServicoDetalhe from './componentes/ServicoDetalhe.jsx'
+import services from './componentes/servicosData.js'
 import Perfil from './componentes/Perfil.jsx'
 import Configuracoes from './componentes/Configuracoes.jsx'
 import Agendamento from './componentes/Agendamento.jsx'
@@ -15,14 +16,7 @@ import configIcon from './assets/configs.png'
 import profileIcon from './assets/perfil.png'
 import plansIcon from './assets/planos.png'
 
-const serviceViews = [
-  'limpeza-residencial',
-  'limpeza-pos-obra',
-  'organizacao-de-ambientes',
-  'jardinagem',
-  'assistencia-domestica',
-  'arrumar-eletrodomesticos',
-]
+const serviceViews = services.map((service) => service.slug)
 
 const appViews = ['login', 'home', 'contatos', 'servicos', 'planos', 'perfil', 'configuracoes', 'agendamento', ...serviceViews]
 

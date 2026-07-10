@@ -5,6 +5,8 @@ import organizationImage from '../assets/Organização.png'
 import homeAssistanceImage from '../assets/AssistDomestica.png'
 import cleaningImage from '../assets/Faxina.jpg'
 import tecnicaimage from '../assets/tecnica.png'
+import windowCleaningImage from '../assets/Limpeza de vidros.jpg'
+import ironingImage from '../assets/Passadoria de roupas.jpg'
 const services = [
   {
     slug: 'limpeza-residencial',
@@ -90,6 +92,30 @@ const services = [
       'Atendimento prático para geladeiras, máquinas de lavar, fogões e mais',
     ],
     image: tecnicaimage,
+  },
+  {
+    slug: 'limpeza-de-vidros',
+    title: 'Limpeza de vidros',
+    description: 'Limpeza cuidadosa de vidros, espelhos e portas de vidro para deixar os ambientes mais claros e bem apresentados.',
+    details: [
+      'Limpeza de vidros internos e externos acessÃ­veis',
+      'HigienizaÃ§Ã£o de espelhos e portas de vidro',
+      'RemoÃ§Ã£o de marcas, poeira e respingos',
+      'Acabamento sem manchas e com mais brilho',
+    ],
+    image: windowCleaningImage,
+  },
+  {
+    slug: 'passadoria-de-roupas',
+    title: 'Passadoria de roupas',
+    description: 'Roupas passadas e organizadas com atenÃ§Ã£o aos tecidos, ajudando a deixar a rotina da casa mais prÃ¡tica.',
+    details: [
+      'Passadoria de peÃ§as do dia a dia',
+      'Cuidados adequados para cada tipo de tecido',
+      'Dobra e organizaÃ§Ã£o das roupas passadas',
+      'Atendimento ajustado Ã  sua rotina',
+    ],
+    image: ironingImage,
   },
 ]
 
