@@ -122,11 +122,6 @@ export default function Login({ onBack, onLoginSuccess }) {
       return
     }
 
-    if (user.password === null) {
-      setError('Essa conta foi criada com o Google, portanto nao possui senha para resetar. Tente entrar com o Google.')
-      return
-    }
-
     const code = generateRandomCode()
     setResetUser(user)
     setSentCode(code)
@@ -175,6 +170,7 @@ export default function Login({ onBack, onLoginSuccess }) {
     const updatedUser = {
       ...resetUser,
       password: newPassword,
+      ...(resetUser.password ? {} : { loginPreference: 'email' }),
     }
 
     updateUserInStorage(updatedUser)
