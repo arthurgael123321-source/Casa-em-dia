@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { getCurrentUser, updateCurrentUserProfile } from '../services/authUtils.js';
+import { atualizarPlano } from '../services/api.js';
 
 const PLANO_PADRAO = 'basico';
 
@@ -26,6 +27,7 @@ export function Planos({ onHomeClick }) {
   const [planoSelecionado, setPlanoSelecionado] = useState(null);
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
+  const [mensagemPlano, setMensagemPlano] = useState('');
 
   const planosAssinatura = [
     {
@@ -86,20 +88,31 @@ export function Planos({ onHomeClick }) {
     document.getElementById('area-assinatura')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleEnviarAssinatura = (e) => {
+  const handleEnviarAssinatura = async (e) => {
     e.preventDefault();
-    // Atualiza o plano do topo para o novo plano contratado
-    const novoPlano = planoSelecionado.id;
-    setPlanoAtual(novoPlano);
-    localStorage.setItem(getChavePlanoUsuario(usuarioAtual), novoPlano);
-    localStorage.setItem('planoAtual', novoPlano);
-
-    if (usuarioAtual) {
-      updateCurrentUserProfile({ planoAtual: novoPlano });
+    if (!planoSelecionado) {
+      return;
     }
 
-    alert(`Sucesso! Seu plano foi atualizado para ${planoSelecionado.nome}.`);
-    setPlanoSelecionado(null);
+    try {
+      const novoPlano = planoSelecionado.id;
+      const response = await atualizarPlano(novoPlano);
+
+      setPlanoAtual(novoPlano);
+      localStorage.setItem(getChavePlanoUsuario(usuarioAtual), novoPlano);
+      localStorage.setItem('planoAtual', novoPlano);
+
+      if (response?.user) {
+        updateCurrentUserProfile({ ...response.user, planoAtual: response.user.plan });
+      } else if (usuarioAtual) {
+        updateCurrentUserProfile({ planoAtual: novoPlano });
+      }
+
+      setMensagemPlano(`Sucesso! Seu plano foi atualizado para ${planoSelecionado.nome}.`);
+      setPlanoSelecionado(null);
+    } catch (error) {
+      setMensagemPlano(error.message || 'Nao foi possivel atualizar seu plano agora.');
+    }
   };
 
   // Função para descobrir se a troca é um Upgrade ou Downgrade
@@ -200,6 +213,7 @@ export function Planos({ onHomeClick }) {
 
       {/* Formulário de Alteração de Plano */}
       <div id="area-assinatura" style={styles.secaoAssinatura}>
+        {mensagemPlano && <p style={styles.mensagemPlano}>{mensagemPlano}</p>}
         {planoSelecionado ? (
           <div style={styles.caixaFormulario}>
             {/* O Título muda dinamicamente indicando se é Upgrade ou Downgrade */}
@@ -554,5 +568,14 @@ const styles = {
     backgroundColor: '#f3f4f6',
     padding: '20px',
     borderRadius: '12px',
+  },
+  mensagemPlano: {
+    margin: '0 0 16px 0',
+    color: '#14532d',
+    fontWeight: '700',
+    backgroundColor: '#dcfce7',
+    border: '1px solid #bbf7d0',
+    borderRadius: '12px',
+    padding: '10px 12px',
   }
 };

@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { getCurrentUser, updateCurrentUserProfile, clearAuthSession } from '../services/authUtils.js'
+import { atualizarPerfil } from '../services/api.js'
 
 const getFormData = (currentUser) => ({
   fullName: currentUser?.fullName || '',
@@ -20,17 +21,25 @@ function Perfil({ onLoginClick }) {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSave = (e) => {
+  const handleSave = async (e) => {
     e.preventDefault()
-    const updatedUser = updateCurrentUserProfile(formData)
 
-    if (updatedUser) {
-      setUser(updatedUser)
-      setIsEditing(false)
-      setMessage('Perfil atualizado com sucesso!')
-    } else {
-      setMessage('Não foi possível atualizar o perfil neste momento.')
+    try {
+      const response = await atualizarPerfil(formData)
+      const updatedUser = updateCurrentUserProfile(response.user)
+
+      if (updatedUser) {
+        setUser(updatedUser)
+        setFormData(getFormData(updatedUser))
+        setIsEditing(false)
+        setMessage('Perfil atualizado com sucesso!')
+        return
+      }
+    } catch {
+      // A mensagem de erro mais amigavel fica abaixo.
     }
+
+    setMessage('Nao foi possivel atualizar o perfil neste momento.')
   }
 
   const handleLogout = () => {

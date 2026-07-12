@@ -87,9 +87,9 @@ export const getCurrentUser = () => {
 
 export const isAuthenticated = () => !!getCurrentUser()
 
-export const persistAuthSession = (user, rememberMe = false) => {
+export const persistAuthSession = (user, rememberMe = false, externalToken = null) => {
   const normalizedUser = persistUserInRegistry(user)
-  const token = `token_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
+  const token = externalToken || `token_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`
   const targetStorage = rememberMe ? window.localStorage : window.sessionStorage
   const fallbackStorage = rememberMe ? window.sessionStorage : window.localStorage
 
