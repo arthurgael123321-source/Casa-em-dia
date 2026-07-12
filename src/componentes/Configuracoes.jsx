@@ -430,7 +430,7 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
                     </label>
                     <button type="submit" className="btn-secondary">{user.password ? 'Alterar senha' : 'Criar senha'}</button>
                   </form>
-
+                    
                   <div className="setting-info-message">
                     <p>💡 Mais opções de segurança disponíveis em breve.</p>
                   </div>
