@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { criarAgendamento } from '../services/api.js'
 
 function Agendamento() {
   const [formData, setFormData] = useState({
@@ -9,6 +10,8 @@ function Agendamento() {
     observacoes: '',
   })
   const [successMessage, setSuccessMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
   const minDate = new Date().toISOString().split('T')[0]
 
   const handleChange = (event) => {
@@ -16,16 +19,27 @@ function Agendamento() {
     setFormData((prev) => ({ ...prev, [name]: value }))
   }
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault()
-    setSuccessMessage(`Pedido enviado, ${formData.nome}! Nossa equipe confirmará seu agendamento por WhatsApp.`)
-    setFormData({
-      nome: '',
-      telefone: '',
-      servico: 'Limpeza residencial',
-      data: '',
-      observacoes: '',
-    })
+    setErrorMessage('')
+    setSuccessMessage('')
+    setIsSubmitting(true)
+
+    try {
+      await criarAgendamento(formData)
+      setSuccessMessage(`Pedido enviado, ${formData.nome}! Nossa equipe confirmara seu agendamento por WhatsApp.`)
+      setFormData({
+        nome: '',
+        telefone: '',
+        servico: 'Limpeza residencial',
+        data: '',
+        observacoes: '',
+      })
+    } catch (error) {
+      setErrorMessage(error.message || 'Nao foi possivel enviar o agendamento')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -47,6 +61,7 @@ function Agendamento() {
         <form className="agendamento-card agendamento-form" onSubmit={handleSubmit}>
           <h3>Solicitar agendamento</h3>
           {successMessage && <p className="agendamento-success" role="status">{successMessage}</p>}
+          {errorMessage && <p className="agendamento-error" role="alert">{errorMessage}</p>}
 
           <label>
             <span>Nome</span>
@@ -80,7 +95,9 @@ function Agendamento() {
             <textarea name="observacoes" value={formData.observacoes} onChange={handleChange} rows="4" placeholder="Conte mais sobre sua necessidade" />
           </label>
 
-          <button type="submit" className="hero-cta">Enviar pedido</button>
+          <button type="submit" className="hero-cta" disabled={isSubmitting}>
+            {isSubmitting ? 'Enviando...' : 'Enviar pedido'}
+          </button>
         </form>
 
         <div className="agendamento-card agendamento-info">

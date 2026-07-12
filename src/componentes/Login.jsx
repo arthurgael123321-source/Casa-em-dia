@@ -3,6 +3,7 @@ import '../App.css'
 import './Login.css'
 import logo from '../assets/WhatsApp Image 2026-06-23 at 7.39.28 PM.png'
 import { persistAuthSession } from '../services/authUtils.js'
+import { login as loginApi, register as registerApi } from '../services/api.js'
 import googleIcon from '../assets/OIP.png'
 import loginImage from '../assets/imagelogCasa.jpg'
 
@@ -85,8 +86,8 @@ export default function Login({ onBack, onLoginSuccess }) {
     return users.find(u => u.email === emailOrUsername || u.username === emailOrUsername)
   }
 
-  const authenticateUser = (user) => {
-    persistAuthSession(user, rememberMe)
+  const authenticateUser = (user, token = null) => {
+    persistAuthSession(user, rememberMe, token)
 
     if (onLoginSuccess) {
       onLoginSuccess()
@@ -180,9 +181,10 @@ export default function Login({ onBack, onLoginSuccess }) {
   }
 
   // Login tradicional
-  const handleTraditionalLogin = (e) => {
+  const handleTraditionalLogin = async (e) => {
     e.preventDefault()
     setError('')
+    setSuccess('')
 
     if (isNewUser) {
       // Criar novo usuário
@@ -206,45 +208,31 @@ export default function Login({ onBack, onLoginSuccess }) {
         return
       }
 
-      const existingUser = findUser(email) || findUser(username)
-      if (existingUser) {
-        setError('Email ou usuário já cadastrado')
+      try {
+        const result = await registerApi({
+          username,
+          fullName: username,
+          email,
+          password,
+        })
+
+        authenticateUser(result.user, result.token)
+      } catch (requestError) {
+        setError(requestError.message || 'Erro ao criar conta')
+      }
+    } else {
+      // Login com usuario/email existente
+      if (!email.trim() || !password.trim()) {
+        setError('Por favor preencha todos os campos')
         return
       }
 
-      const newUser = {
-        id: Date.now(),
-        username,
-        fullName: username,
-        email,
-        password,
-        phone: '',
-        address: '',
-        createdAt: new Date().toISOString(),
+      try {
+        const result = await loginApi(email, password)
+        authenticateUser(result.user, result.token)
+      } catch (requestError) {
+        setError(requestError.message || 'Erro ao entrar')
       }
-
-      saveUserToStorage(newUser)
-      authenticateUser(newUser)
-    } else {
-      // Login com usuario/email existente
-if (!email.trim() || !password.trim()) {
-  setError('Por favor preencha todos os campos')
-  return
-}
-
-const user = findUser(email)
-
-if (!user) {
-  setError('Usuário não encontrado')
-  return
-}
-
-if (user.password !== password) {
-  setError('Senha incorreta')
-  return
-}
-
-authenticateUser(user)
     }
   }
 

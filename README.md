@@ -54,12 +54,17 @@ Execute:
 npm run dev
 ```
 
-Backend:
+Backend (na mesma pasta do projeto):
 
 ```bash
-cd backend
-npm install
-npm start
+npm run setup-db
+npm run server
+```
+
+Frontend + backend juntos:
+
+```bash
+npm run dev:all
 ```
 
 ## Variáveis de ambiente
@@ -72,6 +77,9 @@ DB_PORT=
 DB_NAME=
 DB_USER=
 DB_PASSWORD=
+JWT_SECRET=
+JWT_EXPIRES_IN=7d
+VITE_API_URL=http://localhost:3000/api
 ```
 
 ## Status do projeto
