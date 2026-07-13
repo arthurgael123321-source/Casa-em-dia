@@ -1,5 +1,5 @@
 import './App.css'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { isAuthenticated, logout } from './services/authUtils.js'
 import Home from './componentes/Home.jsx'
 import Login from './componentes/Login.jsx'
@@ -12,6 +12,7 @@ import Perfil from './componentes/Perfil.jsx'
 import Configuracoes from './componentes/Configuracoes.jsx'
 import Agendamento from './componentes/Agendamento.jsx'
 import logo from './assets/WhatsApp Image 2026-06-23 at 7.39.28 PM.png'
+import topbarLogo from './assets/LogoCasa_em_dia.png'
 import configIcon from './assets/configs.png'
 import profileIcon from './assets/perfil.png'
 import plansIcon from './assets/planos.png'
@@ -32,6 +33,12 @@ const getViewFromHash = () => {
 
 function AppShell({ currentView, onNavigate, children }) {
   const isServiceView = currentView === 'servicos' || serviceViews.includes(currentView)
+  const contentRef = useRef(null)
+
+  useEffect(() => {
+    contentRef.current?.scrollTo(0, 0)
+    window.scrollTo(0, 0)
+  }, [currentView])
 
   return (
     <main className="mockup-page">
@@ -61,7 +68,7 @@ function AppShell({ currentView, onNavigate, children }) {
       <section className="mockup-card" role="main" aria-label="Conteúdo principal">
         <header className="mockup-header">
           <button className="site-logo-button" onClick={() => onNavigate('home')} aria-label="Ir para página inicial">
-            <img src={logo} alt="Casa em Dia" className="site-logo" />
+            <img src={topbarLogo} alt="Casa em Dia" className="site-logo" />
           </button>
           <div className="top-actions" aria-label="Ações rápidas">
             <button type="button" className="top-action-button" aria-label="Configurações" onClick={() => onNavigate('configuracoes')}>
@@ -76,7 +83,7 @@ function AppShell({ currentView, onNavigate, children }) {
           </div>
         </header>
 
-        <div className="app-content-shell">{children}</div>
+        <div className="app-content-shell" ref={contentRef}>{children}</div>
       </section>
     </main>
   )
