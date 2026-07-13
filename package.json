@@ -10,7 +10,8 @@
     "setup-db": "node backend/setupDatabase.js",
     "lint": "eslint .",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "start": "node backend/server.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.2",
