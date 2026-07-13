@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getCurrentUser, updateCurrentUserProfile } from '../services/authUtils.js';
+import { getCurrentUser, isAuthenticated, updateCurrentUserProfile } from '../services/authUtils.js';
 import { atualizarPlano } from '../services/api.js';
 import './Planos.css';
 
@@ -21,7 +21,7 @@ const carregarPlanoAtual = (user) => {
     || PLANO_PADRAO;
 };
 
-export function Planos({ onHomeClick }) {
+export function Planos({ onHomeClick, onRequireAuth }) {
   const usuarioAtual = getCurrentUser();
   // Novo estado: define qual plano o usuário possui atualmente cadastrado
   const [planoAtual, setPlanoAtual] = useState(() => carregarPlanoAtual(usuarioAtual)); 
@@ -90,6 +90,11 @@ export function Planos({ onHomeClick }) {
   }, [planoSelecionado]);
 
   const handleCliqueAssinar = (plano) => {
+    if (!isAuthenticated()) {
+      onRequireAuth?.(`Crie uma conta para assinar o plano ${plano.nome}.`, () => setPlanoSelecionado(plano));
+      return;
+    }
+
     setPlanoSelecionado(plano);
   };
 

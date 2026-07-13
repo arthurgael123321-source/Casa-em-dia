@@ -34,6 +34,7 @@ export default function Login({ onBack, onLoginSuccess }) {
   // Estados gerais
   const [error, setError] = useState('')
   const [rememberMe, setRememberMe] = useState(() => localStorage.getItem('rememberMe') === 'true')
+  const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Inicializar usuários no local storage
   useEffect(() => {
@@ -208,6 +209,7 @@ export default function Login({ onBack, onLoginSuccess }) {
         return
       }
 
+      setIsSubmitting(true)
       try {
         const result = await registerApi({
           username,
@@ -219,6 +221,8 @@ export default function Login({ onBack, onLoginSuccess }) {
         authenticateUser(result.user, result.token)
       } catch (requestError) {
         setError(requestError.message || 'Erro ao criar conta')
+      } finally {
+        setIsSubmitting(false)
       }
     } else {
       // Login com usuario/email existente
@@ -227,11 +231,14 @@ export default function Login({ onBack, onLoginSuccess }) {
         return
       }
 
+      setIsSubmitting(true)
       try {
         const result = await loginApi(email, password)
         authenticateUser(result.user, result.token)
       } catch (requestError) {
         setError(requestError.message || 'Erro ao entrar')
+      } finally {
+        setIsSubmitting(false)
       }
     }
   }
@@ -411,8 +418,8 @@ export default function Login({ onBack, onLoginSuccess }) {
                     Voltar
                   </button>
                 )}
-                <button className="login-submit" type="submit">
-                  Entrar
+                <button className="login-submit" type="submit" disabled={isSubmitting}>
+                  {isSubmitting ? 'Aguarde...' : 'Entrar'}
                 </button>
               </div>
 
