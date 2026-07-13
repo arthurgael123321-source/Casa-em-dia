@@ -14,11 +14,19 @@ const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'change-this-secret-in-env';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 const PLANOS_VALIDOS = new Set(['basico', 'premium', 'pro']);
-const GOOGLE_CLIENT_ID = (
- process.env.GOOGLE_CLIENT_ID ||
- '393847874149-t84gnf07986drl1920s0v54q67q4c5au.apps.googleusercontent.com'
-).trim();
-const googleClient = GOOGLE_CLIENT_ID ? new OAuth2Client(GOOGLE_CLIENT_ID) : null;
+const FALLBACK_GOOGLE_CLIENT_IDS = [
+ '393847874149-t84gnf07986drl1920s0v54q67q4c5au.apps.googleusercontent.com',
+ '393847874149-thknvhekdj8u6v1uatufnhjoh63b7a87.apps.googleusercontent.com'
+];
+const GOOGLE_CLIENT_IDS = [
+ process.env.GOOGLE_CLIENT_ID,
+ ...(process.env.GOOGLE_CLIENT_IDS || '').split(','),
+ ...FALLBACK_GOOGLE_CLIENT_IDS,
+]
+ .map((value) => String(value || '').trim())
+ .filter(Boolean)
+ .filter((value, index, array) => array.indexOf(value) === index);
+const googleClient = GOOGLE_CLIENT_IDS.length > 0 ? new OAuth2Client() : null;
 
 const normalizeUser = (user) => ({
  id: user.id,
@@ -242,7 +250,7 @@ app.post('/api/auth/google', async (req, res) => {
   const { credential, idToken } = req.body;
   const token = String(credential || idToken || '').trim();
 
-  if (!googleClient || !GOOGLE_CLIENT_ID) {
+	if (!googleClient || GOOGLE_CLIENT_IDS.length === 0) {
    return res.status(500).json({ erro: 'Login Google nao configurado no servidor' });
   }
 
@@ -252,7 +260,7 @@ app.post('/api/auth/google', async (req, res) => {
 
   const ticket = await googleClient.verifyIdToken({
    idToken: token,
-   audience: GOOGLE_CLIENT_ID,
+	audience: GOOGLE_CLIENT_IDS,
   });
 
   const payload = ticket.getPayload();
@@ -304,7 +312,8 @@ app.post('/api/auth/google', async (req, res) => {
    user: normalizeUser(user),
   });
  } catch (error) {
-  return res.status(401).json({ erro: 'Falha ao autenticar com Google', detalhes: error.message });
+	const hint = 'Verifique GOOGLE_CLIENT_ID/GOOGLE_CLIENT_IDS e Authorized JavaScript origins no Google Cloud.';
+	return res.status(401).json({ erro: 'Falha ao autenticar com Google', detalhes: `${error.message}. ${hint}` });
  }
 });
 

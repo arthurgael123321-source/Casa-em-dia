@@ -1,4 +1,8 @@
-const BASE = import.meta.env.VITE_API_URL || 'https://casa-em-dia.onrender.com/api'
+const RAW_BASE = import.meta.env.VITE_API_URL || 'https://casa-em-dia.onrender.com/api'
+const BASE = (() => {
+	const sanitizedBase = RAW_BASE.replace(/\/+$/, '')
+	return /\/api$/i.test(sanitizedBase) ? sanitizedBase : `${sanitizedBase}/api`
+})()
 
 const readAuthToken = () => (
 	window.localStorage.getItem('authToken') || window.sessionStorage.getItem('authToken') || ''
@@ -8,7 +12,9 @@ const parseResponse = async (response, fallbackMessage) => {
 	const body = await response.json().catch(() => ({}))
 
 	if (!response.ok) {
-		throw new Error(body.erro || fallbackMessage)
+		const errorText = body.erro || fallbackMessage
+		const detailsText = body.detalhes ? ` (${body.detalhes})` : ''
+		throw new Error(`${errorText}${detailsText}`)
 	}
 
 	return body
