@@ -31,3 +31,14 @@ html[data-theme="dark"] .top-action-button {
 html[data-theme="dark"] .top-action-button img {
   filter: none;
 }
+
+/*
+  The Notificações/Privacidade/Preferências/Segurança tab icons sit directly
+  on the (inverted, now dark) sidebar background instead of a fixed-color
+  circle. Dropping their counter-invert lets them flip color along with the
+  page like everything else, so they end up light-on-dark instead of
+  invisible dark-on-dark.
+*/
+html[data-theme="dark"] .nav-icon {
+  filter: none;
+}
