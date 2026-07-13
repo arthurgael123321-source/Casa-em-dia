@@ -1,0 +1,58 @@
+/*
+  Dark mode is implemented as a whole-page color inversion instead of
+  per-component overrides: this codebase has colors hardcoded across many
+  CSS files and inline styles, so inverting the page (and counter-inverting
+  media) gives every screen a working dark theme without having to touch
+  each one individually.
+*/
+html[data-theme="dark"] {
+  filter: invert(1) hue-rotate(180deg);
+  background: #fff;
+}
+
+html[data-theme="dark"] img,
+html[data-theme="dark"] video {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+/*
+  The topbar icon buttons (Configurações/Perfil/Planos) are a white circle
+  with a dark icon. Counter-inverting just the <img> leaves the circle
+  inverted to black behind an un-inverted (still dark) icon, so both end up
+  dark-on-dark. Instead invert the whole button once — combined with the
+  page-level invert that cancels out — so the button renders exactly as it
+  does in light mode, and drop the icon's own counter-invert so it isn't
+  inverted a third time.
+*/
+html[data-theme="dark"] .top-action-button {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+html[data-theme="dark"] .top-action-button img {
+  filter: none;
+}
+
+/*
+  The Notificações/Privacidade/Preferências/Segurança tab icons sit directly
+  on the (inverted, now dark) sidebar background instead of a fixed-color
+  circle. Dropping their counter-invert lets them flip color along with the
+  page like everything else, so they end up light-on-dark instead of
+  invisible dark-on-dark.
+*/
+html[data-theme="dark"] .nav-icon {
+  filter: none;
+}
+
+/*
+  Same dark-on-dark problem as the topbar buttons: the Google icon on
+  "Entrar com Google" sits on a fixed white pill. Keep the whole button
+  exactly as it looks in light mode instead of turning the pill black
+  behind an un-inverted (still-colorful, but low-contrast) icon.
+*/
+html[data-theme="dark"] .social-btn.google {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+html[data-theme="dark"] .social-btn.google img {
+  filter: none;
+}

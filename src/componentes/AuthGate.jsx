@@ -1,13 +1,16 @@
 import './AuthGate.css'
 import Login from './Login.jsx'
+import { useLanguage } from '../i18n/languageStore.js'
 
 export default function AuthGate({ message, onClose, onLoginSuccess }) {
+  const { t } = useLanguage()
+
   return (
     <div
       className="auth-gate-overlay"
       role="dialog"
       aria-modal="true"
-      aria-label="Login necessário"
+      aria-label={message || t('common.fechar')}
       onClick={(event) => {
         if (event.target === event.currentTarget) {
           onClose()
@@ -18,7 +21,7 @@ export default function AuthGate({ message, onClose, onLoginSuccess }) {
         <button
           type="button"
           className="auth-gate-close"
-          aria-label="Fechar"
+          aria-label={t('common.fechar')}
           onClick={onClose}
         >
           ×

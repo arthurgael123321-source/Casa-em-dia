@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { getCurrentUser, isAuthenticated, updateCurrentUserProfile } from '../services/authUtils.js';
 import { atualizarPlano } from '../services/api.js';
+import { useLanguage } from '../i18n/languageStore.js';
 import './Planos.css';
 
 const PLANO_PADRAO = 'basico';
@@ -22,9 +23,10 @@ const carregarPlanoAtual = (user) => {
 };
 
 export function Planos({ onHomeClick, onRequireAuth }) {
+  const { t } = useLanguage();
   const usuarioAtual = getCurrentUser();
   // Novo estado: define qual plano o usuário possui atualmente cadastrado
-  const [planoAtual, setPlanoAtual] = useState(() => carregarPlanoAtual(usuarioAtual)); 
+  const [planoAtual, setPlanoAtual] = useState(() => carregarPlanoAtual(usuarioAtual));
   const [planoSelecionado, setPlanoSelecionado] = useState(null);
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
@@ -33,50 +35,34 @@ export function Planos({ onHomeClick, onRequireAuth }) {
   const planosAssinatura = [
     {
       id: 'basico',
-      nome: 'Básico',
-      preco: 'Grátis',
+      nome: t('planos.planosLista.basico.nome'),
+      preco: t('planos.planosLista.basico.preco'),
       nivel: 1, // Nível para cálculo de upgrade/downgrade
-      descricao: 'Encontre profissionais qualificados para serviços pontuais.',
-      beneficios: [
-        'Até 3 orçamentos por pedido',
-        'Contato direto com profissionais',
-        'Avaliações públicas visíveis',
-      ],
-      textoBotao: 'Plano Gratuito',
+      descricao: t('planos.planosLista.basico.descricao'),
+      beneficios: t('planos.planosLista.basico.beneficios'),
+      textoBotao: t('planos.planosLista.basico.textoBotao'),
       destaque: false,
     },
     {
       id: 'premium',
-      nome: 'Premium',
+      nome: t('planos.planosLista.premium.nome'),
       preco: 'R$ 24,99',
       nivel: 2,
       periodo: '/mês',
-      descricao: 'A melhor escolha para quem precisa de manutenção frequente com segurança total.',
-      beneficios: [
-        'Orçamentos ilimitados',
-        'Garantia Casa em Dia contra danos de até R$ 5.000',
-        'Atendimento e agendamento prioritários',
-        'Profissionais com selo de verificação de antecedentes',
-        'Desconto de 5% direto na mão de obra',
-      ],
-      textoBotao: 'Assinar Premium',
-      destaque: true, 
+      descricao: t('planos.planosLista.premium.descricao'),
+      beneficios: t('planos.planosLista.premium.beneficios'),
+      textoBotao: t('planos.planosLista.premium.textoBotao'),
+      destaque: true,
     },
     {
       id: 'pro',
-      nome: 'Pro',
+      nome: t('planos.planosLista.pro.nome'),
       preco: 'R$ 69,99',
       nivel: 3,
       periodo: '/mês',
-      descricao: 'Ideal para proprietários de imóveis, repúblicas ou gerenciamento de reformas.',
-      beneficios: [
-        'Tudo do plano Premium',
-        'Garantia estendida contra danos de até R$ 20.000',
-        'Concierge exclusivo para buscar e negociar com profissionais',
-        'Pagamento centralizado via faturamento mensal',
-        'Histórico detalhado com relatórios de vistorias',
-      ],
-      textoBotao: 'Seja Pro',
+      descricao: t('planos.planosLista.pro.descricao'),
+      beneficios: t('planos.planosLista.pro.beneficios'),
+      textoBotao: t('planos.planosLista.pro.textoBotao'),
       destaque: false,
     },
   ];
@@ -91,7 +77,7 @@ export function Planos({ onHomeClick, onRequireAuth }) {
 
   const handleCliqueAssinar = (plano) => {
     if (!isAuthenticated()) {
-      onRequireAuth?.(`Crie uma conta para assinar o plano ${plano.nome}.`, () => setPlanoSelecionado(plano));
+      onRequireAuth?.(t('authGate.planos', { plano: plano.nome }), () => setPlanoSelecionado(plano));
       return;
     }
 
@@ -129,28 +115,28 @@ export function Planos({ onHomeClick, onRequireAuth }) {
         updateCurrentUserProfile({ ...response.user, planoAtual: response.user.plan });
       }
 
-      setMensagemPlano(`Sucesso! Seu plano foi atualizado para ${planoSelecionado.nome}.`);
+      setMensagemPlano(t('planos.sucessoPlano', { plano: planoSelecionado.nome }));
       setPlanoSelecionado(null);
     } catch (error) {
       // Contas de login social simulado (sem cadastro real no servidor) nunca têm um
       // token válido para o backend, então a troca de plano é aplicada localmente.
       if (/token/i.test(error.message || '')) {
         aplicarPlanoLocalmente(novoPlano);
-        setMensagemPlano(`Plano atualizado para ${planoSelecionado.nome}.`);
+        setMensagemPlano(t('planos.planoAtualizado', { plano: planoSelecionado.nome }));
         setPlanoSelecionado(null);
         return;
       }
 
-      setMensagemPlano(error.message || 'Nao foi possivel atualizar seu plano agora.');
+      setMensagemPlano(error.message || t('planos.erroAtualizarPlano'));
     }
   };
 
   // Função para descobrir se a troca é um Upgrade ou Downgrade
   const obterTipoMudanca = () => {
     if (!planoSelecionado) return '';
-    if (planoSelecionado.nivel > dadosPlanoAtual.nivel) return 'Fazer Upgrade';
-    if (planoSelecionado.nivel < dadosPlanoAtual.nivel) return 'Fazer Downgrade';
-    return 'Seu Plano Atual';
+    if (planoSelecionado.nivel > dadosPlanoAtual.nivel) return t('planos.fazerUpgrade');
+    if (planoSelecionado.nivel < dadosPlanoAtual.nivel) return t('planos.fazerDowngrade');
+    return t('planos.planoAtual');
   };
 
   return (
@@ -163,33 +149,33 @@ export function Planos({ onHomeClick, onRequireAuth }) {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M19 12H5M5 12L12 19M5 12L12 5" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
-          Voltar
+          {t('planos.voltar')}
         </button>
-        
+
         <h1 style={styles.marcaHeader}>Casa em Dia</h1>
         <div style={{ width: '90px' }}></div>
       </header>
 
       {/* Seção de Introdução dos Planos */}
       <section style={styles.secaoIntroducao}>
-        <h2 style={styles.titulo}>Planos de Assinatura</h2>
+        <h2 style={styles.titulo}>{t('planos.titulo')}</h2>
         <p style={styles.subtitulo}>
-          Contrate os melhores profissionais do mercado com segurança, rapidez e garantias exclusivas.
+          {t('planos.subtitulo')}
         </p>
       </section>
 
       {/* ÁREA NOVA: Gerenciamento do Plano Atual */}
       <div style={styles.painelPlanoAtual}>
         <div style={styles.infoPlanoAtual}>
-          <span style={styles.tagStatus}>Plano Ativo</span>
+          <span style={styles.tagStatus}>{t('planos.planoAtivo')}</span>
           <h3 style={styles.nomePlanoAtual}>
-            Você está usando o Plano: <span style={{ color: '#059669' }}>{dadosPlanoAtual?.nome}</span>
+            {t('planos.usandoPlano')} <span style={{ color: '#059669' }}>{dadosPlanoAtual?.nome}</span>
           </h3>
-          <p style={styles.precoPlanoAtual}>Investimento: {dadosPlanoAtual?.preco}{dadosPlanoAtual?.periodo}</p>
+          <p style={styles.precoPlanoAtual}>{t('planos.investimento')} {dadosPlanoAtual?.preco}{dadosPlanoAtual?.periodo}</p>
         </div>
         <div style={styles.statusTextoPainel}>
           <p style={{ margin: 0, fontSize: '0.9rem', color: '#6b7280' }}>
-            Precisa de mais recursos ou quer economizar? Escolha um plano abaixo para realizar um <strong>Upgrade</strong> ou <strong>Downgrade</strong> instantâneo.
+            {t('planos.upgradeTexto')} <strong>{t('planos.upgrade')}</strong> {t('planos.upgradeTextoMeio')} <strong>{t('planos.downgrade')}</strong> {t('planos.upgradeTextoFim')}
           </p>
         </div>
       </div>
@@ -200,20 +186,20 @@ export function Planos({ onHomeClick, onRequireAuth }) {
           const ehOPlanoAtual = plano.id === planoAtual;
 
           return (
-            <div 
-              key={plano.id} 
+            <div
+              key={plano.id}
               style={{
                 ...styles.cardPlano,
                 ...(plano.destaque ? styles.cardDestaque : {}),
                 ...(ehOPlanoAtual ? styles.cardPlanoAtualAtivo : {}),
               }}
             >
-              {plano.destaque && !ehOPlanoAtual && <span style={styles.tagDestaque}>Mais Recomendado</span>}
-              {ehOPlanoAtual && <span style={styles.tagCardAtivo}>Seu Plano</span>}
-              
+              {plano.destaque && !ehOPlanoAtual && <span style={styles.tagDestaque}>{t('planos.maisRecomendado')}</span>}
+              {ehOPlanoAtual && <span style={styles.tagCardAtivo}>{t('planos.seuPlano')}</span>}
+
               <h2 style={styles.nomePlano}>{plano.nome}</h2>
               <p style={styles.descricaoPlano}>{plano.descricao}</p>
-              
+
               <div style={styles.containerPreco}>
                 <span style={styles.preco}>{plano.preco}</span>
                 {plano.periodo && <span style={styles.periodo}>{plano.periodo}</span>}
@@ -227,7 +213,7 @@ export function Planos({ onHomeClick, onRequireAuth }) {
                 ))}
               </ul>
 
-              <button 
+              <button
                 onClick={() => handleCliqueAssinar(plano)}
                 disabled={ehOPlanoAtual}
                 style={{
@@ -236,7 +222,7 @@ export function Planos({ onHomeClick, onRequireAuth }) {
                   ...(ehOPlanoAtual ? styles.botaoDesabilitado : {}),
                 }}
               >
-                {ehOPlanoAtual ? 'Plano Já Ativo' : plano.textoBotao}
+                {ehOPlanoAtual ? t('planos.planoJaAtivo') : plano.textoBotao}
               </button>
             </div>
           );
@@ -247,7 +233,7 @@ export function Planos({ onHomeClick, onRequireAuth }) {
       {planoSelecionado && (
         <div className="planos-modal-overlay" style={styles.modalOverlay} onClick={handleFecharModal}>
           <div className="planos-modal-card" style={styles.modalCard} onClick={(e) => e.stopPropagation()}>
-            <button type="button" onClick={handleFecharModal} style={styles.modalFechar} aria-label="Fechar">
+            <button type="button" onClick={handleFecharModal} style={styles.modalFechar} aria-label={t('common.fechar')}>
               ×
             </button>
 
@@ -260,25 +246,25 @@ export function Planos({ onHomeClick, onRequireAuth }) {
               {obterTipoMudanca()}
             </span>
 
-            <h2 style={styles.tituloForm}>Mudando para: <span style={styles.textoVerde}>{planoSelecionado.nome}</span></h2>
-            <p style={styles.subForm}>Confirme seus dados para efetuar a transição de plano no Casa em Dia.</p>
+            <h2 style={styles.tituloForm}>{t('planos.mudandoPara')} <span style={styles.textoVerde}>{planoSelecionado.nome}</span></h2>
+            <p style={styles.subForm}>{t('planos.confirmeDados')}</p>
 
             <form onSubmit={handleEnviarAssinatura} style={styles.form}>
-              <label style={styles.label}>Nome Completo</label>
+              <label style={styles.label}>{t('planos.nomeCompleto')}</label>
               <input
                 type="text"
                 required
-                placeholder="Digite seu nome"
+                placeholder={t('planos.nomePlaceholder')}
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
                 style={styles.input}
               />
 
-              <label style={styles.label}>E-mail de Cadastro</label>
+              <label style={styles.label}>{t('planos.emailCadastro')}</label>
               <input
                 type="email"
                 required
-                placeholder="seuemail@casaemdia.com"
+                placeholder={t('planos.emailPlaceholder')}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 style={styles.input}
@@ -286,7 +272,7 @@ export function Planos({ onHomeClick, onRequireAuth }) {
 
               {planoSelecionado.id !== 'basico' && (
                 <>
-                  <label style={styles.label}>Número do Cartão de Crédito</label>
+                  <label style={styles.label}>{t('planos.numeroCartao')}</label>
                   <input
                     type="text"
                     required
@@ -297,7 +283,7 @@ export function Planos({ onHomeClick, onRequireAuth }) {
               )}
 
               <button type="submit" style={styles.botaoConfirmar}>
-                Confirmar Alteração ({planoSelecionado.preco})
+                {t('planos.confirmarAlteracao')} ({planoSelecionado.preco})
               </button>
             </form>
           </div>

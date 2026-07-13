@@ -2,12 +2,15 @@ import { useState } from 'react'
 import { criarAgendamento } from '../services/api.js'
 import './Agendamento.css'
 import { FaWhatsapp, FaPhone, FaClock, FaCheckCircle } from 'react-icons/fa'
+import { useLanguage } from '../i18n/languageStore.js'
 
 function Agendamento() {
+  const { t } = useLanguage()
+  const servicosOpcoes = t('agendamento.servicosOpcoes')
   const [formData, setFormData] = useState({
     nome: '',
     telefone: '',
-    servico: 'Limpeza residencial',
+    servico: servicosOpcoes[0],
     data: '',
     observacoes: '',
   })
@@ -29,16 +32,16 @@ function Agendamento() {
 
     try {
       await criarAgendamento(formData)
-      setSuccessMessage(`Pedido enviado, ${formData.nome}! Nossa equipe confirmara seu agendamento por WhatsApp.`)
+      setSuccessMessage(t('agendamento.sucesso', { nome: formData.nome }))
       setFormData({
         nome: '',
         telefone: '',
-        servico: 'Limpeza residencial',
+        servico: servicosOpcoes[0],
         data: '',
         observacoes: '',
       })
     } catch (error) {
-      setErrorMessage(error.message || 'Nao foi possivel enviar o agendamento')
+      setErrorMessage(error.message || t('agendamento.erroGenerico'))
     } finally {
       setIsSubmitting(false)
     }
@@ -48,13 +51,13 @@ function Agendamento() {
     <div className="agendamento-container">
       <section className="agendamento-banner" aria-label="Agendamento de serviços">
         <div className="agendamento-banner-content">
-          <p className="agendamento-eyebrow">Agendamento rápido</p>
-          <h1>Reserve seu atendimento em poucos minutos</h1>
-          <p>Escolha o serviço, informe sua disponibilidade e nossa equipe entra em contato com você.</p>
+          <p className="agendamento-eyebrow">{t('agendamento.eyebrow')}</p>
+          <h1>{t('agendamento.titulo')}</h1>
+          <p>{t('agendamento.subtitulo')}</p>
           <div className="agendamento-badges">
-            <span><FaCheckCircle /> Atendimento ágil</span>
-            <span><FaCheckCircle /> Agendamento simples</span>
-            <span><FaCheckCircle /> Confirmação por WhatsApp</span>
+            <span><FaCheckCircle /> {t('agendamento.badgeAgil')}</span>
+            <span><FaCheckCircle /> {t('agendamento.badgeSimples')}</span>
+            <span><FaCheckCircle /> {t('agendamento.badgeWhatsapp')}</span>
           </div>
         </div>
       </section>
@@ -62,59 +65,56 @@ function Agendamento() {
       <section className="agendamento-content">
         <div className="agendamento-grid">
           <form className="agendamento-panel agendamento-form-panel" onSubmit={handleSubmit}>
-            <h2>Solicitar agendamento</h2>
+            <h2>{t('agendamento.solicitar')}</h2>
             {successMessage && <p className="agendamento-alert success" role="status">{successMessage}</p>}
             {errorMessage && <p className="agendamento-alert error" role="alert">{errorMessage}</p>}
 
             <div className="agendamento-field">
-              <label htmlFor="agendamento-nome">Nome</label>
-              <input id="agendamento-nome" name="nome" value={formData.nome} onChange={handleChange} placeholder="Seu nome" required />
+              <label htmlFor="agendamento-nome">{t('agendamento.nome')}</label>
+              <input id="agendamento-nome" name="nome" value={formData.nome} onChange={handleChange} placeholder={t('agendamento.nomePlaceholder')} required />
             </div>
 
             <div className="agendamento-field">
-              <label htmlFor="agendamento-telefone">Telefone</label>
+              <label htmlFor="agendamento-telefone">{t('agendamento.telefone')}</label>
               <input id="agendamento-telefone" name="telefone" value={formData.telefone} onChange={handleChange} placeholder="(11) 99999-9999" required />
             </div>
 
             <div className="agendamento-field">
-              <label htmlFor="agendamento-servico">Serviço</label>
+              <label htmlFor="agendamento-servico">{t('agendamento.servico')}</label>
               <select id="agendamento-servico" name="servico" value={formData.servico} onChange={handleChange}>
-                <option>Limpeza residencial</option>
-                <option>Limpeza pós-obra</option>
-                <option>Organização de ambientes</option>
-                <option>Jardinagem</option>
-                <option>Assistência doméstica</option>
-                <option>Faxina</option>
+                {servicosOpcoes.map((opcao) => (
+                  <option key={opcao}>{opcao}</option>
+                ))}
               </select>
             </div>
 
             <div className="agendamento-field">
-              <label htmlFor="agendamento-data">Data desejada</label>
+              <label htmlFor="agendamento-data">{t('agendamento.dataDesejada')}</label>
               <input id="agendamento-data" name="data" type="date" min={minDate} value={formData.data} onChange={handleChange} required />
             </div>
 
             <div className="agendamento-field">
-              <label htmlFor="agendamento-observacoes">Observações</label>
-              <textarea id="agendamento-observacoes" name="observacoes" value={formData.observacoes} onChange={handleChange} rows="4" placeholder="Conte mais sobre sua necessidade" />
+              <label htmlFor="agendamento-observacoes">{t('agendamento.observacoes')}</label>
+              <textarea id="agendamento-observacoes" name="observacoes" value={formData.observacoes} onChange={handleChange} rows="4" placeholder={t('agendamento.observacoesPlaceholder')} />
             </div>
 
             <button type="submit" className="agendamento-submit" disabled={isSubmitting}>
-              {isSubmitting ? 'Enviando...' : 'Enviar pedido'}
+              {isSubmitting ? t('agendamento.enviando') : t('agendamento.enviarPedido')}
             </button>
           </form>
 
           <aside className="agendamento-panel agendamento-info-panel">
-            <h2>Como funciona</h2>
+            <h2>{t('agendamento.comoFunciona')}</h2>
             <ol className="agendamento-steps">
-              <li><span className="step-number">1</span>Você nos conta qual serviço precisa.</li>
-              <li><span className="step-number">2</span>Definimos data e horário com mais praticidade.</li>
-              <li><span className="step-number">3</span>Confirmamos tudo pelo WhatsApp.</li>
+              <li><span className="step-number">1</span>{t('agendamento.passo1')}</li>
+              <li><span className="step-number">2</span>{t('agendamento.passo2')}</li>
+              <li><span className="step-number">3</span>{t('agendamento.passo3')}</li>
             </ol>
 
             <div className="agendamento-contact-box">
-              <strong><FaClock /> Atendimento rápido</strong>
+              <strong><FaClock /> {t('agendamento.atendimentoRapido')}</strong>
               <a href="https://wa.me/551190028922" target="_blank" rel="noopener noreferrer" className="contact-link whatsapp">
-                <FaWhatsapp /> Fale pelo WhatsApp
+                <FaWhatsapp /> {t('agendamento.falePeloWhatsapp')}
               </a>
               <a href="tel:+551190028922" className="contact-link phone">
                 <FaPhone /> (11) 9002-8922

@@ -1,23 +1,24 @@
 import heroImage from '../assets/CasaImpecavel.png'
-import services from './servicosData'
+import { buildServices } from './servicosData'
+import { useLanguage } from '../i18n/languageStore.js'
 
 function Servicos({ onContactClick, onPlanosClick, onServicePageClick }) {
+  const { t, language } = useLanguage()
+  const services = buildServices(language)
+
   return (
     <div className="services-shell">
       <section className="service-hero" aria-label="Serviços de limpeza">
         <div className="hero-copy">
-          <p className="eyebrow">Serviços de limpeza com excelência</p>
-          <h2>Casa impecável, rotina leve e atendimento próximo</h2>
-          <p>
-            Da limpeza residencial à organização e jardinagem, a Casa em Dia reúne cuidado, praticidade e
-            profissionais experientes para transformar seu dia a dia com mais conforto.
-          </p>
+          <p className="eyebrow">{t('servicos.eyebrow')}</p>
+          <h2>{t('servicos.titulo')}</h2>
+          <p>{t('servicos.descricao')}</p>
           <div className="hero-buttons">
             <button className="hero-cta" onClick={() => onContactClick && onContactClick()}>
-              Agende agora
+              {t('servicos.agendeAgora')}
             </button>
             <button className="hero-secondary" onClick={() => onPlanosClick && onPlanosClick()}>
-              Ver planos
+              {t('servicos.verPlanos')}
             </button>
           </div>
         </div>
@@ -29,33 +30,33 @@ function Servicos({ onContactClick, onPlanosClick, onServicePageClick }) {
 
       <section className="services-highlight-strip" aria-label="Diferenciais da Casa em Dia">
         <article className="highlight-card">
-          <strong>Atendimento ágil</strong>
-          <p>Agendamento simples e confirmação rápida para o seu tempo.</p>
+          <strong>{t('servicos.diferenciais.atendimentoTitulo')}</strong>
+          <p>{t('servicos.diferenciais.atendimentoDesc')}</p>
         </article>
         <article className="highlight-card">
-          <strong>Equipe qualificada</strong>
-          <p>Profissionais treinados para entregar precisão e cuidado.</p>
+          <strong>{t('servicos.diferenciais.equipeTitulo')}</strong>
+          <p>{t('servicos.diferenciais.equipeDesc')}</p>
         </article>
         <article className="highlight-card">
-          <strong>Flexibilidade</strong>
-          <p>Serviços sob medida para residências, reformas e rotina.</p>
+          <strong>{t('servicos.diferenciais.flexibilidadeTitulo')}</strong>
+          <p>{t('servicos.diferenciais.flexibilidadeDesc')}</p>
         </article>
       </section>
 
       <section className="services-card" aria-label="Detalhes dos serviços">
         <div className="services-section-head">
           <div>
-            <p className="eyebrow">Escolha o tipo de cuidado</p>
-            <h3 className="services-title">Nossos principais serviços</h3>
+            <p className="eyebrow">{t('servicos.escolhaTipo')}</p>
+            <h3 className="services-title">{t('servicos.principaisServicos')}</h3>
           </div>
           <button className="hero-secondary" onClick={() => onContactClick && onContactClick()}>
-            Fale com a equipe
+            {t('servicos.faleComEquipe')}
           </button>
         </div>
 
         <div className="services-grid">
           {services.map((service) => (
-            <article key={service.title} className="service-detail-card">
+            <article key={service.slug} className="service-detail-card">
               <img
                 src={service.image || heroImage}
                 alt={service.title}
@@ -67,7 +68,7 @@ function Servicos({ onContactClick, onPlanosClick, onServicePageClick }) {
               <h4>{service.title}</h4>
               <p>{service.description}</p>
               <button type="button" className="service-card-button" onClick={() => onServicePageClick && onServicePageClick(service.slug)}>
-                Ver serviço
+                {t('servicos.verServico')}
               </button>
             </article>
           ))}

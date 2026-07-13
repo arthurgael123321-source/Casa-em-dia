@@ -1,5 +1,7 @@
 import { useState } from 'react'
 import { getCurrentUser, updateCurrentUserProfile } from '../services/authUtils.js'
+import { useLanguage } from '../i18n/languageStore.js'
+import { getStoredTheme, setTheme } from '../services/theme.js'
 import './Configuracoes.css'
 import bellIcon from '../assets/Icons/Notificação.png'
 import lockIcon from '../assets/Icons/Cadeado.png'
@@ -7,6 +9,7 @@ import settingsIcon from '../assets/configs.png'
 import shieldIcon from '../assets/Icons/Segurança.png'
 
 export default function Configuracoes({ onHomeClick, onLoginClick }) {
+  const { t, language, setLanguage } = useLanguage()
   const [user, setUser] = useState(() => getCurrentUser())
   const [message, setMessage] = useState('')
   const [messageType, setMessageType] = useState('success')
@@ -14,9 +17,11 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
   const [isSaving, setIsSaving] = useState(false)
   const [settings, setSettings] = useState(() => {
     const savedSettings = localStorage.getItem('userSettings')
+    let parsed = null
+
     if (savedSettings) {
       try {
-        return JSON.parse(savedSettings)
+        parsed = JSON.parse(savedSettings)
       } catch {
         localStorage.removeItem('userSettings')
       }
@@ -28,17 +33,21 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
       smsNotificacoes: false,
       notificacoesAgendamento: true,
       notificacoesPromocoes: false,
+      ...parsed?.notificacoes,
     },
     privacidade: {
       perfPublico: false,
       mostrarTelefone: true,
+      ...parsed?.privacidade,
     },
     preferencias: {
-      idioma: 'pt-BR',
-      tema: 'claro',
+      ...parsed?.preferencias,
+      idioma: language,
+      tema: getStoredTheme(),
     },
     seguranca: {
       sessoesAtivasMonitor: true,
+      ...parsed?.seguranca,
     },
     }
   })
@@ -66,6 +75,14 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
         [key]: value,
       },
     }))
+
+    if (section === 'preferencias' && key === 'tema') {
+      setTheme(value)
+    }
+
+    if (section === 'preferencias' && key === 'idioma') {
+      setLanguage(value)
+    }
   }
 
   const handleSaveSettings = () => {
@@ -77,10 +94,10 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
       }
       localStorage.setItem('userSettings', JSON.stringify(userSettings))
       setMessageType('success')
-      setMessage('✓ Configurações salvas com sucesso!')
+      setMessage(t('configuracoes.configSalvas'))
     } catch {
       setMessageType('error')
-      setMessage('❌ Erro ao salvar configurações')
+      setMessage(t('configuracoes.erroSalvarConfig'))
     } finally {
       setIsSaving(false)
       setTimeout(() => setMessage(''), 4000)
@@ -95,14 +112,14 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
 
   const handleLoginPreferenceSave = () => {
     if (loginPreference === 'email' && !user.password) {
-      showMessage('error', 'Crie uma senha antes de escolher o acesso por e-mail e senha.')
+      showMessage('error', t('configuracoes.erroCriarSenha'))
       return
     }
 
     const updatedUser = updateCurrentUserProfile({ loginPreference })
     setUser(updatedUser)
     localStorage.setItem('preferredLoginMethod', loginPreference)
-    showMessage('success', 'Preferência de login atualizada com sucesso!')
+    showMessage('success', t('configuracoes.preferenciaAtualizada'))
   }
 
   const handlePasswordChange = (event) => {
@@ -110,17 +127,17 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
     const hadPassword = Boolean(user.password)
 
     if (user.password && currentPassword !== user.password) {
-      showMessage('error', 'A senha atual está incorreta.')
+      showMessage('error', t('configuracoes.senhaAtualIncorreta'))
       return
     }
 
     if (newPassword.length < 6) {
-      showMessage('error', 'A nova senha deve ter pelo menos 6 caracteres.')
+      showMessage('error', t('configuracoes.novaSenhaCurta'))
       return
     }
 
     if (newPassword !== confirmNewPassword) {
-      showMessage('error', 'A confirmação da nova senha não confere.')
+      showMessage('error', t('configuracoes.confirmacaoNaoConfere'))
       return
     }
 
@@ -136,7 +153,7 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
     setCurrentPassword('')
     setNewPassword('')
     setConfirmNewPassword('')
-    showMessage('success', hadPassword ? 'Senha alterada com sucesso!' : 'Senha criada com sucesso. Você já pode entrar por e-mail e senha.')
+    showMessage('success', hadPassword ? t('configuracoes.senhaAlterada') : t('configuracoes.senhaCriada'))
   }
 
   if (!user) {
@@ -144,10 +161,10 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
       <main className="settings-page">
         <section className="settings-container">
           <div className="settings-empty">
-            <h2>Acesso restrito</h2>
-            <p>Você precisa estar autenticado para acessar as configurações.</p>
+            <h2>{t('configuracoes.acessoRestrito')}</h2>
+            <p>{t('configuracoes.acessoRestritoTexto')}</p>
             <button className="btn-primary" onClick={() => onLoginClick && onLoginClick()}>
-              Ir para login
+              {t('configuracoes.irParaLogin')}
             </button>
           </div>
         </section>
@@ -161,11 +178,11 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
         {/* Header */}
         <header className="settings-header">
           <div className="settings-header-content">
-            <h1>Configurações</h1>
-            <p className="settings-subtitle">Personalize sua experiência</p>
+            <h1>{t('configuracoes.titulo')}</h1>
+            <p className="settings-subtitle">{t('configuracoes.subtitulo')}</p>
           </div>
           <button className="btn-back" onClick={() => onHomeClick && onHomeClick()}>
-            ← Voltar
+            {t('configuracoes.voltar')}
           </button>
         </header>
 
@@ -185,7 +202,7 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
       onClick={() => setActiveTab('notificacoes')}
     >
       <img src={bellIcon} alt="" className="nav-icon" />
-      Notificações
+      {t('configuracoes.navNotificacoes')}
     </button>
 
     <button
@@ -193,7 +210,7 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
       onClick={() => setActiveTab('privacidade')}
     >
       <img src={lockIcon} alt="" className="nav-icon" />
-      Privacidade
+      {t('configuracoes.navPrivacidade')}
     </button>
 
     <button
@@ -201,7 +218,7 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
       onClick={() => setActiveTab('preferencias')}
     >
       <img src={settingsIcon} alt="" className="nav-icon" />
-      Preferências
+      {t('configuracoes.navPreferencias')}
     </button>
 
     <button
@@ -209,7 +226,7 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
       onClick={() => setActiveTab('seguranca')}
     >
       <img src={shieldIcon} alt="" className="nav-icon" />
-      Segurança
+      {t('configuracoes.navSeguranca')}
     </button>
   </nav>
 </aside>
@@ -220,14 +237,14 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
             {activeTab === 'notificacoes' && (
               <div className="settings-section">
                 <div className="section-header">
-                  <h2>Notificações</h2>
-                  <p>Escolha como deseja ser notificado</p>
+                  <h2>{t('configuracoes.notificacoesTitulo')}</h2>
+                  <p>{t('configuracoes.notificacoesSubtitulo')}</p>
                 </div>
                 <div className="settings-items">
                   <div className="setting-item">
                     <div className="setting-info">
-                      <h3>Notificações por Email</h3>
-                      <p>Receba atualizações importantes</p>
+                      <h3>{t('configuracoes.notifEmailTitulo')}</h3>
+                      <p>{t('configuracoes.notifEmailDesc')}</p>
                     </div>
                     <label className="toggle-switch">
                       <input
@@ -241,8 +258,8 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
 
                   <div className="setting-item">
                     <div className="setting-info">
-                      <h3>Notificações por SMS</h3>
-                      <p>Receba lembretes via SMS</p>
+                      <h3>{t('configuracoes.notifSmsTitulo')}</h3>
+                      <p>{t('configuracoes.notifSmsDesc')}</p>
                     </div>
                     <label className="toggle-switch">
                       <input
@@ -256,8 +273,8 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
 
                   <div className="setting-item">
                     <div className="setting-info">
-                      <h3>Notificações de Agendamento</h3>
-                      <p>Confirmações de seus agendamentos</p>
+                      <h3>{t('configuracoes.notifAgendamentoTitulo')}</h3>
+                      <p>{t('configuracoes.notifAgendamentoDesc')}</p>
                     </div>
                     <label className="toggle-switch">
                       <input
@@ -271,8 +288,8 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
 
                   <div className="setting-item">
                     <div className="setting-info">
-                      <h3>Notificações de Promoções</h3>
-                      <p>Ofertas e promoções especiais</p>
+                      <h3>{t('configuracoes.notifPromocoesTitulo')}</h3>
+                      <p>{t('configuracoes.notifPromocoesDesc')}</p>
                     </div>
                     <label className="toggle-switch">
                       <input
@@ -291,14 +308,14 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
             {activeTab === 'privacidade' && (
               <div className="settings-section">
                 <div className="section-header">
-                  <h2>Privacidade</h2>
-                  <p>Controle quem vê suas informações</p>
+                  <h2>{t('configuracoes.privacidadeTitulo')}</h2>
+                  <p>{t('configuracoes.privacidadeSubtitulo')}</p>
                 </div>
                 <div className="settings-items">
                   <div className="setting-item">
                     <div className="setting-info">
-                      <h3>Perfil Público</h3>
-                      <p>Permita que outros vejam seu perfil</p>
+                      <h3>{t('configuracoes.perfilPublicoTitulo')}</h3>
+                      <p>{t('configuracoes.perfilPublicoDesc')}</p>
                     </div>
                     <label className="toggle-switch">
                       <input
@@ -312,8 +329,8 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
 
                   <div className="setting-item">
                     <div className="setting-info">
-                      <h3>Mostrar Telefone</h3>
-                      <p>Profissionais podem ver seu telefone</p>
+                      <h3>{t('configuracoes.mostrarTelefoneTitulo')}</h3>
+                      <p>{t('configuracoes.mostrarTelefoneDesc')}</p>
                     </div>
                     <label className="toggle-switch">
                       <input
@@ -332,39 +349,38 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
             {activeTab === 'preferencias' && (
               <div className="settings-section">
                 <div className="section-header">
-                  <h2>Preferências</h2>
-                  <p>Customize sua experiência</p>
+                  <h2>{t('configuracoes.preferenciasTitulo')}</h2>
+                  <p>{t('configuracoes.preferenciasSubtitulo')}</p>
                 </div>
                 <div className="settings-items">
                   <div className="setting-item">
                     <div className="setting-info">
-                      <h3>Idioma</h3>
-                      <p>Escolha o idioma da plataforma</p>
+                      <h3>{t('configuracoes.idiomaTitulo')}</h3>
+                      <p>{t('configuracoes.idiomaDesc')}</p>
                     </div>
                     <select
                       value={settings.preferencias.idioma}
                       onChange={(e) => handleSelectChange('preferencias', 'idioma', e.target.value)}
                       className="settings-select"
                     >
-                      <option value="pt-BR">Português (Brasil)</option>
-                      <option value="en-US">English (US)</option>
-                      <option value="es-ES">Español</option>
+                      <option value="pt-BR">{t('configuracoes.idiomaPtBR')}</option>
+                      <option value="en-US">{t('configuracoes.idiomaEnUS')}</option>
                     </select>
                   </div>
 
                   <div className="setting-item">
                     <div className="setting-info">
-                      <h3>Tema</h3>
-                      <p>Escolha como a interface aparece</p>
+                      <h3>{t('configuracoes.temaTitulo')}</h3>
+                      <p>{t('configuracoes.temaDesc')}</p>
                     </div>
                     <select
                       value={settings.preferencias.tema}
                       onChange={(e) => handleSelectChange('preferencias', 'tema', e.target.value)}
                       className="settings-select"
                     >
-                      <option value="claro">Claro</option>
-                      <option value="escuro">Escuro</option>
-                      <option value="auto">Automático</option>
+                      <option value="claro">{t('configuracoes.temaClaro')}</option>
+                      <option value="escuro">{t('configuracoes.temaEscuro')}</option>
+                      <option value="auto">{t('configuracoes.temaAutomatico')}</option>
                     </select>
                   </div>
                 </div>
@@ -375,14 +391,14 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
             {activeTab === 'seguranca' && (
               <div className="settings-section">
                 <div className="section-header">
-                  <h2>Segurança</h2>
-                  <p>Proteja sua conta</p>
+                  <h2>{t('configuracoes.segurancaTitulo')}</h2>
+                  <p>{t('configuracoes.segurancaSubtitulo')}</p>
                 </div>
                 <div className="settings-items">
                   <div className="setting-item">
                     <div className="setting-info">
-                      <h3>Monitorar Sessões</h3>
-                      <p>Receba alertas sobre novos acessos</p>
+                      <h3>{t('configuracoes.monitorarSessoesTitulo')}</h3>
+                      <p>{t('configuracoes.monitorarSessoesDesc')}</p>
                     </div>
                     <label className="toggle-switch">
                       <input
@@ -396,43 +412,43 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
 
                   <div className="security-card">
                     <div className="setting-info">
-                      <h3>Como deseja entrar</h3>
-                      <p>Escolha o método que será priorizado no próximo acesso.</p>
+                      <h3>{t('configuracoes.comoDesejaEntrar')}</h3>
+                      <p>{t('configuracoes.comoDesejaEntrarDesc')}</p>
                     </div>
                     <div className="login-preference-options" role="radiogroup" aria-label="Método de login preferido">
                       <label className={`login-preference-option ${loginPreference === 'google' ? 'selected' : ''}`}>
                         <input type="radio" name="loginPreference" value="google" checked={loginPreference === 'google'} onChange={(event) => setLoginPreference(event.target.value)} />
-                        <span><strong>Continuar com Google</strong><small>Use a verificação da sua conta Google.</small></span>
+                        <span><strong>{t('configuracoes.continuarComGoogle')}</strong><small>{t('configuracoes.continuarComGoogleDesc')}</small></span>
                       </label>
                       <label className={`login-preference-option ${loginPreference === 'email' ? 'selected' : ''}`}>
                         <input type="radio" name="loginPreference" value="email" checked={loginPreference === 'email'} onChange={(event) => setLoginPreference(event.target.value)} />
-                        <span><strong>E-mail e senha</strong><small>Entre usando o e-mail cadastrado e sua senha.</small></span>
+                        <span><strong>{t('configuracoes.emailSenha')}</strong><small>{t('configuracoes.emailSenhaDesc')}</small></span>
                       </label>
                     </div>
-                    <button type="button" className="btn-secondary" onClick={handleLoginPreferenceSave}>Salvar preferência de login</button>
+                    <button type="button" className="btn-secondary" onClick={handleLoginPreferenceSave}>{t('configuracoes.salvarPreferenciaLogin')}</button>
                   </div>
 
                   <form className="security-card password-form" onSubmit={handlePasswordChange}>
                     <div className="setting-info">
-                      <h3>{user.password ? 'Alterar senha' : 'Criar senha para acesso por e-mail'}</h3>
-                      <p>{user.password ? 'Confirme sua senha atual para definir uma nova.' : 'Sua conta foi criada com Google. Defina uma senha para também poder entrar por e-mail.'}</p>
+                      <h3>{user.password ? t('configuracoes.alterarSenha') : t('configuracoes.criarSenhaTitulo')}</h3>
+                      <p>{user.password ? t('configuracoes.alterarSenhaDesc') : t('configuracoes.criarSenhaDesc')}</p>
                     </div>
                     {user.password && (
-                      <label className="security-field">Senha atual
+                      <label className="security-field">{t('configuracoes.senhaAtual')}
                         <input type="password" value={currentPassword} onChange={(event) => setCurrentPassword(event.target.value)} autoComplete="current-password" required />
                       </label>
                     )}
-                    <label className="security-field">Nova senha
+                    <label className="security-field">{t('configuracoes.novaSenha')}
                       <input type="password" value={newPassword} onChange={(event) => setNewPassword(event.target.value)} autoComplete="new-password" minLength="6" required />
                     </label>
-                    <label className="security-field">Confirmar nova senha
+                    <label className="security-field">{t('configuracoes.confirmarNovaSenha')}
                       <input type="password" value={confirmNewPassword} onChange={(event) => setConfirmNewPassword(event.target.value)} autoComplete="new-password" minLength="6" required />
                     </label>
-                    <button type="submit" className="btn-secondary">{user.password ? 'Alterar senha' : 'Criar senha'}</button>
+                    <button type="submit" className="btn-secondary">{user.password ? t('configuracoes.alterarSenha') : t('configuracoes.criarSenha')}</button>
                   </form>
-                    
+
                   <div className="setting-info-message">
-                    <p>💡 Mais opções de segurança disponíveis em breve.</p>
+                    <p>{t('configuracoes.maisSeguranca')}</p>
                   </div>
                 </div>
               </div>
@@ -440,12 +456,12 @@ export default function Configuracoes({ onHomeClick, onLoginClick }) {
 
             {/* Botão Salvar */}
             <div className="settings-actions">
-              <button 
-                className="btn-primary" 
+              <button
+                className="btn-primary"
                 onClick={handleSaveSettings}
                 disabled={isSaving}
               >
-                {isSaving ? '⏳ Salvando...' : ' Salvar Configurações'}
+                {isSaving ? t('configuracoes.salvando') : t('configuracoes.salvarConfiguracoes')}
               </button>
             </div>
           </section>
