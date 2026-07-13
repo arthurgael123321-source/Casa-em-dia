@@ -1,0 +1,23 @@
+@keyframes planosOverlayFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes planosModalPopIn {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.94);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.planos-modal-overlay {
+  animation: planosOverlayFadeIn 0.22s ease-out;
+}
+
+.planos-modal-card {
+  animation: planosModalPopIn 0.28s cubic-bezier(0.2, 0.9, 0.25, 1);
+}

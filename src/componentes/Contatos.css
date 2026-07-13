@@ -23,6 +23,7 @@
 }
 /* ===================== HEADER NAVEGAÇÃO ===================== */
 .contatos-header {
+  position: relative;
   background: white;
   border-bottom: 1px solid var(--border-color);
   padding: 15px 20px;
@@ -50,11 +51,13 @@
 }
 
 .header-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: 1.3rem;
   font-weight: 700;
   color: var(--dark-gray);
   margin: 0;
-  flex: 1;
   text-align: center;
 }
 
@@ -320,6 +323,8 @@
   }
 
   .header-title {
+    position: static;
+    transform: none;
     font-size: 1.1rem;
     order: 3;
     width: 100%;

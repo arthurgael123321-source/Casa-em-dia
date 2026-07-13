@@ -46,7 +46,7 @@ body { margin: 0; background: var(--bg); color: var(--accent-dark); }
   flex: 1;
 }
 
-.mockup-header { display:flex; justify-content:space-between; align-items:center; padding:20px 28px; gap:20px; }
+.mockup-header { display:flex; justify-content:space-between; align-items:center; padding:20px 28px; gap:20px; height:44px; overflow:visible; box-sizing:content-box; }
 .mockup-header .search-box { flex:1; max-width:720px; }
 
 .header-actions { display:flex; gap:12px; align-items:center; }
@@ -123,10 +123,10 @@ body { margin: 0; background: var(--bg); color: var(--accent-dark); }
   background: #f5f9f1;
 }
 
-.site-logo { width:92px; height:auto; margin-right:18px; border-radius:8px; align-self:center; }
+.site-logo { width:260px; height:auto; margin-right:18px; border-radius:8px; align-self:center; }
 
 @media (max-width:720px) {
-  .site-logo { width:76px; margin-right:10px; }
+  .site-logo { width:210px; margin-right:10px; }
 }
 
 
@@ -402,102 +402,6 @@ body { margin: 0; background: var(--bg); color: var(--accent-dark); }
   box-shadow: 0 28px 60px rgba(33, 64, 27, 0.14);
 }
 
-.agendamento-page {
-  display: grid;
-  gap: 20px;
-}
-
-.agendamento-hero {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  padding: 24px 26px;
-  border-radius: 24px;
-  background: linear-gradient(135deg, #f9fdf7 0%, #edf5e6 100%);
-  box-shadow: var(--shadow);
-}
-
-.agendamento-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-.agendamento-badges span {
-  padding: 9px 12px;
-  border-radius: 999px;
-  background: rgba(33,64,27,0.08);
-  color: #21401b;
-  font-weight: 700;
-}
-
-.agendamento-grid {
-  display: grid;
-  grid-template-columns: 1.2fr 0.8fr;
-  gap: 18px;
-}
-
-.agendamento-card {
-  padding: 22px;
-  border-radius: 22px;
-  background: rgba(255,255,255,0.95);
-  box-shadow: var(--shadow);
-}
-
-.agendamento-form {
-  display: grid;
-  gap: 12px;
-}
-
-.agendamento-success {
-  margin: 0;
-  padding: 12px;
-  border-radius: 10px;
-  background: #e6f6ec;
-  color: #1e5c3b;
-  font-weight: 600;
-}
-
-.agendamento-form label {
-  display: grid;
-  gap: 6px;
-  color: #21401b;
-  font-weight: 700;
-}
-
-.agendamento-form input,
-.agendamento-form select,
-.agendamento-form textarea {
-  width: 100%;
-  border: 1px solid rgba(33,64,27,0.14);
-  border-radius: 12px;
-  padding: 10px 12px;
-  font: inherit;
-  background: #f9fdf7;
-  color: #21401b;
-  box-sizing: border-box;
-}
-
-.agendamento-info ol {
-  padding-left: 18px;
-  color: #4e6c45;
-  line-height: 1.7;
-}
-
-.agendamento-contact-box {
-  margin-top: 16px;
-  padding: 14px;
-  border-radius: 14px;
-  background: #f4faef;
-  border: 1px solid rgba(33,64,27,0.08);
-}
-
-.agendamento-contact-box a {
-  color: inherit;
-  font-weight: 700;
-}
-
 .services-card {
   padding: 36px;
   border-radius: 28px;
@@ -666,7 +570,7 @@ body { margin: 0; background: var(--bg); color: var(--accent-dark); }
 
 @media (max-width: 520px) {
   .mockup-card { border-radius:20px; }
-  .mockup-header { flex-direction:column; align-items:stretch; gap:12px; padding:16px; }
+  .mockup-header { flex-direction:column; align-items:stretch; gap:12px; padding:16px; height:auto; }
   .carousel-wrapper { padding: 10px 16px 18px; gap: 14px; }
   .carousel-image { height:220px; }
   .carousel-arrow { width:40px; height:40px; }
@@ -999,8 +903,6 @@ body { margin: 0; background: var(--bg); color: var(--accent-dark); }
   .profile-grid { grid-template-columns: 1fr; }
   .services-section-head { flex-direction: column; align-items: flex-start; }
   .services-grid { grid-template-columns: 1fr; }
-  .agendamento-hero { flex-direction: column; align-items: flex-start; }
-  .agendamento-grid { grid-template-columns: 1fr; }
 }
 
 /* Mantém três cards para computadores, mesmo em janelas mais estreitas. */

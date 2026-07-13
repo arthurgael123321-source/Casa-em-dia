@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { getCurrentUser, updateCurrentUserProfile } from '../services/authUtils.js';
 import { atualizarPlano } from '../services/api.js';
+import './Planos.css';
 
 const PLANO_PADRAO = 'basico';
 
@@ -83,9 +84,27 @@ export function Planos({ onHomeClick }) {
   // Encontra o objeto do plano atual do usuário para exibir no topo
   const dadosPlanoAtual = planosAssinatura.find(p => p.id === planoAtual);
 
+  useEffect(() => {
+    document.body.style.overflow = planoSelecionado ? 'hidden' : '';
+    return () => { document.body.style.overflow = ''; };
+  }, [planoSelecionado]);
+
   const handleCliqueAssinar = (plano) => {
     setPlanoSelecionado(plano);
-    document.getElementById('area-assinatura')?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  const handleFecharModal = () => {
+    setPlanoSelecionado(null);
+  };
+
+  const aplicarPlanoLocalmente = (novoPlano) => {
+    setPlanoAtual(novoPlano);
+    localStorage.setItem(getChavePlanoUsuario(usuarioAtual), novoPlano);
+    localStorage.setItem('planoAtual', novoPlano);
+
+    if (usuarioAtual) {
+      updateCurrentUserProfile({ planoAtual: novoPlano });
+    }
   };
 
   const handleEnviarAssinatura = async (e) => {
@@ -94,23 +113,29 @@ export function Planos({ onHomeClick }) {
       return;
     }
 
+    const novoPlano = planoSelecionado.id;
+
     try {
-      const novoPlano = planoSelecionado.id;
       const response = await atualizarPlano(novoPlano);
 
-      setPlanoAtual(novoPlano);
-      localStorage.setItem(getChavePlanoUsuario(usuarioAtual), novoPlano);
-      localStorage.setItem('planoAtual', novoPlano);
+      aplicarPlanoLocalmente(novoPlano);
 
       if (response?.user) {
         updateCurrentUserProfile({ ...response.user, planoAtual: response.user.plan });
-      } else if (usuarioAtual) {
-        updateCurrentUserProfile({ planoAtual: novoPlano });
       }
 
       setMensagemPlano(`Sucesso! Seu plano foi atualizado para ${planoSelecionado.nome}.`);
       setPlanoSelecionado(null);
     } catch (error) {
+      // Contas de login social simulado (sem cadastro real no servidor) nunca têm um
+      // token válido para o backend, então a troca de plano é aplicada localmente.
+      if (/token/i.test(error.message || '')) {
+        aplicarPlanoLocalmente(novoPlano);
+        setMensagemPlano(`Plano atualizado para ${planoSelecionado.nome}.`);
+        setPlanoSelecionado(null);
+        return;
+      }
+
       setMensagemPlano(error.message || 'Nao foi possivel atualizar seu plano agora.');
     }
   };
@@ -125,6 +150,8 @@ export function Planos({ onHomeClick }) {
 
   return (
     <div style={styles.container}>
+      {mensagemPlano && <p style={styles.toastMensagem}>{mensagemPlano}</p>}
+
       {/* Topo de Navegação Premium — Casa em Dia */}
       <header style={styles.headerNav}>
         <button onClick={() => onHomeClick && onHomeClick()} style={styles.botaoVoltarHome}>
@@ -211,11 +238,14 @@ export function Planos({ onHomeClick }) {
         })}
       </div>
 
-      {/* Formulário de Alteração de Plano */}
-      <div id="area-assinatura" style={styles.secaoAssinatura}>
-        {mensagemPlano && <p style={styles.mensagemPlano}>{mensagemPlano}</p>}
-        {planoSelecionado ? (
-          <div style={styles.caixaFormulario}>
+      {/* Holder de Alteração de Plano */}
+      {planoSelecionado && (
+        <div className="planos-modal-overlay" style={styles.modalOverlay} onClick={handleFecharModal}>
+          <div className="planos-modal-card" style={styles.modalCard} onClick={(e) => e.stopPropagation()}>
+            <button type="button" onClick={handleFecharModal} style={styles.modalFechar} aria-label="Fechar">
+              ×
+            </button>
+
             {/* O Título muda dinamicamente indicando se é Upgrade ou Downgrade */}
             <span style={{
               ...styles.tagMudanca,
@@ -224,26 +254,26 @@ export function Planos({ onHomeClick }) {
             }}>
               {obterTipoMudanca()}
             </span>
-            
+
             <h2 style={styles.tituloForm}>Mudando para: <span style={styles.textoVerde}>{planoSelecionado.nome}</span></h2>
             <p style={styles.subForm}>Confirme seus dados para efetuar a transição de plano no Casa em Dia.</p>
-            
+
             <form onSubmit={handleEnviarAssinatura} style={styles.form}>
               <label style={styles.label}>Nome Completo</label>
-              <input 
-                type="text" 
-                required 
-                placeholder="Digite seu nome" 
+              <input
+                type="text"
+                required
+                placeholder="Digite seu nome"
                 value={nome}
                 onChange={(e) => setNome(e.target.value)}
                 style={styles.input}
               />
 
               <label style={styles.label}>E-mail de Cadastro</label>
-              <input 
-                type="email" 
-                required 
-                placeholder="seuemail@casaemdia.com" 
+              <input
+                type="email"
+                required
+                placeholder="seuemail@casaemdia.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 style={styles.input}
@@ -252,10 +282,10 @@ export function Planos({ onHomeClick }) {
               {planoSelecionado.id !== 'basico' && (
                 <>
                   <label style={styles.label}>Número do Cartão de Crédito</label>
-                  <input 
-                    type="text" 
-                    required 
-                    placeholder="0000 0000 0000 0000" 
+                  <input
+                    type="text"
+                    required
+                    placeholder="0000 0000 0000 0000"
                     style={styles.input}
                   />
                 </>
@@ -266,10 +296,8 @@ export function Planos({ onHomeClick }) {
               </button>
             </form>
           </div>
-        ) : (
-          <p style={styles.avisoSelecione}>💡 Selecione um plano diferente do seu atual acima para gerenciar sua assinatura.</p>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -375,10 +403,9 @@ const styles = {
     maxWidth: '450px',
   },
   gridPlanos: {
-    display: 'flex',
-    justifyContent: 'center',
+    display: 'grid',
+    gridTemplateColumns: 'repeat(3, 1fr)',
     gap: '30px',
-    flexWrap: 'wrap',
     maxWidth: '1200px',
     margin: '0 auto 60px auto',
     alignItems: 'stretch',
@@ -388,7 +415,8 @@ const styles = {
     border: '1px solid #e5e7eb',
     borderRadius: '16px',
     padding: '35px',
-    width: '320px',
+    width: '100%',
+    boxSizing: 'border-box',
     display: 'flex',
     flexDirection: 'column',
     position: 'relative',
@@ -497,19 +525,46 @@ const styles = {
     borderColor: '#cbd5e1',
     cursor: 'not-allowed',
   },
-  secaoAssinatura: {
-    maxWidth: '500px',
-    margin: '0 auto',
-    paddingTop: '20px',
-    textAlign: 'center',
+  modalOverlay: {
+    position: 'fixed',
+    inset: 0,
+    backgroundColor: 'rgba(15, 23, 42, 0.55)',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: '20px',
+    zIndex: 1000,
   },
-  caixaFormulario: {
-    backgroundColor: '#f9fafb',
+  modalCard: {
+    position: 'relative',
+    backgroundColor: '#ffffff',
     border: '1px solid #e5e7eb',
     borderRadius: '16px',
     padding: '40px',
     textAlign: 'left',
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05)',
+    boxShadow: '0 20px 45px rgba(0, 0, 0, 0.25)',
+    width: '100%',
+    maxWidth: '480px',
+    maxHeight: '90vh',
+    overflowY: 'auto',
+    boxSizing: 'border-box',
+  },
+  modalFechar: {
+    position: 'absolute',
+    top: '14px',
+    right: '14px',
+    width: '32px',
+    height: '32px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    background: 'transparent',
+    border: 'none',
+    borderRadius: '50%',
+    color: '#6b7280',
+    fontSize: '1.5rem',
+    lineHeight: 1,
+    cursor: 'pointer',
   },
   tagMudanca: {
     display: 'inline-block',
@@ -562,20 +617,21 @@ const styles = {
     cursor: 'pointer',
     marginTop: '10px',
   },
-  avisoSelecione: {
-    color: '#6b7280',
-    fontSize: '1.05rem',
-    backgroundColor: '#f3f4f6',
-    padding: '20px',
-    borderRadius: '12px',
-  },
-  mensagemPlano: {
-    margin: '0 0 16px 0',
+  toastMensagem: {
+    position: 'fixed',
+    top: '20px',
+    left: '50%',
+    transform: 'translateX(-50%)',
+    margin: 0,
     color: '#14532d',
     fontWeight: '700',
     backgroundColor: '#dcfce7',
     border: '1px solid #bbf7d0',
     borderRadius: '12px',
-    padding: '10px 12px',
-  }
+    padding: '12px 20px',
+    boxShadow: '0 10px 25px rgba(0, 0, 0, 0.12)',
+    zIndex: 1100,
+    maxWidth: '90%',
+    textAlign: 'center',
+  },
 };

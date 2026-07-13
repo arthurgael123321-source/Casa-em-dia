@@ -36,27 +36,27 @@ export default function Contatos({ onHomeClick }) {
     {
       icon: <FaPhone />,
       titulo: 'Telefone',
-      descricao: '(11) 99999-8888',
-      link: 'tel:(11)999998888'
+      descricao: '(11) 9002-8922',
+      link: 'tel:+551190028922'
     },
     {
       icon: <FaWhatsapp />,
       titulo: 'WhatsApp',
-      descricao: '(11) 99999-8888',
-      link: 'https://wa.me/5511999998888',
+      descricao: '(11) 9002-8922',
+      link: 'https://wa.me/551190028922',
       abrirEmNovaAba: true
     },
     {
       icon: <FaEnvelope />,
       titulo: 'Email',
-      descricao: 'contato@casaemdia.com',
+      descricao: 'casaemdia@gmail.com.br',
       link: 'mailto:contato@casaemdia.com'
     },
     {
       icon: <FaMapMarkerAlt />,
       titulo: 'Localização',
-      descricao: 'Centro Histórico de São Paulo, SP',
-      link: 'https://www.google.com/maps/search/?api=1&query=Centro+Hist%C3%B3rico+de+S%C3%A3o+Paulo%2C+SP',
+      descricao: 'Praça da Sé, 100 - Sé, São Paulo - SP',
+      link: 'https://www.google.com/maps/search/?api=1&query=Pra%C3%A7a+da+S%C3%A9%2C+100+-+S%C3%A9%2C+S%C3%A3o+Paulo+-+SP',
       abrirEmNovaAba: true
     }
   ];
@@ -94,7 +94,7 @@ export default function Contatos({ onHomeClick }) {
                 <div className="canal-icon">{canal.icon}</div>
                 <h3>{canal.titulo}</h3>
                 <p>{canal.descricao}</p>
-                <span className="canal-arrow">→</span>
+                <span className="canal-arrow"></span>
               </a>
             ))}
           </div>
