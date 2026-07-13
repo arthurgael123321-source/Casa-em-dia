@@ -30,7 +30,7 @@ const services = [
       'Rejuntes e superfícies finalizadas',
       'Checagem de acabamentos e áreas comuns',
     ],
-    image: slideRepair,
+    image: slideGarden,
   },
   {
     slug: 'organizacao-de-ambientes',
@@ -54,7 +54,7 @@ const services = [
       'Limpeza de canteiros e áreas externas',
       'Verificação de saúde das plantas',
     ],
-    image: slideGarden,
+    image: slideRepair,
   },
   {
     slug: 'assistencia-domestica',
@@ -108,12 +108,12 @@ const services = [
   {
     slug: 'passadoria-de-roupas',
     title: 'Passadoria de roupas',
-    description: 'Roupas passadas e organizadas com atenÃ§Ã£o aos tecidos, ajudando a deixar a rotina da casa mais prÃ¡tica.',
+    description: 'Roupas passadas e organizadas com atenção aos tecidos, ajudando a deixar a rotina da casa mais prática.',
     details: [
-      'Passadoria de peÃ§as do dia a dia',
+      'Passadoria de peças do dia a dia',
       'Cuidados adequados para cada tipo de tecido',
-      'Dobra e organizaÃ§Ã£o das roupas passadas',
-      'Atendimento ajustado Ã  sua rotina',
+      'Dobra e organização das roupas passadas',
+      'Atendimento ajustado a sua rotina',
     ],
     image: ironingImage,
   },
