@@ -14,3 +14,20 @@ html[data-theme="dark"] img,
 html[data-theme="dark"] video {
   filter: invert(1) hue-rotate(180deg);
 }
+
+/*
+  The topbar icon buttons (Configurações/Perfil/Planos) are a white circle
+  with a dark icon. Counter-inverting just the <img> leaves the circle
+  inverted to black behind an un-inverted (still dark) icon, so both end up
+  dark-on-dark. Instead invert the whole button once — combined with the
+  page-level invert that cancels out — so the button renders exactly as it
+  does in light mode, and drop the icon's own counter-invert so it isn't
+  inverted a third time.
+*/
+html[data-theme="dark"] .top-action-button {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+html[data-theme="dark"] .top-action-button img {
+  filter: none;
+}
