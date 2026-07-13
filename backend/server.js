@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import { OAuth2Client } from 'google-auth-library';
 import pool from './db.js';
 
 dotenv.config();
@@ -13,6 +14,8 @@ const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'change-this-secret-in-env';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 const PLANOS_VALIDOS = new Set(['basico', 'premium', 'pro']);
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
+const googleClient = GOOGLE_CLIENT_ID ? new OAuth2Client(GOOGLE_CLIENT_ID) : null;
 
 const normalizeUser = (user) => ({
  id: user.id,
@@ -22,8 +25,28 @@ const normalizeUser = (user) => ({
  phone: user.telefone || '',
  address: user.endereco || '',
  plan: user.plano_atual || 'basico',
+ loginMethod: user.auth_provider || 'local',
  createdAt: user.criado_em
 });
+
+const buildUniqueUsername = async (baseName) => {
+ const sanitizedBase = String(baseName || 'usuario')
+  .toLowerCase()
+  .replace(/[^a-z0-9._-]/g, '')
+  .slice(0, 40) || 'usuario';
+
+ for (let attempt = 0; attempt < 20; attempt += 1) {
+  const suffix = attempt === 0 ? '' : `${Math.floor(1000 + Math.random() * 9000)}`;
+  const candidate = `${sanitizedBase}${suffix}`.slice(0, 60);
+
+  const [rows] = await pool.execute('SELECT id FROM usuarios WHERE username = ? LIMIT 1', [candidate]);
+  if (rows.length === 0) {
+   return candidate;
+  }
+ }
+
+ return `usuario${Date.now()}`.slice(0, 60);
+};
 
 const syncClienteFromUsuario = async (usuario) => {
  try {
@@ -191,6 +214,9 @@ app.post('/api/auth/login', async (req, res) => {
 		}
 
 		const user = rows[0];
+		if (!user.senha_hash) {
+			return res.status(401).json({ erro: 'Esta conta usa login social. Entre com Google ou defina uma senha nas configuracoes.' });
+		}
 		const passwordIsValid = await bcrypt.compare(password, user.senha_hash);
 
 		if (!passwordIsValid) {
@@ -206,6 +232,77 @@ app.post('/api/auth/login', async (req, res) => {
 	} catch (error) {
 		res.status(500).json({ erro: 'Erro no login', detalhes: error.message });
 	}
+});
+
+app.post('/api/auth/google', async (req, res) => {
+ try {
+  const { credential, idToken } = req.body;
+  const token = String(credential || idToken || '').trim();
+
+  if (!googleClient || !GOOGLE_CLIENT_ID) {
+   return res.status(500).json({ erro: 'Login Google nao configurado no servidor' });
+  }
+
+  if (!token) {
+   return res.status(400).json({ erro: 'Token do Google obrigatorio' });
+  }
+
+  const ticket = await googleClient.verifyIdToken({
+   idToken: token,
+   audience: GOOGLE_CLIENT_ID,
+  });
+
+  const payload = ticket.getPayload();
+  const email = payload?.email?.trim().toLowerCase();
+  const nomeCompleto = payload?.name?.trim() || (email ? email.split('@')[0] : 'Usuario Google');
+  const googleSub = payload?.sub;
+
+  if (!payload?.email_verified || !email || !googleSub) {
+   return res.status(401).json({ erro: 'Conta Google invalida ou sem email verificado' });
+  }
+
+  const [existingRows] = await pool.execute(
+   'SELECT * FROM usuarios WHERE google_sub = ? OR email = ? LIMIT 1',
+   [googleSub, email]
+  );
+
+  let user;
+  if (existingRows.length > 0) {
+   user = existingRows[0];
+
+   await pool.execute(
+	`UPDATE usuarios
+	 SET google_sub = ?, auth_provider = ?, nome_completo = ?, email = ?
+	 WHERE id = ?`,
+	[googleSub, 'google', nomeCompleto, email, user.id]
+   );
+
+   const [updatedRows] = await pool.execute('SELECT * FROM usuarios WHERE id = ? LIMIT 1', [user.id]);
+   user = updatedRows[0];
+  } else {
+   const usernameBase = email.split('@')[0];
+   const username = await buildUniqueUsername(usernameBase);
+   const randomPassword = await bcrypt.hash(`google_${googleSub}_${Date.now()}`, 10);
+
+   const [insertResult] = await pool.execute(
+	`INSERT INTO usuarios (username, nome_completo, email, senha_hash, telefone, endereco, auth_provider, google_sub)
+	 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+	[username, nomeCompleto, email, randomPassword, '', '', 'google', googleSub]
+   );
+
+   const [newRows] = await pool.execute('SELECT * FROM usuarios WHERE id = ? LIMIT 1', [insertResult.insertId]);
+   user = newRows[0];
+  }
+
+  await syncClienteFromUsuario(user);
+
+  return res.json({
+   token: generateToken(user),
+   user: normalizeUser(user),
+  });
+ } catch (error) {
+  return res.status(401).json({ erro: 'Falha ao autenticar com Google', detalhes: error.message });
+ }
 });
 
 app.get('/api/auth/me', authMiddleware, async (req, res) => {
