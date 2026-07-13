@@ -36,6 +36,23 @@ async function hasColumn(connection, tableName, columnName) {
  return rows[0].count > 0;
 }
 
+async function ensureUniqueIndex(connection, tableName, indexName, columnsSql) {
+ const [rows] = await connection.query(
+	`
+	 SELECT COUNT(*) AS count
+	 FROM INFORMATION_SCHEMA.STATISTICS
+	 WHERE TABLE_SCHEMA = ?
+		 AND TABLE_NAME = ?
+		 AND INDEX_NAME = ?
+	`,
+	[DB_NAME, tableName, indexName]
+ );
+
+ if (rows[0].count === 0) {
+	await connection.query(`CREATE UNIQUE INDEX \`${indexName}\` ON \`${tableName}\` (${columnsSql})`);
+ }
+}
+
 async function setupDatabase() {
  try {
  const connection = await mysql.createConnection({
@@ -58,6 +75,8 @@ async function setupDatabase() {
 	nome_completo VARCHAR(120) NOT NULL,
 	email VARCHAR(120) NOT NULL UNIQUE,
 	senha_hash VARCHAR(255) NOT NULL,
+	auth_provider VARCHAR(20) DEFAULT 'local',
+	google_sub VARCHAR(128) NULL,
 	telefone VARCHAR(30) DEFAULT '',
 	endereco VARCHAR(255) DEFAULT '',
 	plano_atual VARCHAR(20) DEFAULT 'basico',
@@ -69,6 +88,9 @@ async function setupDatabase() {
  await ensureColumn(connection, 'usuarios', 'telefone', "telefone VARCHAR(30) DEFAULT ''");
  await ensureColumn(connection, 'usuarios', 'endereco', "endereco VARCHAR(255) DEFAULT ''");
  await ensureColumn(connection, 'usuarios', 'plano_atual', "plano_atual VARCHAR(20) DEFAULT 'basico'");
+ await ensureColumn(connection, 'usuarios', 'auth_provider', "auth_provider VARCHAR(20) DEFAULT 'local' AFTER senha_hash");
+ await ensureColumn(connection, 'usuarios', 'google_sub', 'google_sub VARCHAR(128) NULL AFTER auth_provider');
+ await ensureUniqueIndex(connection, 'usuarios', 'uniq_usuarios_google_sub', '`google_sub`');
 
  await connection.query(`
  CREATE TABLE IF NOT EXISTS clientes (

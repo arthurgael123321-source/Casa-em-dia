@@ -1,11 +1,36 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import '../App.css'
 import './Login.css'
 import logo from '../assets/WhatsApp Image 2026-06-23 at 7.39.28 PM.png'
 import { persistAuthSession } from '../services/authUtils.js'
-import { login as loginApi, register as registerApi } from '../services/api.js'
+import { login as loginApi, register as registerApi, loginWithGoogle as loginWithGoogleApi } from '../services/api.js'
 import googleIcon from '../assets/OIP.png'
 import loginImage from '../assets/imagelogCasa.jpg'
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
+
+const loadGoogleScript = () => new Promise((resolve, reject) => {
+  if (window.google?.accounts?.id) {
+    resolve()
+    return
+  }
+
+  const existingScript = document.querySelector('script[data-google-identity="true"]')
+  if (existingScript) {
+    existingScript.addEventListener('load', () => resolve(), { once: true })
+    existingScript.addEventListener('error', () => reject(new Error('Falha ao carregar script do Google.')), { once: true })
+    return
+  }
+
+  const script = document.createElement('script')
+  script.src = 'https://accounts.google.com/gsi/client'
+  script.async = true
+  script.defer = true
+  script.dataset.googleIdentity = 'true'
+  script.onload = () => resolve()
+  script.onerror = () => reject(new Error('Falha ao carregar script do Google.'))
+  document.head.appendChild(script)
+})
 
 
 export default function Login({ onBack, onLoginSuccess }) {
@@ -22,8 +47,6 @@ export default function Login({ onBack, onLoginSuccess }) {
   )) // 'traditional', 'google', 'facebook', 'sms'
   const [verificationCode, setVerificationCode] = useState('')
   const [sentCode, setSentCode] = useState('')
-  const [codeWasSent, setCodeWasSent] = useState(false)
-  const [socialEmail, setSocialEmail] = useState('')
   const [resetIdentifier, setResetIdentifier] = useState('')
   const [resetUser, setResetUser] = useState(null)
   const [resetStep, setResetStep] = useState('identify') // 'identify', 'code', 'new-password'
@@ -34,6 +57,9 @@ export default function Login({ onBack, onLoginSuccess }) {
   // Estados gerais
   const [error, setError] = useState('')
   const [rememberMe, setRememberMe] = useState(() => localStorage.getItem('rememberMe') === 'true')
+  const [googleLoading, setGoogleLoading] = useState(false)
+  const [googleReady, setGoogleReady] = useState(false)
+  const googleButtonRef = useRef(null)
 
   // Inicializar usuários no local storage
   useEffect(() => {
@@ -67,12 +93,6 @@ export default function Login({ onBack, onLoginSuccess }) {
     }
   }
 
-  const saveUserToStorage = (user) => {
-    const users = getUsersFromStorage()
-    users.push(user)
-    localStorage.setItem('users', JSON.stringify(users))
-  }
-
   const updateUserInStorage = (updatedUser) => {
     const users = getUsersFromStorage()
     const updatedUsers = users.map((user) => (
@@ -86,7 +106,7 @@ export default function Login({ onBack, onLoginSuccess }) {
     return users.find(u => u.email === emailOrUsername || u.username === emailOrUsername)
   }
 
-  const authenticateUser = (user, token = null) => {
+  const authenticateUser = useCallback((user, token = null) => {
     persistAuthSession(user, rememberMe, token)
 
     if (onLoginSuccess) {
@@ -94,7 +114,84 @@ export default function Login({ onBack, onLoginSuccess }) {
     } else {
       window.location.href = '/'
     }
-  }
+  }, [rememberMe, onLoginSuccess])
+
+  const handleGoogleCredential = useCallback(async (response) => {
+    const credential = response?.credential
+
+    if (!credential) {
+      setError('Nao foi possivel obter token do Google')
+      return
+    }
+
+    setGoogleLoading(true)
+    setError('')
+    setSuccess('')
+
+    try {
+      const result = await loginWithGoogleApi(credential)
+      authenticateUser(result.user, result.token)
+    } catch (requestError) {
+      setError(requestError.message || 'Erro ao autenticar com Google')
+    } finally {
+      setGoogleLoading(false)
+    }
+  }, [authenticateUser])
+
+  useEffect(() => {
+    if (authMode !== 'google') {
+      return
+    }
+
+    let isCancelled = false
+
+    const initGoogleLogin = async () => {
+      if (!GOOGLE_CLIENT_ID) {
+        setGoogleReady(false)
+        setError('Defina VITE_GOOGLE_CLIENT_ID no .env para habilitar o login Google')
+        return
+      }
+
+      setGoogleLoading(true)
+      try {
+        await loadGoogleScript()
+        if (isCancelled || !window.google?.accounts?.id) {
+          return
+        }
+
+        window.google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleGoogleCredential,
+          auto_select: false,
+          cancel_on_tap_outside: true,
+        })
+
+        if (googleButtonRef.current) {
+          googleButtonRef.current.innerHTML = ''
+          window.google.accounts.id.renderButton(googleButtonRef.current, {
+            theme: 'outline',
+            size: 'large',
+            shape: 'pill',
+            text: 'continue_with',
+            width: 320,
+          })
+        }
+
+        setGoogleReady(true)
+      } catch (googleError) {
+        setGoogleReady(false)
+        setError(googleError.message || 'Falha ao iniciar login Google')
+      } finally {
+        setGoogleLoading(false)
+      }
+    }
+
+    initGoogleLogin()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [authMode, handleGoogleCredential])
   const resetForgotPasswordForm = () => {
     setResetIdentifier('')
     setResetUser(null)
@@ -234,59 +331,6 @@ export default function Login({ onBack, onLoginSuccess }) {
         setError(requestError.message || 'Erro ao entrar')
       }
     }
-  }
-
-  // Enviar código para Google
-  const handleGoogleCodeSend = (e) => {
-    e.preventDefault()
-    setError('')
-
-    if (!socialEmail.trim()) {
-      setError('Por favor digite um email')
-      return
-    }
-
-    if (!validateEmail(socialEmail)) {
-      setError('Email inválido')
-      return
-    }
-
-    const code = generateRandomCode()
-    setSentCode(code)
-    setCodeWasSent(true)
-    setVerificationCode('')
-  }
-
-  // Verificar código Google
-  const handleGoogleCodeVerify = (e) => {
-    e.preventDefault()
-    setError('')
-
-    if (!verificationCode.trim()) {
-      setError('Por favor digite o código')
-      return
-    }
-
-    if (verificationCode !== sentCode) {
-      setError('Código incorreto')
-      return
-    }
-
-    // Criar ou encontrar usuário Google
-    let user = findUser(socialEmail)
-    if (!user) {
-      user = {
-        id: Date.now(),
-        username: socialEmail.split('@')[0],
-        email: socialEmail,
-        password: null,
-        loginMethod: 'google',
-        createdAt: new Date().toISOString(),
-      }
-      saveUserToStorage(user)
-    }
-
-    authenticateUser(user)
   }
 
   return (
@@ -441,7 +485,7 @@ export default function Login({ onBack, onLoginSuccess }) {
                     onClick={() => {
                       setAuthMode('google')
                       setError('')
-                      setCodeWasSent(false)
+                      setSuccess('')
                     }}
                   >
                     <img src={googleIcon} alt="Google" className="social-icon" />
@@ -577,76 +621,32 @@ export default function Login({ onBack, onLoginSuccess }) {
           )}
 
           {authMode === 'google' && (
-            <form 
- className="login-form"
- onSubmit={codeWasSent ? handleGoogleCodeVerify : handleGoogleCodeSend}
->
-              {!codeWasSent ? (
-                <>
-                  <h3 className="auth-title">Login com Google</h3>
-                  <input
-                    id="google-email"
-                    className="login-input"
-                    type="email"
-                    value={socialEmail}
-                    onChange={(e) => setSocialEmail(e.target.value)}
-                    placeholder="Digite seu email Google"
-                    required
-                  />
-                  {error && <div className="login-error">{error}</div>}
-                  <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                    <button
-                      type="button"
-                      className="login-submit"
-                      onClick={() => {
-                        setAuthMode('traditional')
-                        setError('')
-                        setSocialEmail('')
-                      }}
-                      style={{ background: '#fff', color: 'var(--accent-dark)', border: '2px solid rgba(33,64,27,0.06)', width: 110 }}
-                    >
-                      Voltar
-                    </button>
-                    <button className="login-submit" type="submit">Enviar Código</button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <h3 className="auth-title">Código Enviado</h3>
-                  <div className="code-display">
-                    <p className="code-text">Seu código de verificação é:</p>
-                    <div className="code-box">{sentCode}</div>
-                    <p className="code-info">Esse código foi enviado para {socialEmail}</p>
-                  </div>
-                  <input
-                    id="google-code"
-                    className="login-input"
-                    type="text"
-                    value={verificationCode}
-                    onChange={(e) => setVerificationCode(e.target.value)}
-                    placeholder="Digite o código"
-                    required
-                    maxLength="6"
-                  />
-                  {error && <div className="login-error">{error}</div>}
-                  <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-                    <button
-                      type="button"
-                      className="login-submit"
-                      onClick={() => {
-                        setCodeWasSent(false)
-                        setVerificationCode('')
-                        setError('')
-                      }}
-                      style={{ background: '#fff', color: 'var(--accent-dark)', border: '2px solid rgba(33,64,27,0.06)', width: 110 }}
-                    >
-                      Voltar
-                    </button>
-                    <button className="login-submit" type="submit">Verificar Código</button>
-                  </div>
-                </>
+            <div className="login-form">
+              <h3 className="auth-title">Login com Google</h3>
+              <p className="code-info">Use sua conta Google para entrar com seguranca.</p>
+
+              {!GOOGLE_CLIENT_ID && (
+                <div className="login-error">Variavel VITE_GOOGLE_CLIENT_ID nao configurada.</div>
               )}
-            </form>
+
+              {googleLoading && <div className="code-info">Carregando autenticacao Google...</div>}
+              <div ref={googleButtonRef} style={{ display: googleReady ? 'flex' : 'none', justifyContent: 'center', margin: '12px 0 8px' }} />
+
+              {error && <div className="login-error">{error}</div>}
+              <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
+                <button
+                  type="button"
+                  className="login-submit"
+                  onClick={() => {
+                    setAuthMode('traditional')
+                    setError('')
+                  }}
+                  style={{ background: '#fff', color: 'var(--accent-dark)', border: '2px solid rgba(33,64,27,0.06)', width: 110 }}
+                >
+                  Voltar
+                </button>
+              </div>
+            </div>
           )}
 
         </div>

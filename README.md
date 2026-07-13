@@ -79,7 +79,9 @@ DB_USER=
 DB_PASSWORD=
 JWT_SECRET=
 JWT_EXPIRES_IN=7d
+GOOGLE_CLIENT_ID=
 VITE_API_URL=http://localhost:3000/api
+VITE_GOOGLE_CLIENT_ID=
 ```
 
 ## Status do projeto

@@ -37,6 +37,16 @@ export async function login(identifier, password) {
 	return parseResponse(response, 'Erro ao autenticar')
 }
 
+export async function loginWithGoogle(credential) {
+	const response = await fetch(`${BASE}/auth/google`, {
+		method: 'POST',
+		headers: { 'Content-Type': 'application/json' },
+		body: JSON.stringify({ credential }),
+	})
+
+	return parseResponse(response, 'Erro ao autenticar com Google')
+}
+
 export async function register({ username, fullName, email, password }) {
 	const response = await fetch(`${BASE}/auth/register`, {
 		method: 'POST',
