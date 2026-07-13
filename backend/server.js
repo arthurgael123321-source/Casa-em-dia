@@ -40,6 +40,42 @@ const normalizeUser = (user) => ({
  createdAt: user.criado_em
 });
 
+let usuariosSchemaCache = null;
+
+const getUsuariosSchemaCapabilities = async () => {
+ if (usuariosSchemaCache) {
+	return usuariosSchemaCache;
+ }
+
+ const capabilities = {
+	hasGoogleSub: false,
+	hasAuthProvider: false,
+ };
+
+ try {
+	const [columns] = await pool.query(
+	 `SELECT COLUMN_NAME
+		FROM INFORMATION_SCHEMA.COLUMNS
+		WHERE TABLE_SCHEMA = DATABASE()
+			AND TABLE_NAME = 'usuarios'
+			AND COLUMN_NAME IN ('google_sub', 'auth_provider')`
+	);
+
+	capabilities.hasGoogleSub = columns.some((column) => column.COLUMN_NAME === 'google_sub');
+	capabilities.hasAuthProvider = columns.some((column) => column.COLUMN_NAME === 'auth_provider');
+ } catch {
+	capabilities.hasGoogleSub = false;
+	capabilities.hasAuthProvider = false;
+ }
+
+ usuariosSchemaCache = capabilities;
+ return capabilities;
+};
+
+const invalidateUsuariosSchemaCache = () => {
+ usuariosSchemaCache = null;
+};
+
 const buildUniqueUsername = async (baseName) => {
  const sanitizedBase = String(baseName || 'usuario')
   .toLowerCase()
@@ -272,21 +308,64 @@ app.post('/api/auth/google', async (req, res) => {
    return res.status(401).json({ erro: 'Conta Google invalida ou sem email verificado' });
   }
 
-  const [existingRows] = await pool.execute(
-   'SELECT * FROM usuarios WHERE google_sub = ? OR email = ? LIMIT 1',
-   [googleSub, email]
-  );
+  let schema = await getUsuariosSchemaCapabilities();
+  let existingRows;
+
+  try {
+	if (schema.hasGoogleSub) {
+	 [existingRows] = await pool.execute(
+	  'SELECT * FROM usuarios WHERE google_sub = ? OR email = ? LIMIT 1',
+	  [googleSub, email]
+	 );
+	} else {
+	 [existingRows] = await pool.execute(
+	  'SELECT * FROM usuarios WHERE email = ? LIMIT 1',
+	  [email]
+	 );
+	}
+  } catch (queryError) {
+	if (queryError?.code === 'ER_BAD_FIELD_ERROR' && String(queryError.message || '').includes('google_sub')) {
+	 invalidateUsuariosSchemaCache();
+	 schema = await getUsuariosSchemaCapabilities();
+	 [existingRows] = await pool.execute('SELECT * FROM usuarios WHERE email = ? LIMIT 1', [email]);
+	} else {
+	 throw queryError;
+	}
+  }
 
   let user;
   if (existingRows.length > 0) {
    user = existingRows[0];
 
-   await pool.execute(
-	`UPDATE usuarios
-	 SET google_sub = ?, auth_provider = ?, nome_completo = ?, email = ?
-	 WHERE id = ?`,
-	[googleSub, 'google', nomeCompleto, email, user.id]
-   );
+	if (schema.hasGoogleSub && schema.hasAuthProvider) {
+	 await pool.execute(
+	 `UPDATE usuarios
+	  SET google_sub = ?, auth_provider = ?, nome_completo = ?, email = ?
+	  WHERE id = ?`,
+	 [googleSub, 'google', nomeCompleto, email, user.id]
+	 );
+	} else if (schema.hasGoogleSub) {
+	 await pool.execute(
+	 `UPDATE usuarios
+	  SET google_sub = ?, nome_completo = ?, email = ?
+	  WHERE id = ?`,
+	 [googleSub, nomeCompleto, email, user.id]
+	 );
+	} else if (schema.hasAuthProvider) {
+	 await pool.execute(
+	 `UPDATE usuarios
+	  SET auth_provider = ?, nome_completo = ?, email = ?
+	  WHERE id = ?`,
+	 ['google', nomeCompleto, email, user.id]
+	 );
+	} else {
+	 await pool.execute(
+	 `UPDATE usuarios
+	  SET nome_completo = ?, email = ?
+	  WHERE id = ?`,
+	 [nomeCompleto, email, user.id]
+	 );
+	}
 
    const [updatedRows] = await pool.execute('SELECT * FROM usuarios WHERE id = ? LIMIT 1', [user.id]);
    user = updatedRows[0];
@@ -295,11 +374,32 @@ app.post('/api/auth/google', async (req, res) => {
    const username = await buildUniqueUsername(usernameBase);
    const randomPassword = await bcrypt.hash(`google_${googleSub}_${Date.now()}`, 10);
 
-   const [insertResult] = await pool.execute(
-	`INSERT INTO usuarios (username, nome_completo, email, senha_hash, telefone, endereco, auth_provider, google_sub)
-	 VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-	[username, nomeCompleto, email, randomPassword, '', '', 'google', googleSub]
-   );
+	let insertResult;
+	if (schema.hasGoogleSub && schema.hasAuthProvider) {
+	 [insertResult] = await pool.execute(
+	 `INSERT INTO usuarios (username, nome_completo, email, senha_hash, telefone, endereco, auth_provider, google_sub)
+	  VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+	 [username, nomeCompleto, email, randomPassword, '', '', 'google', googleSub]
+	 );
+	} else if (schema.hasGoogleSub) {
+	 [insertResult] = await pool.execute(
+	 `INSERT INTO usuarios (username, nome_completo, email, senha_hash, telefone, endereco, google_sub)
+	  VALUES (?, ?, ?, ?, ?, ?, ?)`,
+	 [username, nomeCompleto, email, randomPassword, '', '', googleSub]
+	 );
+	} else if (schema.hasAuthProvider) {
+	 [insertResult] = await pool.execute(
+	 `INSERT INTO usuarios (username, nome_completo, email, senha_hash, telefone, endereco, auth_provider)
+	  VALUES (?, ?, ?, ?, ?, ?, ?)`,
+	 [username, nomeCompleto, email, randomPassword, '', '', 'google']
+	 );
+	} else {
+	 [insertResult] = await pool.execute(
+	 `INSERT INTO usuarios (username, nome_completo, email, senha_hash, telefone, endereco)
+	  VALUES (?, ?, ?, ?, ?, ?)`,
+	 [username, nomeCompleto, email, randomPassword, '', '']
+	 );
+	}
 
    const [newRows] = await pool.execute('SELECT * FROM usuarios WHERE id = ? LIMIT 1', [insertResult.insertId]);
    user = newRows[0];
