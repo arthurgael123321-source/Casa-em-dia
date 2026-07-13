@@ -7,7 +7,10 @@ import { login as loginApi, register as registerApi, loginWithGoogle as loginWit
 import googleIcon from '../assets/OIP.png'
 import loginImage from '../assets/imagelogCasa.jpg'
 
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || ''
+const GOOGLE_CLIENT_ID = (
+  import.meta.env.VITE_GOOGLE_CLIENT_ID ||
+  '393847874149-t84gnf07986drl1920s0v54q67q4c5au.apps.googleusercontent.com'
+).trim()
 
 const loadGoogleScript = () => new Promise((resolve, reject) => {
   if (window.google?.accounts?.id) {

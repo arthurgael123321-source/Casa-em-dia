@@ -14,7 +14,10 @@ const PORT = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'change-this-secret-in-env';
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 const PLANOS_VALIDOS = new Set(['basico', 'premium', 'pro']);
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
+const GOOGLE_CLIENT_ID = (
+ process.env.GOOGLE_CLIENT_ID ||
+ '393847874149-t84gnf07986drl1920s0v54q67q4c5au.apps.googleusercontent.com'
+).trim();
 const googleClient = GOOGLE_CLIENT_ID ? new OAuth2Client(GOOGLE_CLIENT_ID) : null;
 
 const normalizeUser = (user) => ({
