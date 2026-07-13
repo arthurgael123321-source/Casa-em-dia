@@ -110,7 +110,7 @@ function Agendamento() {
 
           <div className="agendamento-contact-box">
             <strong>Atendimento rápido</strong>
-            <p><a href="https://wa.me/5511999998888" target="_blank" rel="noopener noreferrer">Fale com a equipe pelo WhatsApp</a> ou ligue para <a href="tel:+5511999998888">(11) 99999-8888</a>.</p>
+            <p><a href="https://wa.me/551190028922" target="_blank" rel="noopener noreferrer">Fale com a equipe pelo WhatsApp</a> ou ligue para <a href="tel:+551190028922">(11) 9002-8922</a>.</p>
           </div>
         </div>
       </div>

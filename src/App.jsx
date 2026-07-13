@@ -51,7 +51,7 @@ function AppShell({ currentView, onNavigate, children }) {
 
         <div className="sidebar-contact">
           <h4 className="sidebar-subtitle">Fale Conosco</h4>
-          <a href="tel:+5511999998888" className="sidebar-contact-link">(11) 99999-8888</a>
+          <a href="tel:+551190028922" className="sidebar-contact-link">(11) 9002-8922</a>
           <a href="mailto:contato@casaemdia.com" className="sidebar-contact-link">contato@casaemdia.com</a>
         </div>
 
