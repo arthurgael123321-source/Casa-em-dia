@@ -2,7 +2,6 @@ import './App.css'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { isAuthenticated, logout } from './services/authUtils.js'
 import Home from './componentes/Home.jsx'
-import Login from './componentes/Login.jsx'
 import Contatos from './componentes/Contatos.jsx'
 import { Planos } from './componentes/Planos.jsx'
 import Servicos from './componentes/Serviços.jsx'
@@ -11,6 +10,7 @@ import services from './componentes/servicosData.js'
 import Perfil from './componentes/Perfil.jsx'
 import Configuracoes from './componentes/Configuracoes.jsx'
 import Agendamento from './componentes/Agendamento.jsx'
+import AuthGate from './componentes/AuthGate.jsx'
 import logo from './assets/WhatsApp Image 2026-06-23 at 7.39.28 PM.png'
 import topbarLogo from './assets/LogoCasa_em_dia.png'
 import configIcon from './assets/configs.png'
@@ -19,7 +19,16 @@ import plansIcon from './assets/planos.png'
 
 const serviceViews = services.map((service) => service.slug)
 
-const appViews = ['login', 'home', 'contatos', 'servicos', 'planos', 'perfil', 'configuracoes', 'agendamento', ...serviceViews]
+const appViews = ['home', 'contatos', 'servicos', 'planos', 'perfil', 'configuracoes', 'agendamento', ...serviceViews]
+
+const protectedViews = ['contatos', 'agendamento', 'perfil', 'configuracoes']
+
+const authGateMessages = {
+  contatos: 'Faça login para falar conosco.',
+  agendamento: 'Faça login para agendar um serviço.',
+  perfil: 'Faça login para acessar seu perfil.',
+  configuracoes: 'Faça login para acessar as configurações.',
+}
 
 const getViewFromHash = () => {
   const hashView = window.location.hash.replace('#', '')
@@ -28,7 +37,7 @@ const getViewFromHash = () => {
     return hashView
   }
 
-  return isAuthenticated() ? 'servicos' : 'login'
+  return 'servicos'
 }
 
 function AppShell({ currentView, onNavigate, children }) {
@@ -89,8 +98,35 @@ function AppShell({ currentView, onNavigate, children }) {
   )
 }
 
+const resolveView = (candidateView) => {
+  if (protectedViews.includes(candidateView) && !isAuthenticated()) {
+    return 'servicos'
+  }
+
+  return candidateView
+}
+
 export default function App() {
-  const [view, setView] = useState(getViewFromHash)
+  const [view, setView] = useState(() => resolveView(getViewFromHash()))
+
+  const goToView = useCallback((nextView) => {
+    window.history.pushState({ view: nextView }, '', `#${nextView}`)
+    setView(nextView)
+  }, [])
+
+  const [authGateRequest, setAuthGateRequest] = useState(() => {
+    const initialView = getViewFromHash()
+
+    if (protectedViews.includes(initialView) && !isAuthenticated()) {
+      return { message: authGateMessages[initialView], onSuccess: () => goToView(initialView) }
+    }
+
+    return null
+  })
+
+  const requireAuth = useCallback((message, onSuccess) => {
+    setAuthGateRequest({ message, onSuccess })
+  }, [])
 
   useEffect(() => {
     window.history.replaceState({ view }, '', `#${view}`)
@@ -98,14 +134,14 @@ export default function App() {
 
   useEffect(() => {
     const handlePopState = (event) => {
-      const previousView = event.state?.view
+      const previousView = appViews.includes(event.state?.view) ? event.state.view : getViewFromHash()
 
-      if (appViews.includes(previousView)) {
-        setView(previousView)
+      if (protectedViews.includes(previousView) && !isAuthenticated()) {
+        requireAuth(authGateMessages[previousView], () => setView(previousView))
         return
       }
 
-      setView(getViewFromHash())
+      setView(previousView)
     }
 
     window.addEventListener('popstate', handlePopState)
@@ -113,102 +149,127 @@ export default function App() {
     return () => {
       window.removeEventListener('popstate', handlePopState)
     }
-  }, [])
+  }, [requireAuth])
 
   const navigate = useCallback((nextView) => {
     if (!appViews.includes(nextView) || nextView === view) {
       return
     }
 
-    window.history.pushState({ view: nextView }, '', `#${nextView}`)
-    setView(nextView)
-  }, [view])
+    if (protectedViews.includes(nextView) && !isAuthenticated()) {
+      requireAuth(authGateMessages[nextView], () => goToView(nextView))
+      return
+    }
 
-  if (view === 'login') {
-    return <Login onLoginSuccess={() => navigate('servicos')} />
-  }
+    goToView(nextView)
+  }, [view, goToView, requireAuth])
 
-  if (view === 'contatos') {
+  const closeAuthGate = useCallback(() => setAuthGateRequest(null), [])
+
+  const handleAuthGateSuccess = useCallback(() => {
+    const request = authGateRequest
+    setAuthGateRequest(null)
+    request?.onSuccess?.()
+  }, [authGateRequest])
+
+  const content = renderContent()
+
+  return (
+    <>
+      {content}
+      {authGateRequest && (
+        <AuthGate
+          message={authGateRequest.message}
+          onClose={closeAuthGate}
+          onLoginSuccess={handleAuthGateSuccess}
+        />
+      )}
+    </>
+  )
+
+  function renderContent() {
+    if (view === 'contatos') {
+      return (
+        <AppShell currentView={view} onNavigate={navigate}>
+          <Contatos onHomeClick={() => navigate('home')} />
+        </AppShell>
+      )
+    }
+  
+    if (view === 'agendamento') {
+      return (
+        <AppShell currentView={view} onNavigate={navigate}>
+          <Agendamento />
+        </AppShell>
+      )
+    }
+  
+    if (view === 'servicos') {
+      return (
+        <AppShell currentView={view} onNavigate={navigate}>
+          <Servicos
+            onContactClick={() => navigate('contatos')}
+            onPlanosClick={() => navigate('planos')}
+            onServicePageClick={(slug) => navigate(slug)}
+          />
+        </AppShell>
+      )
+    }
+  
+    if (serviceViews.includes(view)) {
+      return (
+        <AppShell currentView={view} onNavigate={navigate}>
+          <ServicoDetalhe
+            serviceSlug={view}
+            onScheduleClick={() => navigate('agendamento')}
+            onServicosClick={() => navigate('servicos')}
+          />
+        </AppShell>
+      )
+    }
+  
+    if (view === 'planos') {
+      return (
+        <AppShell currentView={view} onNavigate={navigate}>
+          <Planos onHomeClick={() => navigate('home')} onRequireAuth={requireAuth} />
+        </AppShell>
+      )
+    }
+  
+    if (view === 'perfil') {
+      return (
+        <AppShell currentView={view} onNavigate={navigate}>
+          <Perfil
+            onLoginClick={() => {
+              logout()
+              navigate('servicos')
+            }}
+          />
+        </AppShell>
+      )
+    }
+  
+    if (view === 'configuracoes') {
+      return (
+        <AppShell currentView={view} onNavigate={navigate}>
+          <Configuracoes
+            onHomeClick={() => navigate('home')}
+            onLoginClick={() => {
+              logout()
+              navigate('servicos')
+            }}
+          />
+        </AppShell>
+      )
+    }
+  
     return (
       <AppShell currentView={view} onNavigate={navigate}>
-        <Contatos onHomeClick={() => navigate('home')} />
-      </AppShell>
-    )
-  }
-
-  if (view === 'agendamento') {
-    return (
-      <AppShell currentView={view} onNavigate={navigate}>
-        <Agendamento />
-      </AppShell>
-    )
-  }
-
-  if (view === 'servicos') {
-    return (
-      <AppShell currentView={view} onNavigate={navigate}>
-        <Servicos
-          onContactClick={() => navigate('contatos')}
-          onPlanosClick={() => navigate('planos')}
+        <Home
+          onServicosClick={() => navigate('servicos')}
           onServicePageClick={(slug) => navigate(slug)}
         />
       </AppShell>
     )
   }
-
-  if (serviceViews.includes(view)) {
-    return (
-      <AppShell currentView={view} onNavigate={navigate}>
-        <ServicoDetalhe
-          serviceSlug={view}
-          onScheduleClick={() => navigate('agendamento')}
-          onServicosClick={() => navigate('servicos')}
-        />
-      </AppShell>
-    )
-  }
-
-  if (view === 'planos') {
-    return (
-      <AppShell currentView={view} onNavigate={navigate}>
-        <Planos onHomeClick={() => navigate('home')} />
-      </AppShell>
-    )
-  }
-
-  if (view === 'perfil') {
-    return (
-      <AppShell currentView={view} onNavigate={navigate}>
-        <Perfil
-          onLoginClick={() => {
-            logout()
-            navigate('login')
-          }}
-        />
-      </AppShell>
-    )
-  }
-
-  if (view === 'configuracoes') {
-    return (
-      <AppShell currentView={view} onNavigate={navigate}>
-        <Configuracoes
-          onHomeClick={() => navigate('home')}
-          onLoginClick={() => {
-            logout()
-            navigate('login')
-          }}
-        />
-      </AppShell>
-    )
-  }
-
-  return (
-    <AppShell currentView={view} onNavigate={navigate}>
-      <Home
-        onServicosClick={() => navigate('servicos')}
-        onServicePageClick={(slug) => navigate(slug)}
-      />
-    </AppShell>
-  )
 }
