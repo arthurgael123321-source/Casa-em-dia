@@ -409,6 +409,10 @@ app.get('/api/agendamentos/me', authMiddleware, async (req, res) => {
  }
 });
 
-app.listen(PORT, () => {
- console.log(`Servidor rodando na porta ${PORT}`);
-});
+if (process.env.VERCEL !== '1') {
+ app.listen(PORT, () => {
+  console.log(`Servidor rodando na porta ${PORT}`);
+ });
+}
+
+export default app;
