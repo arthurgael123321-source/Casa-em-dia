@@ -42,3 +42,17 @@ html[data-theme="dark"] .top-action-button img {
 html[data-theme="dark"] .nav-icon {
   filter: none;
 }
+
+/*
+  Same dark-on-dark problem as the topbar buttons: the Google icon on
+  "Entrar com Google" sits on a fixed white pill. Keep the whole button
+  exactly as it looks in light mode instead of turning the pill black
+  behind an un-inverted (still-colorful, but low-contrast) icon.
+*/
+html[data-theme="dark"] .social-btn.google {
+  filter: invert(1) hue-rotate(180deg);
+}
+
+html[data-theme="dark"] .social-btn.google img {
+  filter: none;
+}
