@@ -1,0 +1,16 @@
+/*
+  Dark mode is implemented as a whole-page color inversion instead of
+  per-component overrides: this codebase has colors hardcoded across many
+  CSS files and inline styles, so inverting the page (and counter-inverting
+  media) gives every screen a working dark theme without having to touch
+  each one individually.
+*/
+html[data-theme="dark"] {
+  filter: invert(1) hue-rotate(180deg);
+  background: #fff;
+}
+
+html[data-theme="dark"] img,
+html[data-theme="dark"] video {
+  filter: invert(1) hue-rotate(180deg);
+}

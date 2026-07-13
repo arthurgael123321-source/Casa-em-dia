@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { getCurrentUser, updateCurrentUserProfile, clearAuthSession } from '../services/authUtils.js'
 import { atualizarPerfil } from '../services/api.js'
+import { useLanguage } from '../i18n/languageStore.js'
 
 const getFormData = (currentUser) => ({
   fullName: currentUser?.fullName || '',
@@ -11,6 +12,7 @@ const getFormData = (currentUser) => ({
 })
 
 function Perfil({ onLoginClick }) {
+  const { t } = useLanguage()
   const [user, setUser] = useState(() => getCurrentUser())
   const [isEditing, setIsEditing] = useState(false)
   const [message, setMessage] = useState('')
@@ -32,14 +34,14 @@ function Perfil({ onLoginClick }) {
         setUser(updatedUser)
         setFormData(getFormData(updatedUser))
         setIsEditing(false)
-        setMessage('Perfil atualizado com sucesso!')
+        setMessage(t('perfil.perfilAtualizado'))
         return
       }
     } catch {
       // A mensagem de erro mais amigavel fica abaixo.
     }
 
-    setMessage('Nao foi possivel atualizar o perfil neste momento.')
+    setMessage(t('perfil.erroAtualizarPerfil'))
   }
 
   const handleLogout = () => {
@@ -53,10 +55,10 @@ function Perfil({ onLoginClick }) {
     return (
       <main className="profile-page">
         <section className="profile-card" role="region" aria-label="Perfil do usuário">
-          <h2>Você ainda não fez login.</h2>
-          <p className="profile-subtitle">Entre para acessar seu perfil e editar seus dados.</p>
+          <h2>{t('perfil.semLoginTitulo')}</h2>
+          <p className="profile-subtitle">{t('perfil.semLoginTexto')}</p>
           <div className="profile-actions">
-            <button className="profile-primary" onClick={() => onLoginClick && onLoginClick()}>Ir para login</button>
+            <button className="profile-primary" onClick={() => onLoginClick && onLoginClick()}>{t('perfil.irParaLogin')}</button>
           </div>
         </section>
       </main>
@@ -70,14 +72,14 @@ function Perfil({ onLoginClick }) {
           <div className="profile-identity">
             <div className="profile-avatar">{(user.fullName || user.username || user.email || 'C').slice(0, 1).toUpperCase()}</div>
             <div>
-              <p className="profile-eyebrow">Minha conta</p>
-              <h2>Olá, {user.fullName || user.username || user.email}</h2>
-              <p className="profile-subtitle">Seu espaço para manter dados, preferências e histórico sempre em dia.</p>
+              <p className="profile-eyebrow">{t('perfil.minhaConta')}</p>
+              <h2>{t('perfil.ola', { nome: user.fullName || user.username || user.email })}</h2>
+              <p className="profile-subtitle">{t('perfil.subtitulo')}</p>
             </div>
           </div>
           <div className="profile-actions">
             <button className="profile-primary" onClick={handleLogout}>
-              Sair
+              {t('perfil.sair')}
             </button>
           </div>
         </header>
@@ -86,52 +88,52 @@ function Perfil({ onLoginClick }) {
 
         <div className="profile-highlight-row">
           <article className="profile-highlight-card">
-            <p className="profile-highlight-title">Status da conta</p>
-            <strong>Conta ativa</strong>
-            <span>Seu perfil está pronto para receber novos agendamentos.</span>
+            <p className="profile-highlight-title">{t('perfil.statusConta')}</p>
+            <strong>{t('perfil.contaAtiva')}</strong>
+            <span>{t('perfil.contaAtivaTexto')}</span>
           </article>
           <article className="profile-highlight-card">
-            <p className="profile-highlight-title">Próximo passo</p>
-            <strong>Atualize seus dados</strong>
-            <span>Deixe seu cadastro completo e preparado para qualquer serviço.</span>
+            <p className="profile-highlight-title">{t('perfil.proximoPasso')}</p>
+            <strong>{t('perfil.atualizeDados')}</strong>
+            <span>{t('perfil.atualizeDadosTexto')}</span>
           </article>
           <article className="profile-highlight-card">
-            <p className="profile-highlight-title">Segurança</p>
-            <strong>Proteção reforçada</strong>
-            <span>Seu acesso fica seguro e organizado em um só lugar.</span>
+            <p className="profile-highlight-title">{t('perfil.seguranca')}</p>
+            <strong>{t('perfil.protecaoReforcada')}</strong>
+            <span>{t('perfil.protecaoReforcadaTexto')}</span>
           </article>
         </div>
 
         <div className="profile-grid">
           <article className="profile-panel">
             <div className="profile-panel-header">
-              <h3>Dados pessoais</h3>
+              <h3>{t('perfil.dadosPessoais')}</h3>
               <button className="profile-link-button" onClick={() => setIsEditing((prev) => !prev)}>
-                {isEditing ? 'Cancelar' : 'Editar'}
+                {isEditing ? t('perfil.cancelar') : t('perfil.editar')}
               </button>
             </div>
 
             <form className="profile-form" onSubmit={handleSave}>
               <label className="profile-field">
-                <span>Nome completo</span>
+                <span>{t('perfil.nomeCompleto')}</span>
                 {isEditing ? (
                   <input name="fullName" value={formData.fullName} onChange={handleChange} className="profile-input" />
                 ) : (
-                  <strong>{user.fullName || 'Não informado'}</strong>
+                  <strong>{user.fullName || t('perfil.naoInformado')}</strong>
                 )}
               </label>
 
               <label className="profile-field">
-                <span>Usuário</span>
+                <span>{t('perfil.usuario')}</span>
                 {isEditing ? (
                   <input name="username" value={formData.username} onChange={handleChange} className="profile-input" />
                 ) : (
-                  <strong>{user.username || 'Não informado'}</strong>
+                  <strong>{user.username || t('perfil.naoInformado')}</strong>
                 )}
               </label>
 
               <label className="profile-field">
-                <span>E-mail</span>
+                <span>{t('perfil.email')}</span>
                 {isEditing ? (
                   <input name="email" type="email" value={formData.email} onChange={handleChange} className="profile-input" />
                 ) : (
@@ -140,44 +142,44 @@ function Perfil({ onLoginClick }) {
               </label>
 
               <label className="profile-field">
-                <span>Telefone</span>
+                <span>{t('perfil.telefone')}</span>
                 {isEditing ? (
                   <input name="phone" value={formData.phone} onChange={handleChange} className="profile-input" />
                 ) : (
-                  <strong>{user.phone || 'Não informado'}</strong>
+                  <strong>{user.phone || t('perfil.naoInformado')}</strong>
                 )}
               </label>
 
               <label className="profile-field">
-                <span>Endereço</span>
+                <span>{t('perfil.endereco')}</span>
                 {isEditing ? (
                   <input name="address" value={formData.address} onChange={handleChange} className="profile-input" />
                 ) : (
-                  <strong>{user.address || 'Não informado'}</strong>
+                  <strong>{user.address || t('perfil.naoInformado')}</strong>
                 )}
               </label>
 
               {isEditing && (
                 <button className="profile-primary" type="submit">
-                  Salvar alterações
+                  {t('perfil.salvarAlteracoes')}
                 </button>
               )}
             </form>
           </article>
 
           <article className="profile-panel profile-panel-secondary">
-            <h3>Resumo da conta</h3>
-            <p className="profile-highlight">Seu cadastro está sempre atualizado.</p>
-            <p>Organize seus dados, mantenha o atendimento mais rápido e tenha mais praticidade para agendar cada serviço.</p>
+            <h3>{t('perfil.resumoConta')}</h3>
+            <p className="profile-highlight">{t('perfil.cadastroAtualizado')}</p>
+            <p>{t('perfil.resumoTexto')}</p>
             <ul className="profile-info-list">
-              <li><span>Login seguro</span><strong>Ativo</strong></li>
-              <li><span>Dados atualizados</span><strong>Disponível</strong></li>
-              <li><span>Acesso rápido</span><strong>Pronto</strong></li>
+              <li><span>{t('perfil.loginSeguro')}</span><strong>{t('perfil.ativo')}</strong></li>
+              <li><span>{t('perfil.dadosAtualizados')}</span><strong>{t('perfil.disponivel')}</strong></li>
+              <li><span>{t('perfil.acessoRapido')}</span><strong>{t('perfil.pronto')}</strong></li>
             </ul>
             <div className="profile-pill-group">
-              <span className="profile-pill">Atualização simples</span>
-              <span className="profile-pill">Informações seguras</span>
-              <span className="profile-pill">Atendimento melhor</span>
+              <span className="profile-pill">{t('perfil.pillAtualizacao')}</span>
+              <span className="profile-pill">{t('perfil.pillInformacoes')}</span>
+              <span className="profile-pill">{t('perfil.pillAtendimento')}</span>
             </div>
           </article>
         </div>

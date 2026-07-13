@@ -4,6 +4,7 @@ import './Login.css'
 import logo from '../assets/WhatsApp Image 2026-06-23 at 7.39.28 PM.png'
 import { persistAuthSession } from '../services/authUtils.js'
 import { login as loginApi, register as registerApi, loginWithGoogle as loginWithGoogleApi } from '../services/api.js'
+import { useLanguage } from '../i18n/languageStore.js'
 import googleIcon from '../assets/OIP.png'
 import loginImage from '../assets/imagelogCasa.jpg'
 
@@ -37,6 +38,7 @@ const loadGoogleScript = () => new Promise((resolve, reject) => {
 
 
 export default function Login({ onBack, onLoginSuccess }) {
+  const { t } = useLanguage()
   // Estados de login tradicional
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -124,7 +126,7 @@ export default function Login({ onBack, onLoginSuccess }) {
     const credential = response?.credential
 
     if (!credential) {
-      setError('Nao foi possivel obter token do Google')
+      setError(t('login.erroTokenGoogle'))
       return
     }
 
@@ -136,11 +138,11 @@ export default function Login({ onBack, onLoginSuccess }) {
       const result = await loginWithGoogleApi(credential)
       authenticateUser(result.user, result.token)
     } catch (requestError) {
-      setError(requestError.message || 'Erro ao autenticar com Google')
+      setError(requestError.message || t('login.erroAutenticarGoogle'))
     } finally {
       setGoogleLoading(false)
     }
-  }, [authenticateUser])
+  }, [authenticateUser, t])
 
   useEffect(() => {
     if (authMode !== 'google') {
@@ -152,7 +154,7 @@ export default function Login({ onBack, onLoginSuccess }) {
     const initGoogleLogin = async () => {
       if (!GOOGLE_CLIENT_ID) {
         setGoogleReady(false)
-        setError('Defina VITE_GOOGLE_CLIENT_ID no .env para habilitar o login Google')
+        setError(t('login.erroDefinirClientId'))
         return
       }
 
@@ -184,7 +186,7 @@ export default function Login({ onBack, onLoginSuccess }) {
         setGoogleReady(true)
       } catch (googleError) {
         setGoogleReady(false)
-        setError(googleError.message || 'Falha ao iniciar login Google')
+        setError(googleError.message || t('login.erroFalhaGoogle'))
       } finally {
         setGoogleLoading(false)
       }
@@ -195,7 +197,7 @@ export default function Login({ onBack, onLoginSuccess }) {
     return () => {
       isCancelled = true
     }
-  }, [authMode, handleGoogleCredential])
+  }, [authMode, handleGoogleCredential, t])
   const resetForgotPasswordForm = () => {
     setResetIdentifier('')
     setResetUser(null)
@@ -214,13 +216,13 @@ export default function Login({ onBack, onLoginSuccess }) {
     setSuccess('')
 
     if (!resetIdentifier.trim()) {
-      setError('Digite seu email ou usuario')
+      setError(t('login.erroDigiteEmailUsuario'))
       return
     }
 
     const user = findUser(resetIdentifier)
     if (!user) {
-      setError('Usuario ou email nao encontrado')
+      setError(t('login.erroUsuarioNaoEncontrado'))
       return
     }
 
@@ -236,12 +238,12 @@ export default function Login({ onBack, onLoginSuccess }) {
     setError('')
 
     if (!verificationCode.trim()) {
-      setError('Digite o codigo de verificacao')
+      setError(t('login.erroDigiteCodigo'))
       return
     }
 
     if (verificationCode !== sentCode) {
-      setError('Codigo incorreto')
+      setError(t('login.erroCodigoIncorreto'))
       return
     }
 
@@ -255,17 +257,17 @@ export default function Login({ onBack, onLoginSuccess }) {
     setSuccess('')
 
     if (!newPassword.trim() || !newConfirmPassword.trim()) {
-      setError('Preencha a nova senha e a confirmacao')
+      setError(t('login.erroPreencherSenhas'))
       return
     }
 
     if (newPassword.length < 6) {
-      setError('A senha deve ter pelo menos 6 caracteres')
+      setError(t('login.erroSenhaCurta6'))
       return
     }
 
     if (newPassword !== newConfirmPassword) {
-      setError('As senhas nao conferem')
+      setError(t('login.erroSenhasNaoConferem2'))
       return
     }
 
@@ -278,7 +280,7 @@ export default function Login({ onBack, onLoginSuccess }) {
     updateUserInStorage(updatedUser)
     resetForgotPasswordForm()
     setAuthMode('traditional')
-    setSuccess('Senha alterada com sucesso. Voce ja pode entrar.')
+    setSuccess(t('login.sucessoSenhaAlterada'))
   }
 
   // Login tradicional
@@ -290,22 +292,22 @@ export default function Login({ onBack, onLoginSuccess }) {
     if (isNewUser) {
       // Criar novo usuário
       if (!username.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
-        setError('Por favor preencha todos os campos')
+        setError(t('login.erroPreencherCampos'))
         return
       }
 
       if (!validateEmail(email)) {
-        setError('Email inválido')
+        setError(t('login.erroEmailInvalido'))
         return
       }
 
       if (password.length < 6) {
-        setError('A senha deve ter pelo menos 6 caracteres')
+        setError(t('login.erroSenhaCurta'))
         return
       }
 
       if (password !== confirmPassword) {
-        setError('As senhas não conferem')
+        setError(t('login.erroSenhasNaoConferem'))
         return
       }
 
@@ -320,14 +322,14 @@ export default function Login({ onBack, onLoginSuccess }) {
 
         authenticateUser(result.user, result.token)
       } catch (requestError) {
-        setError(requestError.message || 'Erro ao criar conta')
+        setError(requestError.message || t('login.erroCriarConta'))
       } finally {
         setIsSubmitting(false)
       }
     } else {
       // Login com usuario/email existente
       if (!email.trim() || !password.trim()) {
-        setError('Por favor preencha todos os campos')
+        setError(t('login.erroPreencherCampos'))
         return
       }
 
@@ -336,7 +338,7 @@ export default function Login({ onBack, onLoginSuccess }) {
         const result = await loginApi(email, password)
         authenticateUser(result.user, result.token)
       } catch (requestError) {
-        setError(requestError.message || 'Erro ao entrar')
+        setError(requestError.message || t('login.erroEntrar'))
       } finally {
         setIsSubmitting(false)
       }
@@ -367,7 +369,7 @@ export default function Login({ onBack, onLoginSuccess }) {
                     type="text"
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
-                    placeholder="Nome de usuário"
+                    placeholder={t('login.nomeDeUsuario')}
                     required
                   />
                   <input
@@ -376,7 +378,7 @@ export default function Login({ onBack, onLoginSuccess }) {
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email"
+                    placeholder={t('login.email')}
                     required
                   />
                   <input
@@ -385,7 +387,7 @@ export default function Login({ onBack, onLoginSuccess }) {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Senha"
+                    placeholder={t('login.senha')}
                     required
                     minLength={6}
                   />
@@ -395,7 +397,7 @@ export default function Login({ onBack, onLoginSuccess }) {
                     type="password"
                     value={confirmPassword}
                     onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Confirmar Senha"
+                    placeholder={t('login.confirmarSenha')}
                     required
                     minLength={6}
                   />
@@ -408,7 +410,7 @@ export default function Login({ onBack, onLoginSuccess }) {
                     type="text"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Email ou Usuário"
+                    placeholder={t('login.emailOuUsuario')}
                     required
                   />
                   <input
@@ -417,7 +419,7 @@ export default function Login({ onBack, onLoginSuccess }) {
                     type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Senha"
+                    placeholder={t('login.senha')}
                     required
                     minLength={4}
                   />
@@ -429,7 +431,7 @@ export default function Login({ onBack, onLoginSuccess }) {
                       setAuthMode('forgot-password')
                     }}
                   >
-                    Esqueci minha senha
+                    {t('login.esqueciSenha')}
                   </button>
                 </>
               )}
@@ -446,7 +448,7 @@ export default function Login({ onBack, onLoginSuccess }) {
                     <span className={`switch ${rememberMe ? 'active' : ''}`} aria-hidden="true">
                       <div className="switch-ball"></div>
                     </span>
-                    <span>Lembre de mim</span>
+                    <span>{t('login.lembreDeMim')}</span>
                       </label>
                       </div>
                     )}
@@ -462,11 +464,11 @@ export default function Login({ onBack, onLoginSuccess }) {
                     onClick={() => onBack()}
                     style={{ background: '#fff', color: 'var(--accent-dark)', border: '2px solid rgba(33,64,27,0.06)', width: 110 }}
                   >
-                    Voltar
+                    {t('login.voltar')}
                   </button>
                 )}
                 <button className="login-submit" type="submit" disabled={isSubmitting}>
-                  {isSubmitting ? 'Aguarde...' : 'Entrar'}
+                  {isSubmitting ? t('login.aguarde') : t('login.entrar')}
                 </button>
               </div>
 
@@ -483,11 +485,11 @@ export default function Login({ onBack, onLoginSuccess }) {
                   setSuccess('')
                 }}
               >
-                {isNewUser ? 'Já tem uma conta? Faça login' : 'Não tem conta? Crie uma'}
+                {isNewUser ? t('login.jaTemConta') : t('login.naoTemConta')}
               </button>
 
               <div className="social-area">
-                <div className="social-title">|Entrar com</div>
+                <div className="social-title">{t('login.entrarCom')}</div>
                 <div className="social-buttons">
                   <button
                     type="button"
@@ -499,16 +501,16 @@ export default function Login({ onBack, onLoginSuccess }) {
                     }}
                   >
                     <img src={googleIcon} alt="Google" className="social-icon" />
-                    <span className="social-text">Entrar com Google</span>
+                    <span className="social-text">{t('login.entrarComGoogle')}</span>
                   </button>
-                  
+
                 </div>
               </div>
             </form>
           )}
 
           {authMode === 'forgot-password' && (
-           <form 
+           <form
   className="login-form"
   onSubmit={
     resetStep === 'identify'
@@ -518,8 +520,8 @@ export default function Login({ onBack, onLoginSuccess }) {
         : handlePasswordReset
   }
 >
-            
-              <h3 className="auth-title">Recuperar senha</h3>
+
+              <h3 className="auth-title">{t('login.recuperarSenha')}</h3>
 
               {resetStep === 'identify' && (
                 <>
@@ -529,7 +531,7 @@ export default function Login({ onBack, onLoginSuccess }) {
                     type="text"
                     value={resetIdentifier}
                     onChange={(e) => setResetIdentifier(e.target.value)}
-                    placeholder="Email ou usuario cadastrado"
+                    placeholder={t('login.emailOuUsuarioCadastrado')}
                     required
                   />
                   {error && <div className="login-error">{error}</div>}
@@ -543,9 +545,9 @@ export default function Login({ onBack, onLoginSuccess }) {
                       }}
                       style={{ background: '#fff', color: 'var(--accent-dark)', border: '2px solid rgba(33,64,27,0.06)', width: 110 }}
                     >
-                      Voltar
+                      {t('login.voltar')}
                     </button>
-                    <button className="login-submit" type="submit">Enviar Codigo</button>
+                    <button className="login-submit" type="submit">{t('login.enviarCodigo')}</button>
                   </div>
                 </>
               )}
@@ -553,9 +555,9 @@ export default function Login({ onBack, onLoginSuccess }) {
               {resetStep === 'code' && (
                 <>
                   <div className="code-display">
-                    <p className="code-text">Seu codigo de recuperacao e:</p>
+                    <p className="code-text">{t('login.seuCodigoRecuperacao')}</p>
                     <div className="code-box">{sentCode}</div>
-                    <p className="code-info">Use esse codigo para criar uma nova senha.</p>
+                    <p className="code-info">{t('login.useCodigoNovaSenha')}</p>
                   </div>
                   <input
                     id="reset-code"
@@ -563,7 +565,7 @@ export default function Login({ onBack, onLoginSuccess }) {
                     type="text"
                     value={verificationCode}
                     onChange={(e) => setVerificationCode(e.target.value)}
-                    placeholder="Digite o codigo"
+                    placeholder={t('login.digiteCodigo')}
                     required
                     maxLength="6"
                   />
@@ -579,9 +581,9 @@ export default function Login({ onBack, onLoginSuccess }) {
                       }}
                       style={{ background: '#fff', color: 'var(--accent-dark)', border: '2px solid rgba(33,64,27,0.06)', width: 110 }}
                     >
-                      Voltar
+                      {t('login.voltar')}
                     </button>
-                    <button className="login-submit" type="submit">Verificar Codigo</button>
+                    <button className="login-submit" type="submit">{t('login.verificarCodigo')}</button>
                   </div>
                 </>
               )}
@@ -594,7 +596,7 @@ export default function Login({ onBack, onLoginSuccess }) {
                     type="password"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Nova senha"
+                    placeholder={t('login.novaSenha')}
                     required
                     minLength={6}
                   />
@@ -604,7 +606,7 @@ export default function Login({ onBack, onLoginSuccess }) {
                     type="password"
                     value={newConfirmPassword}
                     onChange={(e) => setNewConfirmPassword(e.target.value)}
-                    placeholder="Confirmar nova senha"
+                    placeholder={t('login.confirmarNovaSenha')}
                     required
                     minLength={6}
                   />
@@ -621,9 +623,9 @@ export default function Login({ onBack, onLoginSuccess }) {
                       }}
                       style={{ background: '#fff', color: 'var(--accent-dark)', border: '2px solid rgba(33,64,27,0.06)', width: 110 }}
                     >
-                      Voltar
+                      {t('login.voltar')}
                     </button>
-                    <button className="login-submit" type="submit">Salvar Senha</button>
+                    <button className="login-submit" type="submit">{t('login.salvarSenha')}</button>
                   </div>
                 </>
               )}
@@ -632,14 +634,14 @@ export default function Login({ onBack, onLoginSuccess }) {
 
           {authMode === 'google' && (
             <div className="login-form">
-              <h3 className="auth-title">Login com Google</h3>
-              <p className="code-info">Use sua conta Google para entrar com seguranca.</p>
+              <h3 className="auth-title">{t('login.loginComGoogle')}</h3>
+              <p className="code-info">{t('login.useContaGoogle')}</p>
 
               {!GOOGLE_CLIENT_ID && (
-                <div className="login-error">Variavel VITE_GOOGLE_CLIENT_ID nao configurada.</div>
+                <div className="login-error">{t('login.variavelNaoConfigurada')}</div>
               )}
 
-              {googleLoading && <div className="code-info">Carregando autenticacao Google...</div>}
+              {googleLoading && <div className="code-info">{t('login.carregandoGoogle')}</div>}
               <div ref={googleButtonRef} style={{ display: googleReady ? 'flex' : 'none', justifyContent: 'center', margin: '12px 0 8px' }} />
 
               {error && <div className="login-error">{error}</div>}
@@ -653,7 +655,7 @@ export default function Login({ onBack, onLoginSuccess }) {
                   }}
                   style={{ background: '#fff', color: 'var(--accent-dark)', border: '2px solid rgba(33,64,27,0.06)', width: 110 }}
                 >
-                  Voltar
+                  {t('login.voltar')}
                 </button>
               </div>
             </div>

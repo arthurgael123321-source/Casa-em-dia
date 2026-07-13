@@ -1,6 +1,7 @@
 import './App.css'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { isAuthenticated, logout } from './services/authUtils.js'
+import { useLanguage } from './i18n/languageStore.js'
 import Home from './componentes/Home.jsx'
 import Contatos from './componentes/Contatos.jsx'
 import { Planos } from './componentes/Planos.jsx'
@@ -23,13 +24,6 @@ const appViews = ['home', 'contatos', 'servicos', 'planos', 'perfil', 'configura
 
 const protectedViews = ['contatos', 'agendamento', 'perfil', 'configuracoes']
 
-const authGateMessages = {
-  contatos: 'Faça login para falar conosco.',
-  agendamento: 'Faça login para agendar um serviço.',
-  perfil: 'Faça login para acessar seu perfil.',
-  configuracoes: 'Faça login para acessar as configurações.',
-}
-
 const getViewFromHash = () => {
   const hashView = window.location.hash.replace('#', '')
 
@@ -41,6 +35,7 @@ const getViewFromHash = () => {
 }
 
 function AppShell({ currentView, onNavigate, children }) {
+  const { t } = useLanguage()
   const isServiceView = currentView === 'servicos' || serviceViews.includes(currentView)
   const contentRef = useRef(null)
 
@@ -52,42 +47,42 @@ function AppShell({ currentView, onNavigate, children }) {
   return (
     <main className="mockup-page">
       <aside className="sidebar" role="complementary" aria-label="Menu lateral">
-        <button className="site-logo-button sidebar-logo-button" onClick={() => onNavigate('home')} aria-label="Ir para a página inicial">
+        <button className="site-logo-button sidebar-logo-button" onClick={() => onNavigate('home')} aria-label={t('nav.irHome')}>
           <img src={logo} alt="Casa em Dia" className="sidebar-logo" />
         </button>
 
         <nav className="sidebar-nav" aria-label="Navegação principal">
           <ul className="sidebar-menu">
-            <li><button onClick={() => onNavigate('servicos')} className={`home-sidebar-btn ${isServiceView ? 'active' : ''}`}>Serviços</button></li>
-            <li><button onClick={() => onNavigate('planos')} className={`home-sidebar-btn ${currentView === 'planos' ? 'active' : ''}`}>Planos</button></li>
-            <li><button onClick={() => onNavigate('agendamento')} className={`home-sidebar-btn ${currentView === 'agendamento' ? 'active' : ''}`}>Agendamento</button></li>
-            <li><button onClick={() => onNavigate('contatos')} className={`home-sidebar-btn ${currentView === 'contatos' ? 'active' : ''}`}>Contato</button></li>
+            <li><button onClick={() => onNavigate('servicos')} className={`home-sidebar-btn ${isServiceView ? 'active' : ''}`}>{t('nav.servicos')}</button></li>
+            <li><button onClick={() => onNavigate('planos')} className={`home-sidebar-btn ${currentView === 'planos' ? 'active' : ''}`}>{t('nav.planos')}</button></li>
+            <li><button onClick={() => onNavigate('agendamento')} className={`home-sidebar-btn ${currentView === 'agendamento' ? 'active' : ''}`}>{t('nav.agendamento')}</button></li>
+            <li><button onClick={() => onNavigate('contatos')} className={`home-sidebar-btn ${currentView === 'contatos' ? 'active' : ''}`}>{t('nav.contato')}</button></li>
           </ul>
         </nav>
 
         <div className="sidebar-contact">
-          <h4 className="sidebar-subtitle">Fale Conosco</h4>
+          <h4 className="sidebar-subtitle">{t('nav.faleConosco')}</h4>
           <a href="tel:+551190028922" className="sidebar-contact-link">(11) 9002-8922</a>
           <a href="mailto:contato@casaemdia.com" className="sidebar-contact-link">contato@casaemdia.com</a>
         </div>
 
-        <button className="sidebar-cta" onClick={() => onNavigate('agendamento')}>Agende Agora</button>
+        <button className="sidebar-cta" onClick={() => onNavigate('agendamento')}>{t('nav.agendeAgora')}</button>
       </aside>
 
       <section className="mockup-card" role="main" aria-label="Conteúdo principal">
         <header className="mockup-header">
-          <button className="site-logo-button" onClick={() => onNavigate('home')} aria-label="Ir para página inicial">
+          <button className="site-logo-button" onClick={() => onNavigate('home')} aria-label={t('nav.irHomeTop')}>
             <img src={topbarLogo} alt="Casa em Dia" className="site-logo" />
           </button>
           <div className="top-actions" aria-label="Ações rápidas">
-            <button type="button" className="top-action-button" aria-label="Configurações" onClick={() => onNavigate('configuracoes')}>
-              <img src={configIcon} alt="Configurações" />
+            <button type="button" className="top-action-button" aria-label={t('nav.configuracoes')} onClick={() => onNavigate('configuracoes')}>
+              <img src={configIcon} alt={t('nav.configuracoes')} />
             </button>
-            <button type="button" className="top-action-button" aria-label="Perfil" onClick={() => onNavigate('perfil')}>
-              <img src={profileIcon} alt="Perfil" />
+            <button type="button" className="top-action-button" aria-label={t('nav.perfil')} onClick={() => onNavigate('perfil')}>
+              <img src={profileIcon} alt={t('nav.perfil')} />
             </button>
-            <button type="button" className="top-action-button" aria-label="Planos" onClick={() => onNavigate('planos')}>
-              <img src={plansIcon} alt="Planos" />
+            <button type="button" className="top-action-button" aria-label={t('nav.planos')} onClick={() => onNavigate('planos')}>
+              <img src={plansIcon} alt={t('nav.planos')} />
             </button>
           </div>
         </header>
@@ -107,6 +102,7 @@ const resolveView = (candidateView) => {
 }
 
 export default function App() {
+  const { t } = useLanguage()
   const [view, setView] = useState(() => resolveView(getViewFromHash()))
 
   const goToView = useCallback((nextView) => {
@@ -118,7 +114,7 @@ export default function App() {
     const initialView = getViewFromHash()
 
     if (protectedViews.includes(initialView) && !isAuthenticated()) {
-      return { message: authGateMessages[initialView], onSuccess: () => goToView(initialView) }
+      return { message: t(`authGate.${initialView}`), onSuccess: () => goToView(initialView) }
     }
 
     return null
@@ -137,7 +133,7 @@ export default function App() {
       const previousView = appViews.includes(event.state?.view) ? event.state.view : getViewFromHash()
 
       if (protectedViews.includes(previousView) && !isAuthenticated()) {
-        requireAuth(authGateMessages[previousView], () => setView(previousView))
+        requireAuth(t(`authGate.${previousView}`), () => setView(previousView))
         return
       }
 
@@ -149,7 +145,7 @@ export default function App() {
     return () => {
       window.removeEventListener('popstate', handlePopState)
     }
-  }, [requireAuth])
+  }, [requireAuth, t])
 
   const navigate = useCallback((nextView) => {
     if (!appViews.includes(nextView) || nextView === view) {
@@ -157,12 +153,12 @@ export default function App() {
     }
 
     if (protectedViews.includes(nextView) && !isAuthenticated()) {
-      requireAuth(authGateMessages[nextView], () => goToView(nextView))
+      requireAuth(t(`authGate.${nextView}`), () => goToView(nextView))
       return
     }
 
     goToView(nextView)
-  }, [view, goToView, requireAuth])
+  }, [view, goToView, requireAuth, t])
 
   const closeAuthGate = useCallback(() => setAuthGateRequest(null), [])
 

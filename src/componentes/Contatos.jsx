@@ -1,61 +1,42 @@
 import { useState } from 'react';
 import './Contatos.css';
 import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaWhatsapp, FaChevronDown } from 'react-icons/fa';
+import { useLanguage } from '../i18n/languageStore.js';
 
 export default function Contatos({ onHomeClick }) {
+  const { t } = useLanguage();
   const [activeAccordion, setActiveAccordion] = useState(null);
 
   const toggleAccordion = (index) => {
     setActiveAccordion(activeAccordion === index ? null : index);
   };
 
-  const faqs = [
-    {
-      pergunta: 'Como agendar um serviço?',
-      resposta: 'Você pode agendar um serviço através da página de Agendamentos. Selecione a data, horário e tipo de serviço desejado. Nossa equipe confirmará seu agendamento via email ou WhatsApp.'
-    },
-    {
-      pergunta: 'Qual é o horário de funcionamento?',
-      resposta: 'Funcionamos de segunda a sexta, das 08:00 às 18:00. Aos sábados, de 09:00 às 13:00. Agendamentos podem ser feitos fora deste horário pelo site.'
-    },
-    {
-      pergunta: 'Como cancelar ou alterar um agendamento?',
-      resposta: 'Você pode cancelar ou alterar seu agendamento com até 24 horas de antecedência através do seu painel de controle ou entrando em contato conosco diretamente.'
-    },
-    {
-      pergunta: 'Vocês oferecem garantia nos serviços?',
-      resposta: 'Sim! Todos os nossos serviços possuem garantia de 30 dias. Se não ficar satisfeito, refazemos o trabalho sem custos adicionais.'
-    },
-    {
-      pergunta: 'Quais formas de pagamento aceitam?',
-      resposta: 'Aceitamos cartão de crédito, débito, PIX, boleto e dinheiro. O pagamento pode ser realizado no momento do agendamento ou presencialmente.'
-    }
-  ];
+  const faqs = t('contatos.faqs');
 
   const canaisContato = [
     {
       icon: <FaPhone />,
-      titulo: 'Telefone',
+      titulo: t('contatos.telefone'),
       descricao: '(11) 9002-8922',
       link: 'tel:+551190028922'
     },
     {
       icon: <FaWhatsapp />,
-      titulo: 'WhatsApp',
+      titulo: t('contatos.whatsapp'),
       descricao: '(11) 9002-8922',
       link: 'https://wa.me/551190028922',
       abrirEmNovaAba: true
     },
     {
       icon: <FaEnvelope />,
-      titulo: 'Email',
+      titulo: t('contatos.email'),
       descricao: 'casaemdia@gmail.com.br',
       link: 'mailto:contato@casaemdia.com'
     },
     {
       icon: <FaMapMarkerAlt />,
-      titulo: 'Localização',
-      descricao: 'Praça da Sé, 100 - Sé, São Paulo - SP',
+      titulo: t('contatos.localizacao'),
+      descricao: t('contatos.enderecoTexto'),
       link: 'https://www.google.com/maps/search/?api=1&query=Pra%C3%A7a+da+S%C3%A9%2C+100+-+S%C3%A9%2C+S%C3%A3o+Paulo+-+SP',
       abrirEmNovaAba: true
     }
@@ -66,16 +47,16 @@ export default function Contatos({ onHomeClick }) {
       {/* Header de Navegação */}
       <header className="contatos-header">
         <button onClick={() => onHomeClick && onHomeClick()} className="btn-voltar">
-          ← Voltar
+          {t('contatos.voltar')}
         </button>
-        <h1 className="header-title">Casa em Dia</h1>
+        <h1 className="header-title">{t('contatos.headerTitulo')}</h1>
       </header>
 
       {/* Banner Principal */}
       <section className="banner-contatos">
         <div className="banner-content">
-          <h1>Fale Conosco</h1>
-          <p>Estamos aqui para ajudar! Escolha a melhor forma de entrar em contato conosco.</p>
+          <h1>{t('contatos.bannerTitulo')}</h1>
+          <p>{t('contatos.bannerTexto')}</p>
         </div>
       </section>
 
@@ -84,8 +65,8 @@ export default function Contatos({ onHomeClick }) {
         <div className="container">
           <div className="canais-grid">
             {canaisContato.map((canal, index) => (
-              <a 
-                key={index} 
+              <a
+                key={index}
                 href={canal.link}
                 className="canal-card"
                 target={canal.abrirEmNovaAba ? '_blank' : undefined}
@@ -105,14 +86,14 @@ export default function Contatos({ onHomeClick }) {
       <section className="faq-section">
         <div className="container">
           <div className="faq-header">
-            <h2>Perguntas Frequentes</h2>
-            <p>Encontre respostas para as dúvidas mais comuns</p>
+            <h2>{t('contatos.perguntasFrequentes')}</h2>
+            <p>{t('contatos.perguntasSubtitulo')}</p>
           </div>
 
           <div className="faq-accordion">
             {faqs.map((faq, index) => (
-              <div 
-                key={index} 
+              <div
+                key={index}
                 className={`accordion-item ${activeAccordion === index ? 'active' : ''}`}
               >
                 <button

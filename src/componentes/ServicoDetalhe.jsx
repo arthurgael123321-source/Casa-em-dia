@@ -1,14 +1,16 @@
-import { serviceMap } from './servicosData'
+import { buildServices } from './servicosData'
+import { useLanguage } from '../i18n/languageStore.js'
 
 function ServicoDetalhe({ serviceSlug, onScheduleClick, onServicosClick }) {
-  const service = serviceMap[serviceSlug]
+  const { t, language } = useLanguage()
+  const service = buildServices(language).find((item) => item.slug === serviceSlug)
 
   if (!service) {
     return (
       <div className="service-detail-page">
-        <h1>Serviço não encontrado</h1>
-        <p>O serviço solicitado não está disponível no momento.</p>
-        <button onClick={() => onServicosClick && onServicosClick()}>Voltar para serviços</button>
+        <h1>{t('servicoDetalhe.naoEncontrado')}</h1>
+        <p>{t('servicoDetalhe.naoDisponivel')}</p>
+        <button onClick={() => onServicosClick && onServicosClick()}>{t('servicoDetalhe.voltarServicos')}</button>
       </div>
     )
   }
@@ -17,15 +19,15 @@ function ServicoDetalhe({ serviceSlug, onScheduleClick, onServicosClick }) {
     <div className="service-detail-page">
           <article className="service-detail-hero">
             <div className="hero-copy">
-              <p className="eyebrow">Serviço personalizado</p>
+              <p className="eyebrow">{t('servicoDetalhe.servicoPersonalizado')}</p>
               <h2>{service.title}</h2>
               <p>{service.description}</p>
               <div className="hero-buttons">
                 <button className="hero-cta" onClick={() => onScheduleClick && onScheduleClick()}>
-                  Agendar agora
+                  {t('servicoDetalhe.agendarAgora')}
                 </button>
                 <button className="hero-secondary" onClick={() => onServicosClick && onServicosClick()}>
-                  Ver todos os serviços
+                  {t('servicoDetalhe.verTodos')}
                 </button>
               </div>
             </div>
@@ -35,7 +37,7 @@ function ServicoDetalhe({ serviceSlug, onScheduleClick, onServicosClick }) {
           </article>
 
           <article className="service-detail-info">
-            <h2>O que está incluso</h2>
+            <h2>{t('servicoDetalhe.oQueEstaIncluso')}</h2>
             <ul>
               {service.details.map((item) => (
                 <li key={item}>{item}</li>
